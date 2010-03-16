@@ -1,0 +1,3 @@
+[submodule "lib/storage/mongodb"]
+	path = lib/storage/mongodb
+	url = git://github.com/christkv/node-mongodb-native.git
