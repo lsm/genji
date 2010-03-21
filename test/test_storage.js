@@ -3,9 +3,9 @@
  * and open the template in the editor.
  */
 
-var DB = require("../../lib/genji/storage/couchdb").CouchDatabase,
+var DB = require("../lib/genji/storage/couchdb").CouchDatabase,
 a = require("assert");
-var d = require('../../lib/genji/utils').debug;
+var d = require('../lib/genji/utils').debug;
 
 var db = new DB("genji_test");
 

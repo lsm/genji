@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-var Base = require("../../lib/genji/core/base").Base,
+var Base = require("../lib/genji/core/base").Base,
 assert = require("assert");
 
 var Class = Base({
