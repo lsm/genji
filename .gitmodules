@@ -1,3 +1,3 @@
-[submodule "lib/storage/mongodb"]
-	path = lib/storage/mongodb
+[submodule "lib/genji/storage/mongodb"]
+	path = lib/genji/storage/mongodb
 	url = git://github.com/christkv/node-mongodb-native.git
