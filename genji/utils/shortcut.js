@@ -3,7 +3,7 @@
 function lv1(dev) {
     if (!global.hasOwnProperty("genji")) {
         dev && forDev();
-        global.genji = require("../index");
+        global.genji = require("../../genji");
     } else {
         throw new Error("Namespace conflicts or you've called me twice.");
     }
@@ -27,7 +27,7 @@ function lv3(dev) {
 
 // handy functions for development
 function forDev() {
-    global.d = require("../utils").debug;
+    global.d = require("./index").debug;
 }
 
 exports.setLevel = function(lv, dev) {
