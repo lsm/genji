@@ -2,7 +2,7 @@ var sys = require('sys'),
 _inspect = sys.inspect,
 _debug = sys.debug;
 
-exports.debug = function debug() {
+exports.debug = function() {
     for (var arg in arguments) {
     	if (typeof arguments[arg] === "object") {
         	_debug("[object]\n" + _inspect(arguments[arg]));
@@ -115,7 +115,7 @@ function lv3(dev) {
 
 // handy functions for development
 function forDev() {
-    global.d = debug;
+    global.d = exports.debug;
 }
 
 exports.setLevel = function(lv, dev) {
