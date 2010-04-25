@@ -1,13 +1,12 @@
 /**
  * Make consistent interface for different libraries
  */
-//var d = require("../utils").debug;
 
 exports.base64 = require("./base64");
 
 try {
     // get hashlib from http://github.com/brainfucker/hashlib
-    expose(require("hashlib1"));
+    expose(require("hashlib"));
 } catch(e) {
     expose(require("./jshash-2.2"));
 }

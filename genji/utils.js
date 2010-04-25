@@ -1,10 +1,23 @@
+var sys = require('sys'),
+_inspect = sys.inspect,
+_debug = sys.debug;
+
+exports.debug = function debug() {
+    for (var arg in arguments) {
+    	if (typeof arguments[arg] === "object") {
+        	_debug("[object]\n" + _inspect(arguments[arg]));
+        } else {
+        	_debug("[" + typeof arguments[arg] + ']\n' + arguments[arg]);
+        }
+    }
+};
+
+
 /**
- * Forked from http://github.com/defrex/node.devserver.js
+ * File/dir watcher and restart manager for development (inspired http://github.com/defrex/node.devserver.js).
  * @todo add crash detect
  */
-
 var fs = require('fs'),
-sys = require('sys'),
 spawn = require('child_process').spawn,
 server,
 startup_script = null,
@@ -69,4 +82,51 @@ function watch(path) {
 }
 
 exports.run = start_server;
-exports.watch = watch;
+exports.watchDir = watch;
+
+
+// Shortcuts
+
+// 'genji' as top level namespace
+function lv1(dev) {
+    if (!global.hasOwnProperty("genji")) {
+        dev && forDev();
+        global.genji = require("../genji");
+    } else {
+        throw new Error("Namespace conflicts or you've called me twice.");
+    }
+}
+
+// level one + merge packages with global
+function lv2(dev) {
+    lv1(dev);
+    global.core = genji.core;
+    global.crypto = genji.crypto;
+    global.utils = genji.utils;
+    global.web = genji.web;
+}
+
+// level one + merge common classes with global
+function lv3(dev) {
+    lv1(dev);
+    global.Base = genji.core.Base;
+    global.Event = genji.core.Event;
+}
+
+// handy functions for development
+function forDev() {
+    global.d = debug;
+}
+
+exports.setLevel = function(lv, dev) {
+    switch(lv) {
+        case 1:
+            lv1(dev); break;
+        case 2:
+            lv2(dev); break;
+        case 3:
+            lv3(dev); break;
+        default:
+            break;
+    }
+}
