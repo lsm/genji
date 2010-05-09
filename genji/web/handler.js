@@ -95,14 +95,14 @@ var Handler = Event({
         this.method === "HEAD" && this.finish();
     },
 
-    error: function(code) {
+    error: function(code, message) {
         code = code || 500;
-        var message =this.getErrorHTML(code);
+        var msg = message || this.getErrorHTML(code);
         this.sendHeader(code, {
             "Content-Type": "text/html; charset=UTF-8",
-            "Content-Length": message.length
+            "Content-Length": msg.length
         });
-        this.response.write(message, "utf8");
+        this.response.write(msg, "utf8");
         this.finish();
     },
 
