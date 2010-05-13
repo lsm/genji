@@ -1,6 +1,5 @@
 var Base = require("./base").Base;
 var EventEmitter = require("events").EventEmitter;
-var d = require('../utils').debug;
 
 // @todo do we need event filter?
 // @todo Event has a `emitter'?
