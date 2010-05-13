@@ -74,7 +74,10 @@ function _attach(func, plugins) {
 exports.listen = function(urls, HandlerClass, options) {
     options = options || [];
     urls = _formatURLs(urls);
-    http.createServer(function(request, response) {
+    if (typeof HandlerClass !== 'function') throw new Error('Invaild handler class.');
+    var server = http.createServer(function(request, response) {
         _route(new HandlerClass(request, response), urls);
-    }).listen(options.port || 8000, options.host || '127.0.0.1');
+    });
+    server.listen(options.port || 8000, options.host || '127.0.0.1');
+    return server;
 };
