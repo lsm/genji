@@ -143,8 +143,9 @@ var Simple = {
 
     staticFile: function(path, type) {
         // this should not be used in production env.
+        // @todo mime and encoding
         var self = this;
-        fs.readFile(path, function(err, content) {
+        fs.readFile(path, 'utf8', function(err, content) {
             if (err) {
                 self.error(404);
                 return;
