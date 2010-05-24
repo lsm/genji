@@ -8,9 +8,14 @@
  * @todo more secured way (e.g. http://gitorious.com/django-password-model)
  */
 
-var crypto = require("genji/crypto"),
-sha1 = crypto.sha1,
-hmac_sha1 = crypto.hmac_sha1;
+var c = require('crypto'),
+base64 = require('../utils').base64;
+var sha1 = function(data) {
+    return c.createHash('sha1').update(data).digest('hex');
+}
+var hmac_sha1 = function(data, key) {
+    return c.createHmac('sha1', key).update(data).digest('hex');
+}
 
 function sign(username, expiration, data, serverKey) {
     var k = hmac_sha1([username, expiration].join("|"), serverKey);
@@ -50,7 +55,7 @@ function makePassword(raw) {
 function checkLogin(handler, serverKey) {
     var cookie = handler.getCookie("_acn");
     if (cookie) {
-        return verify(crypto.base64.decode(cookie), serverKey);
+        return verify(base64.decode(cookie), serverKey);
     }
     return false;
 }
@@ -59,7 +64,7 @@ function login(handler, user, credential, serverKey, data) {
     if (checkPassword(credential, user["password"])) {
         var expire =new Date(+ new Date + 7*24*3600*1000);
         var c = sign(user['username'], expire, data, serverKey);
-        handler.setCookie("_acn", crypto.base64.encode(c), {expires: expire, path: "/"});
+        handler.setCookie("_acn", base64.encode(c), {expires: expire, path: "/"});
         return true;
     } else {
         return false;
