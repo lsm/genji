@@ -4,6 +4,8 @@ var Event = require("../core/event").Event,
 sys = require("sys"),
 mime = require("./mime"),
 extname = require("path").extname,
+multipart = require('./multipart-js/lib/multipart'),
+path = require('path'),
 fs = require("fs");
 
 var Handler = Event({
@@ -16,6 +18,9 @@ var Handler = Event({
         this.response = response;
         // headers of resquest
         this.headers = request.headers;
+        if (this.headers.hasOwnProperty('content-type')) {
+            this.isMultipart = this.headers['content-type'].search('multipart/form-data') > -1;
+        }
         // cookies and headers for response
         this._cookies = [];
         this._headers = {};
@@ -29,14 +34,21 @@ var Handler = Event({
         this._onDataCalled = true;// for MixedHandler
         var data = '';
         var self = this;
+        if (this.isMultipart) {
+            this._uploadStream = multipart.parser();
+            this._uploadStream.headers = this.headers;
+            this.request.setEncoding('binary');
+        }
         this.request.addListener("data",
             function(chunk) {
                 data += chunk;
+                self.isMultipart && self._uploadStream.write(chunk);
                 chunked && self.fire("data", chunk);
             });
         this.request.addListener("end",
             function() {
-                self.fire("data_end", data);
+                self.isMultipart && self._uploadStream.close();
+                self.fire("end", data);
             });
     },
 
