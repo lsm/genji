@@ -1,3 +1,6 @@
 [submodule "genji/web/multipart-js"]
 	path = genji/web/multipart-js
 	url = http://github.com/isaacs/multipart-js.git
+[submodule "lib/support/multipart-js"]
+	path = lib/support/multipart-js
+	url = http://github.com/isaacs/multipart-js.git
