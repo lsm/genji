@@ -4,3 +4,6 @@
 [submodule "lib/support/multipart-js"]
 	path = lib/support/multipart-js
 	url = http://github.com/isaacs/multipart-js.git
+[submodule "lib/support/optparse-js"]
+	path = lib/support/optparse-js
+	url = http://github.com/jfd/optparse-js.git
