@@ -1,7 +1,17 @@
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+describe('ExampleSuite', function () {
+  it('should have a passing test', function() {
+      expect(true).toEqual(true);
+  });
+
+  describe('Nested Describe', function () {
+     it('should also have a passing test', function () {
+        expect(true).toEqual(true);
+     });
+  });
+});
+
+
 var Base = require("../lib/genji/core/base").Base,
 assert = require("assert");
 
