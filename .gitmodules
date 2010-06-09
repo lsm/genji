@@ -7,9 +7,6 @@
 [submodule "lib/support/optparse-js"]
 	path = lib/support/optparse-js
 	url = http://github.com/jfd/optparse-js.git
-[submodule "test/jasmine"]
-	path = test/jasmine
-	url = http://github.com/pivotal/jasmine.git
 [submodule "test/jasmine-node"]
 	path = test/jasmine-node
-	url = http://github.com/mhevery/jasmine-node.git
+	url = http://github.com/robotarmy/jasmine-node.git
