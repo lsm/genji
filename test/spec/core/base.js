@@ -60,8 +60,8 @@ describe('Base', function () {
         });
     });
     
-    describe('_super and overload', function() {
-        it('should be overloaded', function() {
+    describe('_super and override', function() {
+        it('should be overrided', function() {
             expect(klassPlus.say()).toEqual("I'm the first one, while I'm the second one");
         });
     });
