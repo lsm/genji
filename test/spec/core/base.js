@@ -103,6 +103,11 @@ describe('Class', function () {
 
         klass = new MyClass('A class');
         klassPlus = new MyClassPlus('B class');
+        klassPlus.extend({
+            hello: function() {
+                return 'hello';
+            }
+        });
     });
     describe('inheritance', function() {
         it('should be an instance of their respective class, the same for their constructor', function() {
@@ -114,7 +119,10 @@ describe('Class', function () {
         });
         it('should not affect parent class and instances', function() {
             expect(MyClass.prototype.setName).toBeUndefined();
+            expect(MyClass.prototype.hello).toBeUndefined();
             expect(klass.setName).toBeUndefined();
+            expect(klass.hello).toBeUndefined();
+            expect(MyClassPlus.prototype.hello).toBeUndefined();
         });
     });
 
@@ -126,6 +134,7 @@ describe('Class', function () {
             expect(typeof klass.init).toEqual('function');
             expect(typeof klass.getName).toEqual('function');
             expect(typeof klass.say).toEqual('function');
+            expect(typeof klassPlus.hello).toEqual('function');
         });
 
         it('should has properties setted by constructor of the class', function() {
