@@ -1,3 +1,4 @@
+// benchmark scripts copied from Class.js (TJ Holowaychuk)
 var Base = require('../lib/genji/core/base').Base;
 var sys = require('sys'),
 times = 500000;
