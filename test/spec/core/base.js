@@ -17,16 +17,22 @@ describe('Base', function() {
 
         ClassPlusPlus = ClassPlus({
             getName: function() {
-               return this.name;
+                return this.name;
             },
             getAge:  function() {
-               return this.age;
+                return this.age;
             }
         });
 
         Class4 = ClassPlusPlus({
             init: function(name, age) {
                 this._super(name, age);
+            },
+
+            include: {
+                setAge: function(age) {
+                    this.age = age;
+                }
             }
         });
 
@@ -35,8 +41,6 @@ describe('Base', function() {
         klassPlusPlus = new ClassPlusPlus('classPlusPlus', 26);
         klass4 = new Class4('class4', 14);
     });
-
-            
 
     describe('inheritance', function() {
         it('should be an instance of their respective class, the same for their constructor', function() {
@@ -66,88 +70,60 @@ describe('Base', function() {
             expect(klass4.getAge()).toEqual(14);
             expect(klass4.getName()).toEqual('class41');
         });
-        it('', function() {});
         it('should call parent\'s constructor if there\'s no `init` defined', function() {
             expect(klassPlusPlus.getName()).toEqual('classPlusPlus1');
             expect(klassPlusPlus.getAge()).toEqual(26);
         });
     });
-});
 
-
-describe('Class', function () {
-    var Class = require('genji/core/base').Class;
-    var MyClass, MyClassPlus, klass, klassPlus;
-
-    beforeEach(function() {
-        MyClass = Class({
-            init: function(name) {
-                this.name = name;
-            },
-            getName: function() {
-                return this.name;
-            },
-            say: function() {
-                return "I'm the first one";
-            }
-        });
-
-        MyClassPlus = MyClass({
-            setName: function(name) {
-                this.name = name;
-            },
-            say: function() {
-                return this._super() + ", while I'm the second one";
-            }
-        });
-
-        klass = new MyClass('A class');
-        klassPlus = new MyClassPlus('B class');
-        klassPlus.extend({
-            hello: function() {
-                return 'hello';
-            }
+    describe('mixin - include', function() {
+        it('should have the included functions and keep the prototype chain', function() {
+            ClassPlusPlus.include({
+                setName: function(value) {
+                    this.name = value;
+                }
+            });
+            expect(typeof klassPlusPlus.setName).toEqual('function');
+            expect(typeof klass4.setName).toEqual('function');
+            expect(typeof klass4.setAge).toEqual('function');
+            expect(typeof klassPlus.setName).toEqual("undefined");
+            expect(typeof ClassPlusPlus.setName).toEqual("undefined");
         });
     });
-    describe('inheritance', function() {
-        it('should be an instance of their respective class, the same for their constructor', function() {
-            expect(klass.constructor).toBe(MyClass);
-            expect(klass instanceof MyClass).toEqual(true);
-            expect(klassPlus.constructor).toBe(MyClassPlus);
-            expect(klassPlus instanceof MyClass).toEqual(true);
-            expect(klassPlus instanceof MyClassPlus).toEqual(true);
-        });
-        it('should not affect parent class and instances', function() {
-            expect(MyClass.prototype.setName).toBeUndefined();
-            expect(MyClass.prototype.hello).toBeUndefined();
-            expect(klass.setName).toBeUndefined();
-            expect(klass.hello).toBeUndefined();
-            expect(MyClassPlus.prototype.hello).toBeUndefined();
-        });
-    });
-
-    describe('defining properties', function() {
-        it('should has methods', function() {
-            expect(MyClass.prototype.hasOwnProperty('init')).toEqual(true);
-            expect(MyClass.prototype.hasOwnProperty('getName')).toEqual(true);
-            expect(MyClass.prototype.hasOwnProperty('say')).toEqual(true);
-            expect(typeof klass.init).toEqual('function');
-            expect(typeof klass.getName).toEqual('function');
-            expect(typeof klass.say).toEqual('function');
-            expect(typeof klassPlus.hello).toEqual('function');
+    describe('mixin - extend', function() {
+        it("should have the extended static functions and dose not break the Class and prototype chain", function() {
+            ClassPlus.extend({
+                hello: function() {
+                    return 'hello';
+                }
+            }, {
+                world: function() {
+                    return 'world';
+                }
+            });
+            expect(ClassPlus.hello()).toEqual('hello');
+            expect(ClassPlus.world()).toEqual('world');
+            expect(ClassPlusPlus.hello).toEqual(undefined);
+            expect(Class.hello).toEqual(undefined);
+            expect(klassPlus.hello).toEqual(undefined);
         });
 
-        it('should has properties setted by constructor of the class', function() {
-            expect(klass.name).toEqual('A class');
-            expect(klass.getName()).toEqual('A class');
-            expect(klassPlus.getName()).toEqual('B class');
+        it("should be able to extend the instance and dose not break the Class and prototype chain", function() {
+            klassPlusPlus.extend({
+                getEmail: function() {
+                    return this.email;
+                },
+                setEmail: function(email) {
+                    this.email = email;
+                }
+            });
+            klassPlusPlus.setEmail('123@123.com');
+            expect(klassPlusPlus.getEmail()).toEqual('123@123.com');
+            expect(klassPlus.setEmail).toEqual(undefined);
+            expect(klass4.setEmail).toEqual(undefined);
+            expect(Class4.setEmail).toEqual(undefined);
+            expect(ClassPlus.setEmail).toEqual(undefined);
         });
 
-    });
-    
-    describe('_super and override', function() {
-        it('should be overrided', function() {
-            expect(klassPlus.say()).toEqual("I'm the first one, while I'm the second one");
-        });
     });
 });
