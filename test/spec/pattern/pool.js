@@ -1,5 +1,5 @@
 describe('Testing Pool', function() {
-    var Pool = require('genji/pattern/pool').Pool, pool;
+    var Pool = require('genji/pattern/pool'), pool;
     function fillPool(num, callback) {
         for (var i = 0; i < num; i++) {
             callback(i);
