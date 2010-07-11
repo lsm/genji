@@ -14,17 +14,18 @@ describe('Testing genji.pattern.Filter', function() {
 
     it("calls functions in order (FIFO)", function() {
         var x;
-        filter.add('test', addOne);
-        filter.add('test', multiplyFive);
-        filter.add('test', addOne);
-        filter.add('test', function(result) {
+        filter.addFilter('test', addOne);
+        filter.addFilter('test', multiplyFive);
+        filter.addFilter('test', addOne);
+        filter.addFilter('test', function(result) {
             x = result;
             // stop here if we don't call `this`
         });
-        filter.add('test', function(result) {
+        filter.addFilter('test', function(result) {
+            // this func will never be called
             x = result + 1;
         });
-        filter.get('test')(3);
+        filter.getFilter('test')(3);
         expect(x).toEqual(21);
     });
 });
