@@ -1,5 +1,5 @@
 describe('Base', function() {
-    var Base = require('genji/core/base').Base;
+    var Base = require('genji/core').Base;
     var Class, ClassPlus, ClassPlusPlus, Class4
     , klass, klassPlus, klassPlusPlus, klass4;
 
