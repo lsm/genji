@@ -1,4 +1,4 @@
-var Base = require('genji/core/base');
+var Base = require('genji/pattern/base');
 var Class, ClassPlus, ClassPlusPlus, Class4
 , klass, klassPlus, klassPlusPlus, klass4;
 
