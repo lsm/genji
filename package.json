@@ -8,5 +8,5 @@
   { "type" : "git"
   , "url" : "http://github.com/zir/genji.git"
   }
-, "engines": { "node": ">=0.1.94" }
+, "engines": { "node": ">=0.1.104" }
 }
