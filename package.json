@@ -1,12 +1,13 @@
-{ 
-"version": "0.0.1"
+{ "name": "genji"
 , "description": "A web framework for nodejs"
-, "main": "./lib/genji"
+, "version": "0.0.1"
+, "homepage": "http://github.com/zir/genji"
 , "author": "Senmiao Liu<zir.echo@gmail.com>"
-, "name": "genji"
+, "directories": {"lib": "./lib"}
 , "repository" :
   { "type" : "git"
   , "url" : "http://github.com/zir/genji.git"
   }
+, "bin": {"genji": "./bin/genji.js"}
 , "engines": { "node": ">=0.1.104" }
 }
