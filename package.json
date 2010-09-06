@@ -1,6 +1,6 @@
 { "name": "genji"
 , "description": "A low-level loosely coupled web framework for nodejs"
-, "version": "0.0.1"
+, "version": "0.0.2"
 , "homepage": "http://github.com/zir/genji"
 , "author": "Senmiao Liu<zir.echo@gmail.com>"
 , "directories": {"lib": "./lib"}
