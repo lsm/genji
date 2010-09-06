@@ -1,5 +1,5 @@
 { "name": "genji"
-, "description": "A web framework for nodejs"
+, "description": "A low-level loosely coupled web framework for nodejs"
 , "version": "0.0.1"
 , "homepage": "http://github.com/zir/genji"
 , "author": "Senmiao Liu<zir.echo@gmail.com>"
@@ -9,5 +9,5 @@
   , "url" : "http://github.com/zir/genji.git"
   }
 , "bin": {"genji": "./bin/genji.js"}
-, "engines": { "node": ">=0.1.104" }
+, "engines": { "node": ">=0.2.0" }
 }
