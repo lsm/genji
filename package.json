@@ -3,7 +3,7 @@
 , "version": "0.0.2"
 , "homepage": "http://github.com/zir/genji"
 , "author": "Senmiao Liu<zir.echo@gmail.com>"
-, "directories": {"lib": "./lib"}
+, "directories": {"lib": "./lib/genji"}
 , "repository" :
   { "type" : "git"
   , "url" : "http://github.com/zir/genji.git"
