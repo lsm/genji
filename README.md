@@ -3,7 +3,9 @@ The word `Gen Ji` in Chinese means `root` `base` and
 it's also the name of the [Japanese era name](http://en.wikipedia.org/wiki/Genji#Era) which was created to mark the beginning of a new 60-year cycle of the Chinese zodiac.
 So, basically it means something **fundamental** or **beginning** of something.
 The philosophy of this project follows this meaning.
-It would be a collection of patterns/solutions/utils useful for daily nodejs development. It will not force you how to use it, you could use the whole system provided or some part of it. It will not modify the native nodejs api or put any object in the global context.
+It would be a collection of patterns/solutions/utils useful for daily nodejs development.
+It will not force you how to use it, you could use the whole system provided or some part of it.
+It will not modify the native nodejs api or put any object in the global context. It's all up to you.
 
 ## Features
 - **patterns**:
@@ -39,8 +41,19 @@ Here describes how we categorize different functionalities and why.
 
 ### Pattern
 General solutions for generic problems.
-Module in this subdirectory **MUST NOT** have dependencies other than nodejs and other modules under this directory.
+Module in this subdirectory **MUST NOT** have dependencies other than nodejs or other modules under this directory.
 
+### Middleware
+Tasks or functionalities which are independent of any application.
+
+### Handler
+Some http request and response helpers which connect the high level application to low level interface.
+It has application level abstraction, but it would be specific for the resources you are dealing with (e.g. static file, json-rpc).
+
+### Utils
+Utilities for web application.
+
+## Quick start guide
 
 
 
