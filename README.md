@@ -5,7 +5,7 @@ So, basically it means something **fundamental** or **beginning** of something.
 The philosophy of this project follows this meaning.
 It would be a collection of patterns/solutions/utils useful for daily nodejs development. It will not force you how to use it, you could use the whole system provided or some part of it. It will not modify the native nodejs api or put any object in the global context.
 
-##Features
+## Features
 - **patterns**:
     - Javascript object-oriented helper
     - Pooling
@@ -14,13 +14,13 @@ It would be a collection of patterns/solutions/utils useful for daily nodejs dev
     - Promise/deferred *
     - Class instantializing helper (factory) and in memory registration
     - In memory caching
-- **middleware** system which easy to control in many ways with less overhead:
+- **middleware** system which easy to control in many ways with less overhead. Current middlewares:
     - Conditional get
     - Response time in header
     - Logger with different level support
     - Error handler
     - Regular expression based url router, supports sub-url and hook
-- **handlers** (see below):
+- **handlers**:
     - simple handler for working with `request` and `response` objects of nodejs
     - cookie helper
     - handler which can serve static files
@@ -34,13 +34,21 @@ It would be a collection of patterns/solutions/utils useful for daily nodejs dev
     - http client helper *
     - base64 encoder/decoder borrowed from [webtoolkit.info](http://www.webtoolkit.info/)
 
+## Terminology
+Here describes how we categorize different functionalities and why.
+
+### Pattern
+General solutions for generic problems.
+Module in this subdirectory **MUST NOT** have dependencies other than nodejs and other modules under this directory.
+
+
 
 
 ## How To Contribute
 This readme was first time written after read the great post [Readme Driven Development](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
 of [Tom Preston-Werner](http://tom.preston-werner.com/).
 So, this readme is a brief description about what the project it's and what it will become in the future.
-If you have an idea which will **dramatically** change the direction of the project, you could `fork` the project,
+If you have an idea which will **dramatically** change the direction of the project or the effect is long-term, you could `fork` the project,
 `put` the idea in this readme and `send` out a pull request.
 If you have more specific suggestion or features want to implement,
 then you can put them in file **CHANGELOG.md** under an existent version or create a new version if you think make sense,
