@@ -20,17 +20,25 @@ function setup() {
         },
         getAge:  function() {
             return this.age;
-        }
+        },
+        include: [{getSchool: function() {return 'MIT'}}],
+        extend: [{getSchool: function() {return 'NYU'}}]
     });
 
     Class4 = ClassPlusPlus({
         init: function(name, age) {
             this._super(name, age);
         },
-
+        // instance method
         include: {
             setAge: function(age) {
                 this.age = age;
+            }
+        },
+        // static method
+        extend: {
+            getClassName: function() {
+                return 'Class4';
             }
         }
     });
@@ -62,6 +70,8 @@ module.exports = {
         assert.equal(klassPlus.age, 18);
         assert.equal(klassPlus.name, 'classPlus1');
         assert.equal(klass4.getAge(), 14);
+        klass4.setAge(15);
+        assert.equal(klass4.getAge(), 15);
         assert.equal(klass4.getName(), 'class41');
         assert.equal(klassPlusPlus.getName(), 'classPlusPlus1');
         assert.equal(klassPlusPlus.getAge(), 26);
@@ -77,10 +87,13 @@ module.exports = {
                 return 'world';
             }
         });
+        // static functions
         assert.equal(ClassPlus.hello(), 'hello');
         assert.equal(ClassPlus.world(), 'world');
         assert.equal(ClassPlusPlus.hello, undefined);
+        assert.equal(ClassPlusPlus.getSchool(), 'NYU');
         assert.equal(Class.hello, undefined);
+        assert.equal(Class4.getClassName(), 'Class4');
         assert.equal(klassPlus.hello, undefined);
 
         setup();
@@ -95,9 +108,62 @@ module.exports = {
         });
         klassPlusPlus.setEmail('123@123.com');
         assert.equal(klassPlusPlus.getEmail(), '123@123.com');
+        assert.equal(klassPlusPlus.getSchool(), 'MIT');
         assert.equal(klassPlus.setEmail, undefined);
         assert.equal(klass4.setEmail, undefined);
         assert.equal(Class4.setEmail, undefined);
         assert.equal(ClassPlus.setEmail, undefined);
+    },
+
+    'test convert module to class': function(assert) {
+        var Engine = Base({
+            init: function(name) {
+                this.name = name;
+            },
+
+            start: function() {
+                return 'engine ' + this.name + ' started';
+            }
+        });
+        var engine = new Engine('e90');
+        assert.equal(engine instanceof Engine, true);
+        assert.equal(engine.start(), 'engine e90 started');
+    },
+
+    'test extend class like module': function(assert) {
+        var Person = function(name) {
+            this.name = name;
+        }
+        var Worker = function() {
+            this.role = 'worker';
+        }
+        Worker.prototype.work = function() {
+            return this.role + ' can work';
+        }
+        
+        var WorkerClass = Base(Person, Worker);
+        var worker = new WorkerClass('john');
+        assert.equal(worker.name, 'john');
+        assert.equal(worker.role, 'worker');
+        assert.equal(worker.work(), 'worker can work');
+
+        var Leader = function() {
+            this.role = 'leader';
+        }
+        Leader.prototype.getRole = function() {
+            return this.role;
+        }
+        WorkerClass.include(Leader); // `Leader` will be treated as a module
+        var leadWorker = new WorkerClass('tom');
+        assert.equal(leadWorker.getRole(), 'worker');
+    },
+
+    'test extending wrrong object': function(assert) {
+        try {
+            Class.include('');
+            assert.equal(1, 2); // should not be called
+        } catch (e) {
+            assert.equal(e.message, 'Type not accepted');
+        }
     }
 }
