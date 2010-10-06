@@ -17,7 +17,7 @@ var tests = {
     'base', 'control', 'factory', 'pool'
     ],
     'util': [
-    'benchmark'
+    'benchmark', 'base64'
     ],
     'web': [
         'router'
