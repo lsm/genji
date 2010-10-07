@@ -20,7 +20,7 @@ var tests = {
     'benchmark', 'base64'
     ],
     'web': [
-        'router'
+        'router', 'auth'
     ]
 }
 
