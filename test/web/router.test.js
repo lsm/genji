@@ -4,7 +4,8 @@ var router = require('genji/web/router');
 module.exports = {
     'test router': function(assert) {
         var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, preHookSub1, preHookSub2,
-        hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, defaultHandler = 0, anotherHandler = 0;
+        hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, 
+        defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2;
         function DefaultHandler() {
             defaultHandler++;
         }
@@ -40,9 +41,9 @@ module.exports = {
             ['^/', function() {
                     notFound = true;
             }, 'notfound', AnotherHandler],
-            ['^/parent', [
+            ['^/parent/', [
                     [
-                        'sub1/$', function() {
+                        '^sub1/$', function() {
                             sub1 = true;
                         },  {pre: [function() {
                                     if (preHook3 == 1) {
@@ -52,12 +53,12 @@ module.exports = {
                                 }]}
                     ],
                     [
-                        'sub2/$', function() {
+                        '^sub2/$', function() {
                             sub2 = true
                         }, 'post'
                     ],
                     [
-                        'sub3/$', function() {
+                        '^sub3/$', function() {
                             sub3 = true;
                         },  DefaultHandler, {pre: [function() {
                                     if (preHook3 == 3) {
@@ -67,7 +68,7 @@ module.exports = {
                                 }]}
                     ],
                     [
-                        'sub4/$', function() {
+                        '^sub4/$', function() {
                             sub4 = true;
                         },  DefaultHandler
                     ]
@@ -75,7 +76,22 @@ module.exports = {
                         preHook3++;
                         this.next();
                     }
-                ]}]
+                ]}
+            ],
+            ['^/a/', [
+                    ['^b/', [
+                            ['^c/', [
+                                    ['^d/$', function() {
+                                            nestedSub = true;
+                                    }, 'post', AnotherHandler]
+                            ]]
+                    ]],
+                    ['^1/', [
+                            ['^2/', [
+                                    ['^3/$', function() {nestedSub2 = true}, AnotherHandler]
+                            ], 'delete']
+                    ], 'put']
+            ]]
         ];
         var r = new router.Router(urls, DefaultHandler);
         var rules = r.toRules();
@@ -92,6 +108,8 @@ module.exports = {
         route({type: 'POST', condition: '/parent/sub2/'}, rules);
         route({type: 'GET', condition: '/parent/sub3/'}, rules);
         route({type: 'GET', condition: '/parent/sub4/'}, rules);
+        route({type: 'POST', condition: '/a/b/c/d/'}, rules);
+        route({type: 'DELETE', condition: '/a/1/2/3/'}, rules);
 
         // check results
         assert.equal(helloGet, true);
@@ -107,9 +125,11 @@ module.exports = {
         assert.equal(sub2, true);
         assert.equal(sub3, true);
         assert.equal(sub4, true);
+        assert.equal(nestedSub, true);
+        assert.equal(nestedSub2, true);
         assert.equal(preHook3, 4);
         assert.equal(defaultHandler, 5);
-        assert.equal(anotherHandler, 3);
+        assert.equal(anotherHandler, 5);
         try {
             (new router.Router([[1, function() {}]])).toRules();
             assert.equal(1, 2); // should never be called
