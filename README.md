@@ -11,30 +11,33 @@ It will not modify the native nodejs api or put any object in the global context
 - **patterns**:
     - Javascript object-oriented helper
     - Pooling
-    - Functions chaining helper (execution control)
-    - Executing functions in parallel *
-    - Promise/deferred *
-    - Class instantializing helper (factory) and in memory registration
+    - Async execution control helper:
+        - Executing function in serial
+        - Executing functions in parallel *
+    - Super lite promise support
+    - Class instantializing helper (factory, singleton) and in memory registration
     - In memory caching
-- **middleware** system which easy to control in many ways with less overhead. Current middlewares:
+- **web.middleware** system which easy to control in many ways with less overhead. Current middlewares:
+    - Secure-cookie 
     - Conditional get
     - Response time in header
     - Logger with different level support
     - Error handler
     - Regular expression based url router, supports sub-url and hook
-- **handlers**:
+- **web.handlers**:
     - simple handler for working with `request` and `response` objects of nodejs
     - cookie helper
     - handler which can serve static files
     - handler for streaming data *
     - json-rpc *
-- **utils**:
-    - File/dir watcher and server restart manager
+- **web (others)**:
     - HMAC-SHA1 based signer/verifier for cookie like data
     - salted sha1 password generator/verifier
     - mime helper borrowed from somewhere (tell me if you know:)
     - http client helper *
-    - base64 encoder/decoder borrowed from [webtoolkit.info](http://www.webtoolkit.info/)
+- **utils**:
+    - File/dir watcher and server restart manager
+    - crypto and base64 helper
 
 ## Terminology
 Here describes how we categorize different functionalities and why.
