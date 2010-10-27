@@ -47,6 +47,23 @@ module.exports = {
         }
     },
 
+    'test call function for specified times in serial': function(assert) {
+        var count = 0;
+        var c4 = chain(6, function(item, idx, arr, next) {
+            assert.eql(item, undefined);
+            assert.eql(arr, 6);
+            count++;
+            next();
+        });
+        c4();
+        assert.equal(count, 6);
+        try {
+            chain({}, function() {});
+        } catch(e) {
+            assert.equal(typeof e, 'Exception');
+        }
+    },
+
     'test promise': function(assert, beforeExit) {
         var readFile = promise(fs.readFile), finished;
         fs.readFile(__filename, function(err, data1) {
@@ -57,4 +74,4 @@ module.exports = {
             });
         });
     }
-}
+};
