@@ -21,7 +21,11 @@ var tests = {
     ],
     'web': [
         'router', 'auth'
+    ],
+    'web/middleware' : [
+        'secure-cookie'
     ]
+
 }
 
 function loadTests(suffix) {
