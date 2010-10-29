@@ -60,7 +60,7 @@ module.exports = {
         try {
             chain({}, function() {});
         } catch(e) {
-            assert.equal(typeof e, 'Exception');
+            assert.ok(e);
         }
     },
 
