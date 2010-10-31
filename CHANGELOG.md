@@ -1,7 +1,18 @@
 0.0.3 (?)
 ---------
-- the middleware does not care about application settings
-- new url routing system, supports declarative and programmatic style of defining url rules.
 - etag for sending file-like contents
-- hmac hex->base64
-- new style middleware config format
+- util
+    - crypto
+        - new shorthand functions for cipher/decipher
+        - enable to select the digest encoding for `md5`, `sha1`, `hmac_sha1`
+- web
+    - middleware
+        - now the middleware does not care about application settings
+        - new style middleware config format
+        - `secure-cookie` new middleware to encrypt/decrypt cookie
+    - router, new url routing system, supports declarative and programmatic style of defining url rules.
+    - move `createServer`/`startServer` into submodule `web.server`, `web/index.js` only use to export submodules
+- pattern
+    - control
+        - promise: call the original async function in next tick
+    - math, new pattern group, add `random`
