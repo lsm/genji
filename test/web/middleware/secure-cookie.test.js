@@ -3,7 +3,7 @@ crypto = require('crypto')
 cookie = genji.web.cookie;
 
 var expires = new Date('Sat, 06 Jul 2024 10:58:58 GMT'),
-cookieStr = "_testSecure=OcG9biJ5yWUPiYMYqu1lXW8RejnnnzyoOJcVcrCpm6JnA5hBDp6I5aAzfGByhlyxOLwBm2L3ViNMb/q5vcy6emc5+Xs4rx0kJxAlVOfPbBA+EQxU8ENkFCbB5RQtzgD0rnFPjJ/SZXQJ07chZcp1jw%3D%3D; expires=Sat, 06 Jul 2024 10:58:58 GMT";
+cookieStr = "_testSecure=OcG9biJ5yWUPiYMYqu1lXW8RejnnnzyoOJcVcrCpm6JnA5hBDp6I5aAzfGByhlyxOLwBm2L3ViNMb/q5vcy6emc5+Xs4rx0kJxAlVOfPbBA+EQxU8ENkFCbB5RQtzgD0rnFPjJ/SZXQJ07chZcp1jw%3D%3D;";
 
 var middlewares = {
     'secure-cookie': {name: '_testSecure', secureKey: 'cipher-key', serverKey: 'hmac-key'},
