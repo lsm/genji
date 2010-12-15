@@ -1,4 +1,5 @@
 var Pool = require('genji/pattern/pool');
+var assert = require('assert');
 
 
 function feedPool(num, callback) {
@@ -8,7 +9,7 @@ function feedPool(num, callback) {
 }
 
 module.exports = {
-    'test Pool': function(assert) {
+    'test Pool': function() {
         var pool =  new Pool(feedPool, 10);
         assert.equal(pool.length, 10);
         for (var i = 0; i < 10; i++) {

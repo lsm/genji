@@ -1,8 +1,9 @@
 var Factory = require('genji/pattern/factory');
+var assert = require('assert');
 
 
 module.exports = {
-    'test Factory#register': function(assert) {
+    'test Factory#register': function() {
         var defs = [['arr1', function(item) {return new Array(item)}, ['test'], true]];
         var factory = new Factory(defs);
         // singleton
@@ -14,7 +15,7 @@ module.exports = {
         assert.eql(factory.arr2, ['test']);
     },
 
-    'test Factory#regCreator': function(assert) {
+    'test Factory#regCreator': function() {
         var factory = new Factory();
         factory.regCreator('RegExp', function(rule) {return new RegExp(rule)});
         factory.RegExp('matchNumber', ['[0-9]*'], true);

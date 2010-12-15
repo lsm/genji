@@ -3,9 +3,10 @@ Chain = c.Chain,
 chain = c.chain,
 promise = c.promise,
 fs = require('fs');
+var assert = require('assert');
 
 module.exports = {
-    'test executing the same function against different array members': function(assert) {
+    'test executing the same function against different array members': function() {
         var res = 0;
         var c1 = chain([1, 2, 3], function(item, idx, arr, next, args) {
             res += item;
@@ -15,7 +16,7 @@ module.exports = {
         assert.equal(res, 6);
     },
 
-    'test chaining functions and call with order of FIFC': function(assert) {
+    'test chaining functions and call with order of FIFC': function() {
         var c2 = new Chain, res = 0, order = [];
         c2.add('fc', function(n) {
             res += n;
@@ -37,7 +38,7 @@ module.exports = {
         assert.eql(order, [0,1,2]);
     },
 
-    'test chain name not exists': function(assert) {
+    'test chain name not exists': function() {
         try {
             var c3 = new Chain;
             c3.get('aa');
@@ -47,7 +48,7 @@ module.exports = {
         }
     },
 
-    'test call function for specified times in serial': function(assert) {
+    'test call function for specified times in serial': function() {
         var count = 0;
         var c4 = chain(6, function(item, idx, arr, next) {
             assert.eql(item, undefined);
@@ -64,7 +65,7 @@ module.exports = {
         }
     },
 
-    'test promise': function(assert, beforeExit) {
+    'test promise': function(beforeExit) {
         var readFile = promise(fs.readFile), finished;
         fs.readFile(__filename, function(err, data1) {
             if (err) throw err;

@@ -1,9 +1,10 @@
 
 var benchmark = require('genji/util/benchmark');
+var assert = require('assert');
 
 
 module.exports = {
-    'test benchmark': function(assert) {
+    'test benchmark': function() {
         var a = [1,2,3,4,5], b = [], c = [];
         var bm = benchmark.create('Compare for and forEach', [function() {
             for (var i = 0; i < a.length; i++) {

@@ -1,6 +1,7 @@
 var Base = require('genji/pattern/base');
 var Class, ClassPlus, ClassPlusPlus, Class4
 , klass, klassPlus, klassPlusPlus, klass4;
+var assert = require('assert');
 
 function setup() {
     Class = Base(function(name) {
@@ -50,7 +51,7 @@ function setup() {
 }
 
 module.exports = {
-    'test inherits': function(assert) {
+    'test inherits': function() {
         setup();
         assert.equal(klass.constructor, Class);
         assert.equal(klass instanceof Class, true);
@@ -65,7 +66,7 @@ module.exports = {
         assert.isUndefined(klassPlus.getName);
     },
 
-    'test constructor': function(assert) {
+    'test constructor': function() {
         assert.equal(klass.name, 'class');
         assert.equal(klassPlus.age, 18);
         assert.equal(klassPlus.name, 'classPlus1');
@@ -77,7 +78,7 @@ module.exports = {
         assert.equal(klassPlusPlus.getAge(), 26);
     },
 
-    'test mixin - extend': function(assert) {
+    'test mixin - extend': function() {
         ClassPlus.extend({
             hello: function() {
                 return 'hello';
@@ -115,7 +116,7 @@ module.exports = {
         assert.equal(ClassPlus.setEmail, undefined);
     },
 
-    'test convert module to class': function(assert) {
+    'test convert module to class': function() {
         var Engine = Base({
             init: function(name) {
                 this.name = name;
@@ -130,7 +131,7 @@ module.exports = {
         assert.equal(engine.start(), 'engine e90 started');
     },
 
-    'test extend class like module': function(assert) {
+    'test extend class like module': function() {
         var Person = function(name) {
             this.name = name;
         }
@@ -158,7 +159,7 @@ module.exports = {
         assert.equal(leadWorker.getRole(), 'worker');
     },
 
-    'test extending wrrong object': function(assert) {
+    'test extending wrrong object': function() {
         try {
             Class.include('');
             assert.equal(1, 2); // should not be called

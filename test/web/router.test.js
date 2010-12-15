@@ -1,8 +1,9 @@
 
 var router = require('genji/web/router');
+var assert = require('assert');
 
 module.exports = {
-    'test router': function(assert) {
+    'test router': function() {
         var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, preHookSub1, preHookSub2,
         hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, 
         defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2;
