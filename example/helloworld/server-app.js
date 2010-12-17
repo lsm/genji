@@ -14,14 +14,14 @@ var urls = [
     ['^/prefix/', 
         [// you can put an array here instead of function, which means it's a sub-url mapping
             [
-                '^a/$', // then url use to match the pattern will become `a/` if you original url is `/prefix/a/`,
+                '^a/$', // the url use to match the pattern will become `a/` if the requested url is `/prefix/a/`,
                 // so make sure to place the leading `^` in front of `a`, otherwise `/prefix/ba/` will be matched;
                 function(h) {h.sendHTML('got a');}
             ],
             // you can define as many sub-url mappings as you wish
             ['^b/$', function(h) {h.sendHTML('got b');}]
     ]],
-    ['/', function(h) {
+    ['^/$', function(h) {
             h.sendHTML('<a href="/hello/">Hello world</a>');
     }]
 ];
@@ -29,12 +29,14 @@ var urls = [
 var settings = {
     host: '127.0.0.1',
     port: '8000',
-    middlewares: [
-        // your can use buildin middlewares by just define the `name` property
-        {name: 'error-handler'},
-        {name: 'logger'},
-        {name: 'router', urls: urls}
-    ]
+    middlewares: {
+        'error-handler': {uncaughtException: true},
+        'logger': {level: 'debug'},
+        'dev-verbose': {requestHeader: true},
+        'router': {urls: urls},
+        // a middleware can be used as many times as you wish, just set the `name` property to indicate which one to use
+        'print-response': {name: 'dev-verbose', responseHeader: true, responseBody: true}
+    }
 };
 
 genji.web.startServer(settings);
