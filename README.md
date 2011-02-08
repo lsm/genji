@@ -13,7 +13,7 @@ It will not modify the native nodejs api or put any object in the global context
     - Pooling
     - Async execution control helper:
         - Executing function in serial
-        - Executing functions in parallel *
+        - Executing functions in parallel 
     - Super lite promise support
     - Class instantializing helper (factory, singleton) and in memory registration
     - In memory caching
@@ -29,12 +29,12 @@ It will not modify the native nodejs api or put any object in the global context
     - cookie helper
     - handler which can serve static files
     - handler for streaming data *
-    - json-rpc *
+    - json-rpc 
 - **web (others)**:
     - HMAC-SHA1 based signer/verifier for cookie like data
     - salted sha1 password generator/verifier
     - mime helper borrowed from somewhere (tell me if you know:)
-    - http client helper *
+    - http client helper 
 - **utils**:
     - File/dir watcher and server restart manager
     - crypto and base64 helper
@@ -61,17 +61,8 @@ Utilities for web application.
 
 
 ## How To Contribute
-This readme was first time written after read the great post [Readme Driven Development](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
-of [Tom Preston-Werner](http://tom.preston-werner.com/).
-So, this readme is a brief description about what the project it's and what it will become in the future.
-If you have an idea which will **dramatically** change the direction of the project or the effect is long-term, you could `fork` the project,
-`put` the idea in this readme and `send` out a pull request.
-If you have more specific suggestion or features want to implement,
-then you can put them in file **CHANGELOG.md** under an existent version or create a new version if you think make sense,
-and follow the same step like above (fork, change, send pull request).
-Here we may follow the concept: `Changelog for future = todo list`.
-
-
+ - Create ticket in [lighthouse project page](http://echo.lighthouseapp.com/projects/69421-genji/overview)
+ - Send pull request
 
 ## License
 
