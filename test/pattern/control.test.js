@@ -2,6 +2,7 @@ var c = require('genji/pattern/control'),
 Chain = c.Chain,
 chain = c.chain,
 promise = c.promise,
+deferred = c.deferred,
 fs = require('fs');
 var assert = require('assert');
 
@@ -39,13 +40,8 @@ module.exports = {
     },
 
     'test chain name not exists': function() {
-        try {
-            var c3 = new Chain;
-            c3.get('aa');
-            assert.equal(1, 2); // should not be called
-        } catch (e) {
-            assert.equal(e.message, 'Chain named aa not exists.');
-        }
+        var c3 = new Chain;
+        assert.equal(c3.get('aa'), undefined); // should not be called
     },
 
     'test call function for specified times in serial': function() {
@@ -66,12 +62,38 @@ module.exports = {
     },
 
     'test promise': function(beforeExit) {
-        var readFile = promise(fs.readFile), finished;
+        var readFile = promise(fs.readFile);
         fs.readFile(__filename, function(err, data1) {
             if (err) throw err;
             readFile(__filename).then(function(err, data2) {
                 if (err) throw err;
                 assert.eql(data1, data2);
+            });
+        });
+    },
+
+    'test deferred': function(beforeExit) {
+        var readFile = deferred(fs.readFile, fs), finished = false;
+        fs.readFile(__filename, function(err, data1) {
+            if (err) throw err;
+            readFile(__filename)
+            .then(function(data2) {
+                assert.eql(data1, data2);
+            })
+            .then(function(data2) {
+                assert.eql(data1, data2);
+            })
+            .and(function(data2) {
+                assert.eql(data1, data2);
+                this.next(10);
+            })
+            .and(function(data3) {
+                assert.eql(data3, 10);
+                return finished = true;
+            })
+            .done(function() {
+                // done is called after second `and`
+                assert.eql(finished, true);
             });
         });
     }
