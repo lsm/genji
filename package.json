@@ -8,9 +8,6 @@
         "type" : "git",
         "url" : "http://github.com/zir/genji.git"
     },
-    "bin": {
-        "genji": "./bin/genji.js"
-    },
     "main": "./lib/genji",
     "engines": {
         "node": ">=0.4.0"
