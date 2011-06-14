@@ -12,10 +12,6 @@
         "genji": "./bin/genji.js"
     },
     "main": "./lib/genji",
-    "modules": {
-        "pattern": "./lib/genji/pattern",
-        "web": "./lib/genji/web"
-    },
     "engines": {
         "node": ">=0.4.0"
     }
