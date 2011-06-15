@@ -1,5 +1,3 @@
-
-
 function base64Encode(input, inputEncoding) {
 	var buf = new Buffer(input, inputEncoding || 'utf8');
 	return buf.toString('base64');
@@ -11,26 +9,26 @@ function base64Decode(input, outputEncoding) {
 	return base64.toString(outputEncoding || 'utf8');
 }
 
-function toArray(obj){
-    var len = obj.length,
-    arr = new Array(len);
-    for (var i = 0; i < len; ++i) {
-        arr[i] = obj[i];
-    }
-    return arr;
+function toArray(obj) {
+	var len = obj.length,
+			arr = new Array(len);
+	for (var i = 0; i < len; ++i) {
+		arr[i] = obj[i];
+	}
+	return arr;
 }
 
-function extend(/*Object*/ obj, /*Object...*/ props){
-    var source;
-    for(var i = 1, l = arguments.length; i < l; i++){
-        source =  arguments[i];
-        for (var prop in source) {
-            if (source[prop] !== undefined) {
-                obj[prop] = source[prop];
-            }
-        }
-    }
-    return obj;
+function extend(/*Object*/ obj, /*Object...*/ props) {
+	var source;
+	for (var i = 1, l = arguments.length; i < l; i++) {
+		source = arguments[i];
+		for (var prop in source) {
+			if (source[prop] !== undefined) {
+				obj[prop] = source[prop];
+			}
+		}
+	}
+	return obj;
 }
 
 exports.base64Encode = base64Encode;
