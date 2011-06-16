@@ -3,7 +3,7 @@ var assert = require('assert');
 
 exports['test app#get'] = function() {
   var app = genji.app();
-  var data = 'Hello world!';
+  var data = 'get: Hello world!';
   app.get('/helloworld', function(handler) {
     handler.send(data);
   });
@@ -17,19 +17,19 @@ exports['test app#get'] = function() {
 };
 
 exports['test app#post'] = function() {
-  var app = genji.app();
-  var data = 'Hello world!';
+  var app = genji.app('namedApp');
+  var data = 'post: Hello world!';
   app.post('/helloworld', function(handler) {
     handler.on('data', function(params, raw) {
       if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
         handler.send(data, 201, {Server: 'GenJi'});
       } else {
-        handler.finish('error');
+        handler.setStatus(500).finish('error');
       }
     });
   });
   assert.response(genji.createServer(), {
-        url: '/helloworld',
+        url: '/namedApp/helloworld',
         timeout: 100,
         method: 'POST',
         data: 'x=a&y=b'
@@ -41,13 +41,13 @@ exports['test app#post'] = function() {
 };
 
 exports['test app#put'] = function() {
-  var app = genji.app();
-  var data = 'Hello world!';
-  app.put('/helloworld', function(handler) {
+  var app = genji.app('a put app', {root: '/put'});
+  var data = 'put: Hello world!';
+  app.put('^/helloworld', function(handler) {
     handler.send(data);
   });
   assert.response(genji.createServer(), {
-        url: '/helloworld',
+        url: '/put/helloworld',
         timeout: 100,
         method: 'PUT'
       }, function(res) {
@@ -57,7 +57,7 @@ exports['test app#put'] = function() {
 
 exports['test app#del'] = function() {
   var app = genji.app();
-  var data = 'Hello world!';
+  var data = 'del: Hello world!';
   app.del('/helloworld', function(handler) {
     handler.send(data);
   });
