@@ -4,7 +4,7 @@ var assert = require('assert');
 exports['test app#get'] = function() {
   var app = genji.app();
   var data = 'get: Hello world!';
-  app.get('/helloworld', function(handler) {
+  app.get('/helloworld').fn(function(handler) {
     handler.send(data);
   });
   assert.response(genji.createServer(), {
