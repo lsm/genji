@@ -84,3 +84,37 @@ exports['test app#head'] = function() {
         assert.equal(res.statusCode, 304);
       });
 };
+
+exports['test app#notFound'] = function() {
+  var app = genji.app();
+  app.notFound('/*', function(handler) {
+    handler.error(404, 'not found: ' + handler.request.url);
+  });
+  assert.response(genji.createServer(), {
+        url: '/noexistenturl',
+        timeout: 100,
+        method: 'GET'
+      }, function(res) {
+        assert.equal(res.statusCode, 404);
+        assert.equal(res.body, 'not found: /noexistenturl');
+      });
+};
+
+exports['test app#mount'] = function() {
+  var app = genji.app();
+  var data = 'mount+get: Hello world!';
+  var method = 'get';
+  function fn(handler) {
+    handler.send(data);
+  };
+  app.mount([
+    ['/mount/helloworld', fn, method]
+  ]);
+  assert.response(genji.createServer(), {
+        url: '/mount/helloworld',
+        timeout: 100,
+        method: 'GET'
+      }, function(res) {
+        assert.equal(res.body, data);
+      });
+};
