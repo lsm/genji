@@ -21,7 +21,8 @@ function app(name, options) {
   }
   if (!_router) {
     var Router = require('./lib/router').Router;
-    _router = new Router(null, require('./lib/handler').SimpleHandler);
+    var SimpleHandler = require('./lib/handler').SimpleHandler;
+    _router = new Router(null, SimpleHandler);
     use('router');
   }
   options = options || {};
