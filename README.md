@@ -10,13 +10,11 @@ It will not modify the native nodejs api or put any object in the global context
 ## Features
 - **patterns**:
     - Javascript object-oriented helper
-    - Pooling
     - Async execution control helper:
         - Executing function in serial
         - Executing functions in parallel 
     - Super lite promise support
     - Class instantializing helper (factory, singleton) and in memory registration
-    - In memory caching
 - **web.middleware** system which easy to control in many ways with less overhead. Current middlewares:
     - Secure-cookie 
     - Conditional get
@@ -28,8 +26,7 @@ It will not modify the native nodejs api or put any object in the global context
     - simple handler for working with `request` and `response` objects of nodejs
     - cookie helper
     - handler which can serve static files
-    - handler for streaming data *
-    - json-rpc 
+    - json-rpc
 - **web (others)**:
     - HMAC-SHA1 based signer/verifier for cookie like data
     - salted sha1 password generator/verifier
@@ -37,7 +34,7 @@ It will not modify the native nodejs api or put any object in the global context
     - http client helper 
 - **utils**:
     - File/dir watcher and server restart manager
-    - crypto and base64 helper
+    - crypto and base64 shortcuts
 
 ## Terminology
 Here describes how we categorize different functionalities and why.
@@ -61,8 +58,7 @@ Utilities for web application.
 
 
 ## How To Contribute
- - Create ticket in [lighthouse project page](http://echo.lighthouseapp.com/projects/69421-genji/overview)
- - Send pull request
+Feel free to open issue or send pull request
 
 ## License
 
