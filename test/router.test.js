@@ -1,4 +1,4 @@
-var router = require('../lib/genji/router');
+var router = require('../lib/router');
 var assert = require('assert');
 
 module.exports = {

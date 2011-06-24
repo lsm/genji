@@ -1,4 +1,4 @@
-var genji = require('genji');
+var genji = require('../index');
 var assert = require('assert');
 
 exports['test app#get'] = function() {

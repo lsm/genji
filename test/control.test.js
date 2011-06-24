@@ -1,4 +1,4 @@
-var c = require('../lib/genji/control'),
+var c = require('../lib/control'),
     Chain = c.Chain,
     chain = c.chain,
     promise = c.promise,

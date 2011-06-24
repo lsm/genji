@@ -1,4 +1,4 @@
-var Base = require('../lib/genji/base');
+var Base = require('../lib/base');
 var Class, ClassPlus, ClassPlusPlus, Class4
     , klass, klassPlus, klassPlusPlus, klass4;
 var assert = require('assert');

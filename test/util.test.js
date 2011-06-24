@@ -1,4 +1,4 @@
-var util = require('../lib/genji/util');
+var util = require('../lib/util');
 var assert = require('assert');
 
 module.exports = {

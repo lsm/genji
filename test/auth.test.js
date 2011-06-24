@@ -1,4 +1,4 @@
-var Auth = require('../lib/genji/auth');
+var Auth = require('../lib/auth');
 var assert = require('assert');
 
 module.exports = {

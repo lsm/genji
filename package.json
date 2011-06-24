@@ -1,18 +1,21 @@
 {
-    "name": "genji",
-    "description": "A low-level loosely coupled web framework for nodejs",
-    "version": "0.1.0",
-    "homepage": "http://github.com/zir/genji",
-    "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
-    "repository" : {
-        "type" : "git",
-        "url" : "http://github.com/zir/genji.git"
-    },
-    "main": "./lib/genji",
-    "devDependencies": {
-        "expresso": "0.7.x"
-    },
-    "engines": {
-        "node": ">=0.4.0"
-    }
+  "name": "genji",
+  "description": "Simple framework for simple nodejs application",
+  "version": "0.1.0",
+  "homepage": "http://github.com/zir/genji",
+  "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/zir/genji.git"
+  },
+  "main": "index",
+  "directories": {
+    "lib": "./lib"
+  },
+  "devDependencies": {
+    "expresso": "0.7.x"
+  },
+  "engines": {
+    "node": "~0.4.8"
+  }
 }
