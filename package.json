@@ -10,7 +10,8 @@
   },
   "main": "index",
   "directories": {
-    "lib": "./lib"
+    "lib": "./lib",
+    "example": "./example"
   },
   "devDependencies": {
     "expresso": "0.7.x"
