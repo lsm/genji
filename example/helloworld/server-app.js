@@ -1,42 +1,19 @@
-// require the genji lib
-var genji = require('../../lib/genji');
 
-// map url to business logic
-var urls = [
-    // each member in the `urls` array is a mapping
-    // the simplest format would be [RegExp, Function]
-    [
-        '^/hello/$', // RegExp pattern or object that you want to match
-        function(h) { // function which handle your business
-            h.sendHTML('Hello world\n');
-        }
-    ],
-    ['^/prefix/', 
-        [// you can put an array here instead of function, which means it's a sub-url mapping
-            [
-                '^a/$', // the url use to match the pattern will become `a/` if the requested url is `/prefix/a/`,
-                // so make sure to place the leading `^` in front of `a`, otherwise `/prefix/ba/` will be matched;
-                function(h) {h.sendHTML('got a');}
-            ],
-            // you can define as many sub-url mappings as you wish
-            ['^b/$', function(h) {h.sendHTML('got b');}]
-    ]],
-    ['^/$', function(h) {
-            h.sendHTML('<a href="/hello/">Hello world</a>');
-    }]
-];
+// the genji lib
+var genji = require('genji');
 
-var settings = {
-    host: '127.0.0.1',
-    port: '8000',
-    middlewares: {
-        'error-handler': {uncaughtException: true},
-        'logger': {level: 'debug'},
-        'dev-verbose': {requestHeader: true},
-        'router': {urls: urls},
-        // a middleware can be used as many times as you wish, just set the `name` property to indicate which one to use
-        'print-response': {name: 'dev-verbose', responseHeader: true, responseBody: true}
-    }
-};
+// create a app instance
+var helloApp = genji.app();
 
-genji.web.startServer(settings);
+// routing url to function
+helloApp.get('/', function(handler) {
+  handler.send('Hello world!');
+});
+
+// create a http server
+var server = genji.createServer();
+
+// start handling request
+server.listen(8888, '127.0.0.1');
+
+// now open up http://127.0.0.1:8888/ in your browser

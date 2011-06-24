@@ -1,42 +1,35 @@
 // require the genji lib
-var genji = require('../../lib/genji');
+var genji = require('genji');
 
-var rpcEndpoint1 = '^/jsonrpc/$';
-
-providers = [
-    {
-        namespace: 'account',
-        methods: {
-            login: function(username, password) {}, // rpc.call('account.login', params: ['john', 'pass']);
-            signup: function(email, username, password) {}
-        }
-    },
-    {
-        namespace: 'blog.post',
-        methods: {
-            create: function(title, content) {},// rpc.call('blog.post.create', params: ['Hello', 'Hello world!']);
-            remove: function(id) {}
-        },
-        before: function() {
-            // validate user
-        },
-        after: function() {
-            // log or trigger events
-        }
+var providers = [
+  {
+    namespace: 'account',
+    methods: {
+       // rpc.call('account.login', params: ['john', 'pass']);
+      login: function(username, password, callback) {
+        callback(null, 'Welcome ' + username + ' your password is ' + password);
+      }
     }
-]
+  }
+];
 
-var settings = {
-    host: '127.0.0.1',
-    port: '8000',
-    middlewares: {
-        'error-handler': {uncaughtException: true},
-        'logger': {level: 'debug'},
-        'dev-verbose': {requestHeader: true},
-        'jsonrpc': {endpoint: rpcEndpoint1, providers: providers /* before after? */},
-        // a middleware can be used as many times as you wish, just set the `name` property to indicate which one to use
-        'print-response': {name: 'dev-verbose', responseHeader: true, responseBody: true}
-    }
-};
+genji
+    .use('error-handler', {uncaughtException: true})
+    .use('logger')
+    .use('dev-verbose', {requestHeader: true, requestBody: true})
+    .use('jsonrpc', {endpoint: '^/jsonrpc/$', providers: providers})
+    .use('print-response', {name: 'dev-verbose', responseHeader: true,
+      responseBody: true});
 
-genji.web.startServer(settings);
+// create a http server
+var server = genji.createServer();
+
+// start handling request
+server.listen(8888, '127.0.0.1');
+
+// now run following command in terminal:
+/*
+ curl -X POST -H "Content-Type:application/json" \
+ http://127.0.0.1:8888/jsonrpc/ \
+ -d '{"jsonrpc":"2.0", "method": "account.login", "params":["john", "pass"], "id": 1}'
+ */
