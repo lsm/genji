@@ -33,6 +33,7 @@ function app(name, options) {
 
 function use(name, options) {
   _middlewares[name] = options || {};
+  return exports;
 }
 
 function createServer() {
