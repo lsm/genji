@@ -8,7 +8,7 @@
     "type" : "git",
     "url" : "http://github.com/zir/genji.git"
   },
-  "main": "index",
+  "main": "./index",
   "directories": {
     "lib": "./lib",
     "example": "./example"

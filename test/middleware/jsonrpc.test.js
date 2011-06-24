@@ -1,4 +1,4 @@
-var genji = require('../../index'),
+var genji = require('genji'),
     assert = require('assert'),
     afterCalled = false;
 

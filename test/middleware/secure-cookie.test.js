@@ -1,6 +1,6 @@
-var genji = require('../../index'),
+var genji = require('genji'),
     crypto = require('crypto'),
-    cookie = require('../../lib/cookie')
+    cookie = genji.require('cookie')
 var assert = require('assert');
 
 var expires = new Date('Sat, 06 Jul 2024 10:58:58 GMT'),

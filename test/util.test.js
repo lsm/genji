@@ -1,4 +1,5 @@
-var util = require('../lib/util');
+var genji = require('genji');
+var util = genji.require('util');
 var assert = require('assert');
 
 module.exports = {
