@@ -1,4 +1,9 @@
-0.0.3 (?)
+0.1.0 (?)
+---------
+- Remove a lots of functionalities, keep small and focus.
+- Introduce `App`
+
+0.0.3 (2011/06/13)
 ---------
 - etag for sending file-like contents
 - util
