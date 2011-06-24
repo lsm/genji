@@ -1,19 +1,14 @@
-var genji = require('genji'),
+var genji = require('../../index'),
     assert = require('assert'),
     afterCalled = false;
 
-var middlewares = {
-  'response-time': {path: 'genji/web/middleware'},
-  jsonrpc: {path: 'genji/web/middleware', endpoint: '^/jsonrpc/$', providers: [
+var jsonrpc = {endpoint: '^/jsonrpc/$',
+  providers: [
     {
       namespace: 'account',
       methods: {
         login: function(username, password, callback) {
           callback(null, [username, password].join(','));
-          return true;
-        },
-        signup: function(email, username, password, callback) {
-          callback(null, [email, username, password].join(','));
           return true;
         }
       },
@@ -24,13 +19,11 @@ var middlewares = {
         afterCalled = true;
       }
     }
-  ]}
-};
+  ]};
 
-
-var server = genji.web.createServer(middlewares);
 
 exports['test middleware jsonrpc'] = function() {
+  var server = genji.use('jsonrpc', jsonrpc).createServer();
   assert.response(server, {
         url: '/jsonrpc/',
         timeout: 100,
