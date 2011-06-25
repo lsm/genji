@@ -2,6 +2,10 @@
 ---------
 - Remove a lots of functionalities, keep small and focus.
 - Introduce `App`
+- `control#parallel` set done/fail callbacks by
+  `parallel.done(fn)` and `parallel.fail(fn)`
+- add `genji.short`:
+  extends the `genji` namespace with `util` `base` `control` submodules
 
 0.0.3 (2011/06/13)
 ---------
