@@ -3,7 +3,8 @@ var c = genji.require('control'),
     Chain = c.Chain,
     chain = c.chain,
     promise = c.promise,
-    deferred = c.deferred,
+    defer = c.defer,
+    parallel = c.parallel,
     fs = require('fs');
 var assert = require('assert');
 
@@ -63,7 +64,67 @@ module.exports = {
     }
   },
 
-  'test promise': function(beforeExit) {
+  'test control#parallel': function() {
+    var array = [2, 3, 4];
+    var finishedOrder = [];
+
+    function each(item, idx, arr, callback) {
+      setTimeout(function() {
+        assert.eql(array, arr);
+        finishedOrder.push(idx);
+        callback(null, idx);
+      }, (1 / item) * 100);
+    }
+
+    function done(result) {
+      assert.eql([2, 1, 0], finishedOrder);
+      // order is reserved for result
+      assert.eql([0, 1, 2], result);
+    }
+
+    parallel(array, each, done);
+
+    var finishedOrder2 = [];
+
+    function each2(item, idx, arr, callback) {
+      setTimeout(function() {
+        assert.eql(array, arr);
+        finishedOrder2.push(idx);
+        callback(null, idx * 10);
+      }, (1 / item) * 100);
+    }
+
+    parallel(array, each2).done(function(result) {
+      assert.eql([2, 1, 0], finishedOrder2);
+      assert.eql([0, 10, 20], result);
+    });
+
+    var finishedOrder3 = [];
+
+    function each3(item, idx, arr, callback) {
+      setTimeout(function() {
+        assert.eql(array, arr);
+        finishedOrder3.push(idx);
+        if (item === 3) {
+          callback('error');
+        } else {
+          callback(null, idx * 10);
+        }
+      }, (1 / item) * 100);
+    }
+
+    parallel(array, each3).done(
+        function(result) {
+          assert.eql([2, 1, 0], finishedOrder3);
+          assert.equal(null, result[1]);
+        }).fail(function(err, item, idx) {
+          assert.eql('error', err);
+          assert.eql(item, 3);
+          assert.eql(idx, 1);
+        });
+  },
+
+  'test promise': function() {
     var readFile = promise(fs.readFile);
     fs.readFile(__filename, function(err, data1) {
       if (err) throw err;
@@ -74,8 +135,8 @@ module.exports = {
     });
   },
 
-  'test deferred': function(beforeExit) {
-    var readFile = deferred(fs.readFile, fs), finished = false;
+  'test defer': function() {
+    var readFile = defer(fs.readFile, fs), finished = false;
     fs.readFile(__filename, function(err, data1) {
       if (err) throw err;
       readFile(__filename)
@@ -97,6 +158,9 @@ module.exports = {
             // done is called after second `and`
             assert.eql(finished, true);
           });
+      readFile(__filename+'1').fail(function(err) {
+        assert.eql('ENOENT', err.code);
+      });
     });
   }
 };
