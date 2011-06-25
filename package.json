@@ -17,7 +17,7 @@
     "expresso": "0.7.x"
   },
   "scripts": {
-    "test": "expresso -I lib"
+    "test": "expresso -I lib && expresso -I lib test/middleware/*"
   },
   "engines": {
     "node": "~0.4.8"
