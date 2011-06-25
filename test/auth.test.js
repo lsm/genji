@@ -11,6 +11,9 @@ module.exports = {
   },
 
   'test Auth#makePassword/checkPassword': function() {
-
+    var pass = Auth.makePassword('password');
+    assert.eql(true, Auth.checkPassword(pass, 'password'));
+    assert.eql(false, Auth.checkPassword(pass, 'password1'));
+    assert.eql(false, Auth.checkPassword('xx$xx', 'password'));
   }
-}
+};
