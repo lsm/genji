@@ -116,7 +116,7 @@ module.exports = {
     parallel(array, each3).done(
         function(result) {
           assert.eql([2, 1, 0], finishedOrder3);
-          assert.equal(null, result[1]);
+          assert.isUndefined(result[1]);
         }).fail(function(err, item, idx) {
           assert.eql('error', err);
           assert.eql(item, 3);
