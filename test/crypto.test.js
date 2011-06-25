@@ -39,5 +39,10 @@ module.exports = {
   'test Crypto#cipher/decipher': function() {
     var hash = crypto.cipher('plain', 'key');
     assert.eql('plain', crypto.decipher(hash, 'key'));
+  },
+
+  'test base64 encoding end decoding': function() {
+    assert.equal(crypto.base64Encode('你好'), '5L2g5aW9');
+    assert.equal(crypto.base64Decode('5L2g5aW9'), '你好');
   }
 };
