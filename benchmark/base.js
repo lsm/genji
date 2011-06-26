@@ -1,5 +1,6 @@
 // benchmark scripts copied from Class.js (TJ Holowaychuk)
-var Base = require('../lib/genji/base');
+var genji = require('../lib/genji').short();
+var Base = genji.Base;
 var sys = require('sys'),
 times = 500000;
 function bm(label, fn) {
