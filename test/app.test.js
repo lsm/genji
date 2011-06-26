@@ -88,7 +88,7 @@ exports['test app#head'] = function() {
 exports['test app#notFound'] = function() {
   var app = genji.app();
   app.notFound('/*', function(handler) {
-    handler.error(404, 'not found: ' + handler.request.url);
+    handler.error(404, 'not found: ' + this.request.url);
   });
   assert.response(genji.createServer(), {
         url: '/noexistenturl',
