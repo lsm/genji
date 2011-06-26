@@ -20,7 +20,7 @@ exports['test app#post'] = function() {
   var app = genji.app('namedApp');
   var data = 'post: Hello world!';
   app.post('/helloworld', function(handler) {
-    handler.on('data', function(params, raw) {
+    handler.parse(function(params, raw) {
       if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
         handler.send(data, 201, {Server: 'GenJi'});
       } else {
