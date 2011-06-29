@@ -11,7 +11,7 @@ A simple micro-framework for nodejs.
 
     var genji = require('genji');
 
-    // create a app instance
+    // create an app instance
     var helloApp = genji.app();
 
     // routing url to function
