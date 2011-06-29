@@ -1,11 +1,11 @@
 var genji = require('genji');
-var Handler = genji.require('handler');
+var Handler = genji.require('handler').Handler;
 var assert = require('assert');
 
 exports['test header operations 1'] = function() {
   var app = genji.app();
   var data = 'get: Hello world!';
-  var appRoute = app.get('/header1');
+  var appRoute = app.get('^/header1$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
@@ -17,7 +17,7 @@ exports['test header operations 1'] = function() {
     handler.setStatus(202);
     handler.finish(data);
   });
-  appRoute.handler(Handler.Handler);
+  appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/header1',
         timeout: 100,
@@ -34,14 +34,14 @@ exports['test header operations 1'] = function() {
 exports['test header operations 2'] = function() {
   var app = genji.app();
   var data = 'get: Hello world!';
-  var appRoute = app.get('/header2');
+  var appRoute = app.get('^/header2$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.addHeader('key2', 'value2');
     handler.sendHeaders(201, {'key3': 'value3'});
     handler.finish(data);
   });
-  appRoute.handler(Handler.Handler);
+  appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/header2',
         timeout: 100,
@@ -57,13 +57,13 @@ exports['test header operations 2'] = function() {
 
 exports['test error and redirect'] = function() {
   var app = genji.app();
-  var appRoute = app.get('/error');
+  var appRoute = app.get('^/error$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
     handler.error(502, 'error 502');
   });
-  appRoute.handler(Handler.Handler);
+  appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/error',
         timeout: 100,
@@ -75,11 +75,11 @@ exports['test error and redirect'] = function() {
         assert.isUndefined(res.headers.key2);
       });
 
-  app.get('/301', function(handler) {
+  app.get('^/301$', function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
     handler.redirect('/to301', true);
-  }, Handler.Handler);
+  }, Handler);
   assert.response(genji.createServer(), {
         url: '/301',
         timeout: 100,
@@ -92,11 +92,11 @@ exports['test error and redirect'] = function() {
         assert.isUndefined(res.headers.key2);
       });
 
-  app.get('/302', function(handler) {
+  app.get('^/302$', function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
     handler.redirect('/to302', false);
-  }, Handler.Handler);
+  }, Handler);
   assert.response(genji.createServer(), {
         url: '/302',
         timeout: 100,
