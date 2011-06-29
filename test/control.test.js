@@ -146,11 +146,11 @@ module.exports = {
           .then(function(data2) {
             assert.eql(data1, data2);
           })
-          .and(function(data2) {
+          .and(function(defer, data2) {
             assert.eql(data1, data2);
-            this.next(10);
+            defer.next(10);
           })
-          .and(function(data3) {
+          .and(function(defer, data3) {
             assert.eql(data3, 10);
             return finished = true;
           })
