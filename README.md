@@ -2,10 +2,10 @@ A simple micro-framework for nodejs.
 
 ## Features
 - Simple and fast **middleware** layer and functionalities.
-- Dynamic url **routing** with plugins
-- Http request/response handler
-- Async operation helpers (e.g. promise, parallel)
-- Javascript Class
+- Dynamic url **routing** with plugin support
+- Http request/response **handler**
+- **Async** operation helpers (e.g. promise, parallel)
+- Javascript **class**
 
 ## Quick start guide
 
@@ -15,7 +15,7 @@ A simple micro-framework for nodejs.
     var helloApp = genji.app();
 
     // routing url to function
-    helloApp.get('/', function(handler) {
+    helloApp.get('^/$', function(handler) {
       handler.send('Hello world!');
     });
 
@@ -24,6 +24,14 @@ A simple micro-framework for nodejs.
 
     // start handling request
     server.listen(8888, '127.0.0.1');
+
+
+## Run test
+
+    npm install expresso -g # this will install expresso in global scope
+    git clone git://github.com/zir/genji.git
+    cd genji
+    npm test
 
 ## How To Contribute
 

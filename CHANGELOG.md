@@ -1,4 +1,4 @@
-0.1.0 (?)
+0.1.0 (2011/06/29)
 ---------
 - Remove a lots of functionalities, keep small and focus.
 - Introduce `App`
@@ -6,6 +6,11 @@
   `parallel.done(fn)` and `parallel.fail(fn)`
 - add `genji.short`:
   extends the `genji` namespace with `util` `base` `control` submodules
+- Simplified `handler`,
+  - the default handler is `genji.require('handler').Handler`
+  which can handle normal http request, parse cookies and send files
+  - you can use `genji.require('handler').BaseHandler`
+  to include features you only need
 
 0.0.3 (2011/06/13)
 ---------

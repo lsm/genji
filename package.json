@@ -1,7 +1,8 @@
 {
   "name": "genji",
-  "description": "A low-level loosely coupled web framework for nodejs",
+  "description": "A simple micro-framework for nodejs.",
   "version": "0.1.0",
+  "keywords": ["middleware", "router", "async", "micro"],
   "homepage": "http://github.com/zir/genji",
   "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
   "repository" : {
