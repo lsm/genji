@@ -1,3 +1,7 @@
+0.2.0 (?)
+---------
+- control#defer put flow control functions as the first argument of `and` callback
+
 0.1.0 (2011/06/29)
 ---------
 - Remove a lots of functionalities, keep small and focus.
