@@ -10,6 +10,7 @@
 - `util#extend` takes unlimited arguments `extend(obj, props1, props2, ...,
 propsN)`
 - Add `crypto#hmac`
+- `handler#Simple` parses url parameters by default
 
 
 0.1.0 (2011/06/29)
