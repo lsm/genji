@@ -1,6 +1,16 @@
 0.2.0 (?)
 ---------
-- control#defer put flow control functions as the first argument of `and` callback
+- Changed the way how we define sub url for `App#[get, post, put, del, head]`
+- control#defer
+  - put flow control object as the first argument of `and` callback
+  - callbacks of `and`, `then` now will be called in registered order
+    `defer(fs.readFile, fs).and(fn1, fn2, fn3).then(fn4, fn5).and(fn6, fn7)`
+    functions will be called in the following order:
+                  /->fn4->\
+    fn1->fn2->fn3|         |->fn6->fn7
+                  \->fn5->/
+- util#extend takes unlimited arguments `extend(obj, props1, props2, ..., propsN)`
+
 
 0.1.0 (2011/06/29)
 ---------
