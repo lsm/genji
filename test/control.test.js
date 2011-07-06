@@ -176,25 +176,56 @@ module.exports = {
     var then2 = 0;
     fn(10)
         .and(function(defer, result) {
+          assert.eql(11, result);
           defer.next(result + 1);
         })
         .and(function(defer, result) {
-          defer.next(result + 1);
+          assert.eql(12, result);
+          defer.next(result + 2);
         })
         .and(function(defer, result) {
-          assert.eql(13, result);
-          defer.next(13);
+          assert.eql(14, result);
+          defer.next(14);
         })
         .then(function(result) {
           then1 = result * 2;
         })
         .then(function(result) {
-          assert.eql(13, result);
+          assert.eql(14, result);
           then2 = then1 * 2;
         })
         .and(function() {
-          assert.eql(26, then1);
-          assert.eql(52, then2);
+          assert.eql(28, then1);
+          assert.eql(56, then2);
         });
+  },
+
+  'test control#defer register many callbacks': function() {
+    function asyncFn(x, callback) {
+      setTimeout(function() {
+        callback(null, x + 1);
+      }, 1000);
+    }
+
+    var fn = defer(asyncFn);
+    function fn1(defer, result) {
+      assert.eql(11, result);
+      defer.next(result + 1);
+    }
+
+    function fn2(defer, result) {
+      assert.eql(12, result);
+      defer.next(result + 2);
+    }
+
+    function fn3(result) {
+      assert.eql(14, result);
+    }
+
+    function fn4(result) {
+      assert.eql(14, result);
+    }
+
+    fn(10).and(fn1, fn2).then(fn3, fn4);
   }
 };
