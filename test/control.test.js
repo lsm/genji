@@ -135,7 +135,7 @@ module.exports = {
     });
   },
 
-  'test defer': function() {
+  'test control#defer': function() {
     var readFile = defer(fs.readFile, fs), finished = false;
     fs.readFile(__filename, function(err, data1) {
       if (err) throw err;
@@ -162,5 +162,39 @@ module.exports = {
         assert.eql('ENOENT', err.code);
       });
     });
+  },
+
+  'test control#defer with ordered `and`, `then` callbacks': function() {
+    function asyncFn(x, callback) {
+      setTimeout(function() {
+        callback(null, x + 1);
+      }, 1000);
+    }
+
+    var fn = defer(asyncFn);
+    var then1 = 0;
+    var then2 = 0;
+    fn(10)
+        .and(function(defer, result) {
+          defer.next(result + 1);
+        })
+        .and(function(defer, result) {
+          defer.next(result + 1);
+        })
+        .and(function(defer, result) {
+          assert.eql(13, result);
+          defer.next(13);
+        })
+        .then(function(result) {
+          then1 = result * 2;
+        })
+        .then(function(result) {
+          assert.eql(13, result);
+          then2 = then1 * 2;
+        })
+        .and(function() {
+          assert.eql(26, then1);
+          assert.eql(52, then2);
+        });
   }
 };
