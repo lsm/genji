@@ -1,7 +1,7 @@
 0.2.1 (?)
 - Add timeout support for `control#parallel`
 
-0.2.0 (?)
+0.2.0 (2011/07/10)
 ---------
 - Changed the way how we define sub url for `App#[get, post, put, del, head]`
 - `control#defer`
