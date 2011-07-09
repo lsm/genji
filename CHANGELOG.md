@@ -14,6 +14,7 @@
 propsN)`
 - Add `crypto#hmac`
 - `handler#Simple` parses url parameters by default
+- Add context for `control#parallel`
 
 
 0.1.0 (2011/06/29)
