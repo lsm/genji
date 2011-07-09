@@ -58,7 +58,7 @@ module.exports = {
     assert.equal(count, 6);
     try {
       chain({}, function() {
-          });
+      });
     } catch(e) {
       assert.ok(e);
     }
@@ -158,7 +158,7 @@ module.exports = {
             // done is called after second `and`
             assert.eql(finished, true);
           });
-      readFile(__filename+'1').fail(function(err) {
+      readFile(__filename + '1').fail(function(err) {
         assert.eql('ENOENT', err.code);
       });
     });
@@ -208,6 +208,7 @@ module.exports = {
     }
 
     var fn = defer(asyncFn);
+
     function fn1(defer, result) {
       assert.eql(11, result);
       defer.next(result + 1);
