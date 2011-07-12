@@ -1,5 +1,9 @@
+0.3.0 (?)
+- Add vhost support
+
 0.2.1 (?)
 - Add timeout support for `control#parallel`
+- Refactor router
 
 0.2.0 (2011/07/10)
 ---------
