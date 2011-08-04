@@ -1,9 +1,11 @@
 0.3.0 (?)
-- Add vhost support
+- Add `vhost` support
+- `App` error handler
 
 0.2.1 (?)
 - Add timeout support for `control#parallel`
-- Refactor router
+- Refactor `router`
+- bug fix for handler#Simple#sendJson
 
 0.2.0 (2011/07/10)
 ---------
