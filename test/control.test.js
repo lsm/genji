@@ -122,6 +122,19 @@ module.exports = {
           assert.eql(item, 3);
           assert.eql(idx, 1);
         });
+
+    parallel([1, 2, 3, 4], function(item, idx, arr, callback) {
+      if (item !== 3) {
+        callback(null, item*10);
+      }
+    })
+      .done(function(result) {
+        // this should never be called
+        assert.eql(false, true);
+      })
+      .timeout(function(result) {
+      assert.eql(-1, result.indexOf(30));
+      }, 1);
   },
 
   'test promise': function() {

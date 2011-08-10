@@ -2,6 +2,9 @@
 - Add `vhost` support
 - `App` error handler
 
+0.2.2(?)
+- introduce `event` in `control#defer`
+
 0.2.1 (?)
 - Add timeout support for `control#parallel`
 - Refactor `router`
