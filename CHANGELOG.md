@@ -1,14 +1,18 @@
 0.3.0 (?)
+---------
 - Add `vhost` support
 - `App` error handler
-
-0.2.2(?)
+- Refactor `router`
 - introduce `event` in `control#defer`
 
-0.2.1 (?)
+0.2.1 (2011/08/11)
+---------
 - Add timeout support for `control#parallel`
-- Refactor `router`
 - bug fix for handler#Simple#sendJson
+- new event for handler with method `POST`/`PUT`:
+  - `data` for raw data
+  - `params` for http query string
+  - `json` for json string
 
 0.2.0 (2011/07/10)
 ---------
