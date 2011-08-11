@@ -6,7 +6,7 @@ var genji = require('genji');
 var helloApp = genji.app();
 
 // routing url to function
-helloApp.get('/', function(handler) {
+helloApp.get('^/$', function(handler) {
   handler.send('Hello world!');
 });
 
