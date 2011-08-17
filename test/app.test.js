@@ -1,5 +1,6 @@
 var genji = require('genji');
 var assert = require('assert');
+var timeout = 500;
 
 exports['test app#get'] = function() {
   var app = genji.app();
@@ -9,7 +10,7 @@ exports['test app#get'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, data);
@@ -20,7 +21,7 @@ exports['test app#get'] = function() {
   });
     assert.response(genji.createServer(), {
         url: '/foo',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, 'is at /foo ');
@@ -31,7 +32,7 @@ exports['test app#get'] = function() {
   });
     assert.response(genji.createServer(), {
         url: '/foo/',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, 'is at /foo/ ');
@@ -42,7 +43,7 @@ exports['test app#get'] = function() {
   });
     assert.response(genji.createServer(), {
         url: '/bar/',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, 'is at /bar/ ');
@@ -63,7 +64,7 @@ exports['test app#post'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/namedApp/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'POST',
         data: 'x=a&y=b'
       }, function(res) {
@@ -83,7 +84,7 @@ exports['test app#post'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/namedApphelloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'POST',
         data: 'x=c&y=d'
       }, function(res) {
@@ -102,7 +103,7 @@ exports['test app#post'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/fullurlpattern',
-        timeout: 100,
+        timeout: timeout,
         method: 'POST',
         data: 'x=a&y=b'
       }, function(res) {
@@ -120,7 +121,7 @@ exports['test app#put'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/put/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'PUT'
       }, function(res) {
         assert.equal(res.body, data);
@@ -135,7 +136,7 @@ exports['test app#del'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'DELETE'
       }, function(res) {
         assert.equal(res.body, data);
@@ -150,7 +151,7 @@ exports['test app#head'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'HEAD'
       }, function(res) {
         assert.equal(res.statusCode, 304);
@@ -164,7 +165,7 @@ exports['test app#notFound'] = function() {
   });
   assert.response(genji.createServer(), {
         url: '/noexistenturl',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.statusCode, 404);
@@ -184,7 +185,7 @@ exports['test app#mount'] = function() {
   ]);
   assert.response(genji.createServer(), {
         url: '/mount/helloworld',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, data);

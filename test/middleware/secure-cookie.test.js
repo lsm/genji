@@ -44,7 +44,7 @@ exports['test middleware secure-cookie'] = function() {
   var server = genji.createServer();
   assert.response(server, {
         url: '/',
-        timeout: 100,
+        timeout: 500,
         method: 'GET',
         headers: {
           'Cookie': cookieStr

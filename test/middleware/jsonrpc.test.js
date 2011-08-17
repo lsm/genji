@@ -26,7 +26,7 @@ exports['test middleware jsonrpc'] = function() {
   var server = genji.use('jsonrpc', jsonrpc).createServer();
   assert.response(server, {
         url: '/jsonrpc/',
-        timeout: 100,
+        timeout: 500,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

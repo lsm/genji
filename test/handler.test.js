@@ -1,6 +1,7 @@
 var genji = require('genji');
 var Handler = genji.require('handler').Handler;
 var assert = require('assert');
+var timeout = 500;
 
 exports['test header operations 1'] = function() {
   var app = genji.app();
@@ -20,7 +21,7 @@ exports['test header operations 1'] = function() {
   appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/header1',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, data);
@@ -44,7 +45,7 @@ exports['test header operations 2'] = function() {
   appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/header2',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, data);
@@ -66,7 +67,7 @@ exports['test error and redirect'] = function() {
   appRoute.handler(Handler);
   assert.response(genji.createServer(), {
         url: '/error',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, 'error 502');
@@ -82,7 +83,7 @@ exports['test error and redirect'] = function() {
   }, Handler);
   assert.response(genji.createServer(), {
         url: '/301',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, '');
@@ -99,7 +100,7 @@ exports['test error and redirect'] = function() {
   }, Handler);
   assert.response(genji.createServer(), {
         url: '/302',
-        timeout: 100,
+        timeout: timeout,
         method: 'GET'
       }, function(res) {
         assert.equal(res.body, '');
@@ -118,7 +119,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/testsend',
-    timeout: 100,
+    timeout: timeout,
     method: 'GET'
   }, function(res) {
     assert.equal(res.body, 'body');
@@ -132,7 +133,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/testsendJSON',
-    timeout: 100,
+    timeout: timeout,
     method: 'GET'
   }, function(res) {
     var json = JSON.parse(res.body);
@@ -148,7 +149,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/testsendHTML',
-    timeout: 100,
+    timeout: timeout,
     method: 'GET'
   }, function(res) {
     assert.equal(res.body, '<html></html>');
@@ -169,7 +170,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/receiveJSON',
-    timeout: 100,
+    timeout: timeout,
     data: jsonStr,
     method: 'POST'
   }, function(res) {
@@ -201,7 +202,7 @@ exports['test cookie'] = function() {
   var clientCookie = 'client_cookie=client_value;';
   assert.response(genji.createServer(), {
     url: '/cookie',
-    timeout: 100,
+    timeout: timeout,
     headers: {'Cookie': clientCookie},
     method: 'GET'
   }, function(res) {
@@ -227,7 +228,7 @@ exports['test sending file or file like content'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/testStaticFile.js',
-    timeout: 100,
+    timeout: timeout,
     method: 'get'
   }, function(res) {
     crypto.md5file(__filename, 'hex', function(err, hash) {
@@ -248,7 +249,7 @@ exports['test sending file or file like content'] = function() {
   });
   assert.response(genji.createServer(), {
     url: '/testSendAsFile.js',
-    timeout: 100,
+    timeout: timeout,
     method: 'get'
   }, function(res) {
     crypto.md5file(__filename, 'hex', function(err, hash) {
