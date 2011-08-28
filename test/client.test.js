@@ -7,8 +7,8 @@ exports['test client#get/post'] = function() {
   var data = 'Hello world!';
   app.get('^/helloworld/').fn(function(handler) {
     var params = handler.params;
-    assert.eql(params.x, '1');
-    assert.eql(params.y, '2');
+    assert.eql(params.a, '1');
+    assert.eql(params.b, '2');
     handler.send(data);
   });
 
@@ -42,7 +42,7 @@ exports['test client#get/post'] = function() {
 
   var client = new Client('http://127.0.0.1:33333/');
 
-  client.get('/helloworld/?x=1&y=2').then(function(data) {
+  client.get('/helloworld/', {a: 1, b: 2}).then(function(data) {
     assert.equal(data.toString(), data);
     close();
   });
