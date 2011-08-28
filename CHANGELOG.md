@@ -1,9 +1,18 @@
-0.3.0 (?)
+0.3.1 (?)
 ---------
 - Add `vhost` support
 - `App` error handler
+
+0.3.0 (?)
+---------
 - Refactor `router`
+- umount/remove routes
+- overwrite routes which has same url pattern and http method
 - introduce `event` in `control#defer`
+
+0.2.2 (2011/08/29)
+- Cleaned code follow default jshint rules
+- Rewrited `client.js#Client` and added some tests
 
 0.2.1 (2011/08/11)
 ---------
