@@ -30,7 +30,7 @@ exports['test client#get/post'] = function() {
   });
 
   var server = genji.createServer();
-  server.listen(33333, '127.0.0.1');
+  server.listen(8000, '127.0.0.1');
 
   var count = 0;
 
@@ -40,7 +40,7 @@ exports['test client#get/post'] = function() {
     }
   }
 
-  var client = new Client('http://127.0.0.1:33333/');
+  var client = new Client('http://127.0.0.1:8000/');
 
   client.get('/helloworld/', {a: 1, b: 2}).then(function(data) {
     assert.equal(data.toString(), data);
