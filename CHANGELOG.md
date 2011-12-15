@@ -10,7 +10,12 @@
 - overwrite routes which has same url pattern and http method
 - introduce `event` in `control#defer`
 
+0.2.3 (2011/12/15)
+---------
+- Upgraded `expresso` for node 0.6.x support
+
 0.2.2 (2011/08/29)
+---------
 - Cleaned code follow default jshint rules
 - Rewrited `client.js#Client` and added some tests
 
@@ -20,8 +25,8 @@
 - bug fix for handler#Simple#sendJson
 - new event for handler with method `POST`/`PUT`:
   - `data` for raw data
-  - `params` for http query string
-  - `json` for json string
+  - `params` for http query string, parsed as plain javascript object
+  - `json` for json string, parsed as plain javascript object
 
 0.2.0 (2011/07/10)
 ---------
