@@ -15,7 +15,8 @@
     "example": "./example"
   },
   "devDependencies": {
-    "expresso": "0.9.x"
+    "expresso": "0.9.x",
+    "benchmark": "0.3.x"
   },
   "scripts": {
     "test": "expresso -I lib && expresso -I lib test/middleware/*"
