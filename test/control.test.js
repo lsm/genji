@@ -7,6 +7,7 @@ var c = genji.require('control'),
     parallel = c.parallel,
     fs = require('fs');
 var assert = require('assert');
+var EventEmitter = require('events').EventEmitter;
 
 module.exports = {
   'test executing the same function against different array members': function() {
@@ -149,9 +150,14 @@ module.exports = {
   },
 
   'test control#defer': function() {
-    var readFile = defer(fs.readFile, fs), finished = false;
+    var emitter = new EventEmitter;
+    var readFile = defer(fs.readFile, fs, emitter), finished = 0;
     fs.readFile(__filename, function(err, data1) {
       if (err) throw err;
+      emitter.on('done', function() {
+        assert.eql(finished, 1);
+        finished = 2;
+      });
       readFile(__filename)
           .then(function(data2) {
             assert.eql(data1, data2);
@@ -165,12 +171,15 @@ module.exports = {
           })
           .and(function(defer, data3) {
             assert.eql(data3, 10);
-            return finished = true;
+            return finished = 1;
           })
           .done(function() {
             // done is called after second `and`
-            assert.eql(finished, true);
+            assert.eql(finished, 2);
           });
+      emitter.on('fail', function(err) {
+        assert.eql('ENOENT', err.code);
+      });
       readFile(__filename + '1').fail(function(err) {
         assert.eql('ENOENT', err.code);
       });
