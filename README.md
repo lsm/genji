@@ -54,7 +54,7 @@ The philosophy of this project follows this meaning.
 
 (The MIT License)
 
-Copyright (c) 2010 Senmiao Liu <zir.echo@gmail.com>
+Copyright (c) 2010-2012 Senmiao Liu <zir.echo@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

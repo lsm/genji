@@ -6,8 +6,13 @@
 0.3.0 (?)
 ---------
 - Refactor `router`
-- umount/remove routes
-- overwrite routes which has same url pattern and http method
+    - umount/remove routes
+    - alias routes
+    - overwrite routes which has same url pattern and http method
+
+0.2.4 (2012/01/02)
+---------
+- add `send`, `sendJSON` and `sendHTML` to the `base#BaseHandler`
 - introduce `event` in `control#defer`
 
 0.2.3 (2011/12/15)
