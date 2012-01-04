@@ -7,6 +7,7 @@
     - alias routes
     - overwrite routes which has same url pattern and http method
 - support more cache levels for `view` (cache renderered and compiled)
+- profile/settings
 
 0.3.0 (2012/01/05)
 ---------
