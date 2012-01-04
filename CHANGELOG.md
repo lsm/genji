@@ -6,15 +6,14 @@
     - umount/remove routes
     - alias routes
     - overwrite routes which has same url pattern and http method
+- support more cache levels for `view` (cache renderered and compiled)
 
-0.3.1 (?)
-- `view`
-  - pre-register partial files in the `rootViewPath`
-  - add caching ability
-
-0.3.0 (2012/01/04)
+0.3.0 (2012/01/05)
 ---------
 - introduce `view` for working with template engine like [hogan.js](https://github.com/twitter/hogan.js)
+  - render files
+  - simple caching support
+  - preregister partial files in the `rootViewPath`
 
 0.2.4 (2012/01/02)
 ---------
