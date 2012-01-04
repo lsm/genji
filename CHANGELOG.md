@@ -1,14 +1,20 @@
-0.3.1 (?)
+0.3.x (?)
 ---------
 - Add `vhost` support
 - `App` error handler
-
-0.3.0 (?)
----------
 - Refactor `router`
     - umount/remove routes
     - alias routes
     - overwrite routes which has same url pattern and http method
+
+0.3.1 (?)
+- `view`
+  - pre-register partial files in the `rootViewPath`
+  - add caching ability
+
+0.3.0 (2012/01/04)
+---------
+- introduce `view` for working with template engine like [hogan.js](https://github.com/twitter/hogan.js)
 
 0.2.4 (2012/01/02)
 ---------
