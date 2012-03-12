@@ -9,6 +9,11 @@
 - support more cache levels for `view` (cache renderered and compiled)
 - profile/settings
 
+0.3.1 (2012/03/12)
+---------
+- improve `view` partial
+- introduce `model`
+
 0.3.0 (2012/01/05)
 ---------
 - introduce `view` for working with template engine like [hogan.js](https://github.com/twitter/hogan.js)
