@@ -53,9 +53,11 @@ exports['test app#get'] = function() {
 exports['test app#post'] = function() {
   var app = genji.app('namedApp');
   var data = 'post: Hello world!';
+
+  var postData1 = 'x=r&y=t';
   app.post('/helloworld$', function(handler) {
     handler.on('params', function(params, raw) {
-      if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
+      if (params.x === 'r' && params.y === 't' && raw === 'x=r&y=t') {
         handler.send(data, 201, {Server: 'GenJi'});
       } else {
         handler.setStatus(500).finish('error');
@@ -66,16 +68,18 @@ exports['test app#post'] = function() {
         url: '/namedApp/helloworld',
         timeout: timeout,
         method: 'POST',
-        data: 'x=a&y=b'
+        data: postData1,
+        headers:{'content-length': postData1.length}
       }, function(res) {
         assert.equal(res.body, data);
         assert.equal(res.statusCode, 201);
         assert.equal(res.headers.server, 'GenJi');
       });
-  
+
+  var postData2 = 'x=c&y=d';
   app.post('helloworld$', function(handler) {
     handler.on('data', function(params, raw) {
-      if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
+      if (params.x === 'c' && params.y === 'd' && raw === 'x=c&y=d') {
         handler.send(data, 201, {Server: 'GenJi'});
       } else {
         handler.setStatus(500).finish('error');
@@ -86,12 +90,14 @@ exports['test app#post'] = function() {
         url: '/namedApphelloworld',
         timeout: timeout,
         method: 'POST',
-        data: 'x=c&y=d'
+        data: postData2,
+        headers:{'content-length': postData2.length}
       }, function(res) {
         assert.equal(res.body, 'error');
         assert.equal(res.statusCode, 500);
       });
 
+  var postData3 = 'x=a&y=b';
   app.post('^/fullurlpattern$', function(handler) {
     handler.on('params', function(params, raw) {
       if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
@@ -105,7 +111,8 @@ exports['test app#post'] = function() {
         url: '/fullurlpattern',
         timeout: timeout,
         method: 'POST',
-        data: 'x=a&y=b'
+        data: postData3,
+        headers:{'content-length': postData3.length}
       }, function(res) {
         assert.equal(res.body, data);
         assert.equal(res.statusCode, 201);
@@ -114,18 +121,19 @@ exports['test app#post'] = function() {
 };
 
 exports['test app#put'] = function() {
-  var app = genji.app('a put app', {root: '/put'});
+  var app = genji.app('a put app', {root:'/put'});
   var data = 'put: Hello world!';
-  app.put('/helloworld$', function(handler) {
+  app.put('/helloworld$', function (handler) {
     handler.send(data);
   });
   assert.response(genji.createServer(), {
-        url: '/put/helloworld',
-        timeout: timeout,
-        method: 'PUT'
-      }, function(res) {
-        assert.equal(res.body, data);
-      });
+    url:'/put/helloworld',
+    timeout:timeout,
+    method:'PUT',
+    headers:{'content-length':0}
+  }, function (res) {
+    assert.equal(res.body, data);
+  });
 };
 
 exports['test app#del'] = function() {

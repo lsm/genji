@@ -172,7 +172,8 @@ exports['test send, sendJSON, sendHTML'] = function() {
     url: '/receiveJSON',
     timeout: timeout,
     data: jsonStr,
-    method: 'POST'
+    method: 'POST',
+    headers: {'content-length': jsonStr.length}
   }, function(res) {
     var json = JSON.parse(res.body);
     assert.eql(json.ok, true);
