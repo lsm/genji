@@ -1,0 +1,4 @@
+{
+  "globs": ["lib/**/*.js", "lib/*.js"],
+  "github": false
+}
