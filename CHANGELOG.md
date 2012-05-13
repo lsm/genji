@@ -8,6 +8,19 @@
     - overwrite routes which has same url pattern and http method
 - support more cache levels for `view` (cache renderered and compiled)
 - profile/settings
+- allow later-binding middleware/router
+- documentation of inline code
+- manual
+- `enderjs` support
+
+0.3.3 (2012/05/??)
+---------
+- expose submodules by default, `genji.short` and `genji.require` are deprecated
+- add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+
+0.3.2 (2012/05/08)
+---------
+- improve `view` and `model`
 
 0.3.1 (2012/03/12)
 ---------
