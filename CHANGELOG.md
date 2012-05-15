@@ -17,6 +17,7 @@
 ---------
 - expose submodules by default, `genji.short` and `genji.require` are deprecated
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+- rewrite `lib/model.js`, added test
 
 0.3.2 (2012/05/08)
 ---------
