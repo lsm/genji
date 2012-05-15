@@ -1,5 +1,5 @@
-var genji = require('genji');
-var crypto = genji.require('crypto');
+var genji = require('../index');
+var crypto = genji.crypto;
 var assert = require('assert');
 
 module.exports = {

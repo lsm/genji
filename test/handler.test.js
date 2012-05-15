@@ -1,5 +1,5 @@
-var genji = require('genji');
-var Handler = genji.require('handler').Handler;
+var genji = require('../index');
+var Handler = genji.handler.Handler;
 var assert = require('assert');
 var timeout = 500;
 
@@ -183,7 +183,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
 };
 
 exports['test cookie'] = function() {
-  var Cookie = genji.require('cookie');
+  var Cookie = genji.cookie;
   var app = genji.app();
   var cookieOptions = {
     expires: new Date(10000),
@@ -222,7 +222,7 @@ exports['test cookie'] = function() {
 
 exports['test sending file or file like content'] = function() {
   var app = genji.app();
-  var crypto = genji.require('crypto');
+  var crypto = genji.crypto;
 
   app.get('^/testStaticFile.js$').fn(function(handler) {
     handler.staticFile(__filename);

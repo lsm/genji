@@ -1,5 +1,5 @@
-var genji = require('genji');
-var Base = genji.require('base');
+var genji = require('../index');
+var Base = genji.Base;
 var Class, ClassPlus, ClassPlusPlus, Class4
     , klass, klassPlus, klassPlusPlus, klass4;
 var assert = require('assert');

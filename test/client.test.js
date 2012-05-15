@@ -1,6 +1,6 @@
-var genji = require('genji');
+var genji = require('../index');
 var assert = require('assert');
-var Client = genji.require('client').Client;
+var Client = genji.client.Client;
 
 exports['test client#get/post'] = function() {
   var app = genji.app();
