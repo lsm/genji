@@ -2,7 +2,7 @@ var genji = require('../index');
 var assert = require('assert');
 var Model = genji.Model;
 
-exports['test module definition'] = function () {
+exports['test model definition'] = function () {
 
   var Post = Model('Post', {
     fields: {
