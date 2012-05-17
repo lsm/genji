@@ -59,6 +59,7 @@ exports['test model definition'] = function () {
   assert.eql(postExtended.attr('content'), 'is a valid post content');
   postExtended.attr('content', 'another valid post content')
   assert.eql(postExtended.attr('content'), 'another valid post content');
+  assert.eql(postExtended.changed(), {'content': 'another valid post content'});
 
   var postExtendedDoc = postExtended.toData('alias');
   assert.eql(postExtendedDoc._id, 'postId_20');

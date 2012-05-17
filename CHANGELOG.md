@@ -19,6 +19,7 @@
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 - rewrite `lib/model.js`, added test
 - support multi-root path for view template (with namespace)
+- add `Model#changed`, return object which contains changed fields/values after initialized.
 
 0.3.2 (2012/05/08)
 ---------
