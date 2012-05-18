@@ -9,7 +9,11 @@ exports['test model definition'] = function () {
       id: 'number',
       title: 'string',
       content:function (content) {
-        return typeof content === 'string' && content.length > 20;
+        if (typeof content !== 'string') {
+          return 'content should be string';
+        } else if (content.length <= 20) {
+          return 'content should be longer than 20 characters';
+        }
       }
     },
     id: '_id',
@@ -33,14 +37,22 @@ exports['test model definition'] = function () {
   var postDoc = post.toData();
   assert.eql(postDoc, false);
   assert.eql(Post.STATUS_DRAFT, 0);
+  var invalidFields = post.getInvalidFields();
+  assert.eql(invalidFields.content.error, 'content should be longer than 20 characters');
+  assert.eql(invalidFields.content.value, 'invalid content');
 
   var PostExtended = Post('PostExtended', {
+    requires: ['title', 'content'],
     fields: {
       content:function (content) {
-        return typeof content === 'string' && content.length > 10;
+        if (typeof content !== 'string') {
+          return 'content should be string';
+        } else if (content.length <= 10) {
+          return 'content should be longer than 10 characters';
+        }
       },
       author:function (author) {
-        return author === 'post author';
+        return author !== 'post author';
       }
     },
     aliases: {author: 'postAuthor'}
@@ -65,4 +77,11 @@ exports['test model definition'] = function () {
   assert.eql(postExtendedDoc._id, 'postId_20');
   assert.eql(postExtendedDoc.title, 'ANOTHER POST');
   assert.eql(postExtendedDoc.postAuthor, 'post author');
+
+  var postExtendedInvalid = new PostExtended({
+    id: 21,
+    content: 'is a valid post content, but not a valid model',
+    author: 'post author'
+  });
+  assert.eql(postExtendedInvalid.isValid(), false);
 };
