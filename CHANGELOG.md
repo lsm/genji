@@ -11,15 +11,21 @@
 - allow later-binding middleware/router
 - documentation of inline code
 - manual
+
+
+0.3.4 (2012/05/??)
+---------
+- external app loader
 - `enderjs` support
 
-0.3.3 (2012/05/??)
+0.3.3 (2012/05/19)
 ---------
 - expose submodules by default, `genji.short` and `genji.require` are deprecated
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 - rewrite `lib/model.js`, added test
 - support multi-root path for view template (with namespace)
 - add `Model#changed`, return object which contains changed fields/values after initialized.
+- add `util#byteLength`
 
 0.3.2 (2012/05/08)
 ---------
