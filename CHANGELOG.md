@@ -1,3 +1,9 @@
+0.5.x
+---------
+- New `App` module
+- New field type for `Model`: `array`, `regexp`, `date`,
+
+
 0.3.x (?)
 ---------
 - Add `vhost` support
@@ -11,17 +17,18 @@
 - allow later-binding middleware/router
 - documentation of inline code
 - manual
+- add `?md5sum` to url of resource file when render templates or registry partials
 
 
 0.3.4 (2012/05/??)
 ---------
 - external app loader
 - `enderjs` support
+- add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 
 0.3.3 (2012/05/19)
 ---------
 - expose submodules by default, `genji.short` and `genji.require` are deprecated
-- add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 - rewrite `lib/model.js`, added test
 - support multi-root path for view template (with namespace)
 - add `Model#changed`, return object which contains changed fields/values after initialized.
