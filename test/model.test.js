@@ -84,4 +84,12 @@ exports['test model definition'] = function () {
     author: 'post author'
   });
   assert.eql(postExtendedInvalid.isValid(), false);
+
+  var postExtended2 = new PostExtended({
+    _id: 20,
+    title: 'another post',
+    content: 'is a valid post content',
+    postAuthor: 'post author'
+  });
+  assert.eql(postExtended2.attr('author'), 'post author');
 };
