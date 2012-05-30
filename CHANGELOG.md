@@ -1,11 +1,9 @@
 0.5.x
 ---------
-- New `App` module
-- New field type for `Model`: `array`, `regexp`, `date`,
-
-
-0.3.x (?)
----------
+- `Model`
+    - New field type for `Model`: `array`, `regexp`, `date`,
+    - Default field value
+    - Bi-direction aliased field name
 - Add `vhost` support
 - `App` error handler
 - Refactor `router`
@@ -18,13 +16,14 @@
 - documentation of inline code
 - manual
 - add `?md5sum` to url of resource file when render templates or registry partials
-
-
-0.3.4 (2012/05/??)
----------
-- external app loader
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+
+0.5.0 (2012/05/30)
+---------
+- external app loader
+- New `App` module
+- `genji.app` renamed to `genji.route`
 
 0.3.3 (2012/05/19)
 ---------
