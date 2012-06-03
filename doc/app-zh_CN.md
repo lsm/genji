@@ -13,59 +13,59 @@
 
 首先你需要加载`genji`
 
-    ```javascript
-    var genji = require('genji');
-    ```
+  ```javascript
+  var genji = require('genji');
+  ```
 
 `genji.App`是一个静态函数, 它有三个参数:
 
-    ```javascript
-    // `genji.App`参数
-    var appName = 'MyPostApp'; // 定义的 应用 名称
-    var appInstanceProperties = { publish: function(content){console.log(content);}, type: 'post' }; // 所定义 应用 的实例成员
-    var appStaticProperties = { POST_STATUS_DRAFT: 0 }; // 所定义 应用 的类成员
+  ```javascript
+  // `genji.App`参数
+  var appName = 'MyPostApp'; // 定义的 应用 名称
+  var appInstanceProperties = { publish: function(content){console.log(content);}, type: 'post' }; // 所定义 应用 的实例成员
+  var appStaticProperties = { POST_STATUS_DRAFT: 0 }; // 所定义 应用 的类成员
 
-    // 定义一个新的应用 `MyPostApp`
-    var MyPostApp = genji.App(appName, appInstanceProperties, appStaticProperties);
-    ```
+  // 定义一个新的应用 `MyPostApp`
+  var MyPostApp = genji.App(appName, appInstanceProperties, appStaticProperties);
+  ```
 
 ### 实例化一个应用 ###
 
-    ```javascript
-    var myPostApp = new MyPostApp();
-    // 运行下面的语句将会打印'my post content'
-    myPostApp.publish('my post content');
-    ```
+  ```javascript
+  var myPostApp = new MyPostApp();
+  // 运行下面的语句将会打印'my post content'
+  myPostApp.publish('my post content');
+  ```
 
 ### 继承一个应用 ###
 
 只需按`genji.App`的方式调用已经定义的应用的构造函数就可以继承这个应用.
 
-    ```javascript
-    var MyBlogApp = MyPostApp('MyBlogApp', {
-        // 自定义构造函数
-        init: function(options) {
+  ```javascript
+  var MyBlogApp = MyPostApp('MyBlogApp', {
+      // 自定义构造函数
+      init: function(options) {
 
-        },
-        // 实例函数, 你可以直接调用此函数, 路由匹配后也会自动调用. 此定义将覆盖父类的定义('MyPostApp#publish')
-        publish: function(matched1, json, rawData) {
-          var err = null;
-          this.emit('publish', err, {blogType: matched1, jsonObj: json});
-        },
-        // url匹配定义
-        routes: {
-          publish: {method: 'post', url: '^/myblogapp/publish/([a-zA-Z]*)', type: 'json'},
-          update: {method: 'post', url: '/update/([a-zA-Z]*)', type: 'params'}
-        },
-        // 路由结果事件侦听函数
-        routeResults: {
-          publish: function(err, jsonObj) {},
-          update: [func1, func2]
-        }
-      }, {BLOG_STATUS_PUBLISHED: 1});
+      },
+      // 实例函数, 你可以直接调用此函数, 路由匹配后也会自动调用. 此定义将覆盖父类的定义('MyPostApp#publish')
+      publish: function(matched1, json, rawData) {
+        var err = null;
+        this.emit('publish', err, {blogType: matched1, jsonObj: json});
+      },
+      // url匹配定义
+      routes: {
+        publish: {method: 'post', url: '^/myblogapp/publish/([a-zA-Z]*)', type: 'json'},
+        update: {method: 'post', url: '/update/([a-zA-Z]*)', type: 'params'}
+      },
+      // 路由结果事件侦听函数
+      routeResults: {
+        publish: function(err, jsonObj) {},
+        update: [func1, func2]
+      }
+    }, {BLOG_STATUS_PUBLISHED: 1});
 
-    var myBlogApp = new MyBlogApp({urlRoot: '^/blog'});
-    ```
+  var myBlogApp = new MyBlogApp({urlRoot: '^/blog'});
+  ```
 
 ## 实例成员说明 ##
 应用的主要功能都靠定义实例成员实现, 实例成员分`保留成员`和`普通成员`. 应用在定义或者实例化时会对保留成员做一些预处理.
