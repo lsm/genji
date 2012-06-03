@@ -1,7 +1,6 @@
 var genji = require('../index');
 var assert = require('assert');
 var App = genji.App;
-var BaseHandler = genji.handler.BaseHandler;
 var timeout = 500;
 
 exports['test route#get'] = function() {
@@ -221,24 +220,15 @@ exports['test App result events'] = function () {
       return this;
     },
 
-    // result event listeners/handlers
-    results: {
-      login:function (err, loginResult) {
-        assert.eql(err, null);
-        assert.eql(loginResult, true);
-      },
-      signup: [function () {}, function () {}]
-    },
-
     routes:{
-     signup: {method: 'post', type:'json', url: '^/signup/([a-zA-Z]*)', handlerClass: BaseHandler},
+     signup: {method: 'post', type:'json', url: '^/signup/([a-zA-Z]*)'},
      login: {method:'post', url:'^/login'}
     }
   });
 
   var myapp = new MyLoginApp({serverUrl: 'http://rayplus.cc/'});
   assert.eql(myapp.serverUrl, 'http://rayplus.cc/');
-  assert.eql(myapp.urlPrefix, '^/myloginapp');
+  assert.eql(myapp.urlRoot, '^/myloginapp');
 
   myapp.onResult('login', function (err, loginResult) {
     assert.eql(err, null);
