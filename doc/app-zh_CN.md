@@ -57,6 +57,11 @@
         publish: {method: 'post', url: '^/myblogapp/publish/([a-zA-Z]*)', type: 'json'},
         update: {method: 'post', url: '/update/([a-zA-Z]*)', type: 'params'}
       },
+      // 结果事件侦听函数
+      results: {
+        publish: function(err, jsonObj) {},
+        update: [func1, func2]
+      },
       // 路由结果事件侦听函数
       routeResults: {
         publish: function(err, jsonObj) {},
@@ -95,18 +100,31 @@
       publish: {method: 'post', url: '^/myblogapp/publish/([a-zA-Z]*)', type: 'json'},
       // url如果不以'^'开头将自动添加前缀'urlRoot', 下面的url实际为: '^/blog/update/([a-zA-Z]*)'
       update: {method: 'post', url: '/update/([a-zA-Z]*)', type: 'params'}
-    };
+    },
     ```
 
-  - `routeResults`: 外部访问的结果事件侦听函数集. 同样是一个hash对象. 对象的key是事件名称. key对应的value是函数或者包含函数的数组.
+- `results`: 结果事件侦听函数集. 是一个hash对象. 对象的key是事件名称. key对应的value是函数或者包含函数的数组.
 
     ```javascript
-    routeResults = {
+    results : {
       publish: function(err, jsonObj) {
-
+        // this.app === myBlogApp
+        // 没有handler
       },
       update: [func1, func2]
-    };
+    },
+    ```
+
+  - `routeResults`: 路由结果事件侦听函数集. 同样是一个hash对象. 对象的key是事件名称. key对应的value是函数或者包含函数的数组.
+
+    ```javascript
+    routeResults : {
+      publish: function(err, jsonObj) {
+        // this.app === myBlogApp
+        // 通过 this.handler 使用handler对象
+      },
+      update: [func1, func2]
+    },
     ```
 
 ### 普通实例成员 ###
@@ -149,7 +167,9 @@
       });
       ```
 
+  `onResult`和定义应用时的`results`具有一样的功能.
   `onRouteResult`和定义应用时的`routeResults`具有一样的功能.
 
 ### 事件的触发 ###
 在任何实例或者侦听函数中都可以通过`this.emit`触发事件.
+路由事件触发后会同时触发普通事件, 反过来却不适用.
