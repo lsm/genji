@@ -19,7 +19,15 @@
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 
-0.5.0 (2012/05/30)
+0.5.1 (2012/06/??)
+---------
+- `view`
+  - script loader,
+  - change `addViewPath` to `setViewPath`
+  - add support for default context (e.g. var view = new View(engine, {context: {title: 'Title'}});)
+- `model` require field `xxx` or `yyy`
+
+0.5.0 (2012/06/05)
 ---------
 - external app loader
 - New `App` module
