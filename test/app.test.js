@@ -245,3 +245,87 @@ exports['test App result events'] = function () {
 
   genji.loadApp(myapp);
 };
+
+exports['test App#preHook'] = function () {
+
+  var MyApp = App('MyApp', {
+    testAppLevelPreHook:function (params) {
+      this.emit('testAppLevelPreHook', null, params.result);
+    },
+
+    testRouteLevelPreHook:function (result) {
+      this.emit('testRouteLevelPreHook', null, result);
+    },
+
+    routes: {
+      testAppLevelPreHook: {method: 'get', url: '^/prehook/app'},
+      testRouteLevelPreHook: {method: 'get', url: '^/prehook/route/([a-z_]*)'}
+    },
+
+    routeResults: {
+      testAppLevelPreHook:function (err, result) {
+        assert.eql(err, null);
+        assert.eql(result, 'app prehook result [app]');
+        this.handler.send('app prehook tested ok');
+      },
+
+      testRouteLevelPreHook:function(err, result) {
+        assert.eql(err, null);
+        assert.eql(result, 'app_route_result [app] [route]');
+        this.handler.send('route prehook tested ok');
+      }
+    }
+  });
+
+  var myApp = new MyApp;
+
+  // app level route prehook
+  myApp.routePreHook(function (handler, result) {
+    if (result) {
+      // this request comes from `testRouteLevelPreHook`
+      var self = this;
+      setTimeout(function () {
+        // async prehook
+        // you must put all your arguments in `self.next`, otherwise your app/route won't work.
+        self.next(handler, result + ' [app]');
+      }, 200);
+    } else {
+      // this request comes from `testAppLevelPreHook`
+      handler.params = handler.params || {};
+      handler.params.result = 'app prehook result' + ' [app]';
+      return true;
+    }
+  });
+
+  // prehook for specific route
+  myApp.routePreHook('testRouteLevelPreHook', function (handler, result) {
+    this.next(handler, result + ' [route]');
+  });
+  
+  genji.loadApp(myApp);
+
+  assert.response(genji.createServer(), {
+    url:'/prehook/app',
+    timeout:timeout,
+    method:'GET'
+  }, function (res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, 'app prehook tested ok');
+  });
+
+  assert.response(genji.createServer(), {
+    url:'/prehook/route/app_route_result',
+    timeout:timeout,
+    method:'GET'
+  }, function (res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, 'route prehook tested ok');
+  });
+
+  myApp.onResult('testAppLevelPreHook', function (err, result) {
+    assert.eql(err, null);
+    typeof result === 'number' && assert.eql(result, 10);
+  });
+  // prehooks should not be involved in direct calls
+  myApp.testAppLevelPreHook({result: 10});
+};
