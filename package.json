@@ -16,7 +16,8 @@
   },
   "devDependencies": {
     "expresso": "0.9.x",
-    "benchmark": "0.3.x"
+    "benchmark": "0.3.x",
+    "hogan": "1.0.5-dev"
   },
   "scripts": {
     "test": "expresso -I lib && expresso -I lib test/middleware/*"
