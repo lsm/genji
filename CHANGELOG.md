@@ -18,14 +18,20 @@
 - add `?md5sum` to url of resource file when render templates or registry partials
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+- `Model` add method `validate`
 
 0.5.1 (2012/06/??)
 ---------
-- `view`
-  - script loader,
+- `View`
+  - add script loader support (head.js)
   - change `addViewPath` to `setViewPath`
   - add support for default context (e.g. var view = new View(engine, {context: {title: 'Title'}});)
-- `model` require field `xxx` or `yyy`
+  - merge `BaseView` with `ViewWithCompiler`
+  - basic `layout` manager
+- `Model`
+  - `model.attr([key1, key2])` get group of attributes as hash object
+- `App` support application level and route level `routePreHook`
+- Introduce `Role`
 
 0.5.0 (2012/06/05)
 ---------
