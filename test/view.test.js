@@ -28,5 +28,5 @@ exports['test view'] = function () {
   view.renderFile(tplFile, {copyright: 'www.example.com'}, function (err, htmlOfFile) {
     assert.eql(htmlOfFile, html);
   });
-}
+};
 
