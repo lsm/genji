@@ -1,9 +1,5 @@
 0.5.x
 ---------
-- `Model`
-    - New field type for `Model`: `array`, `regexp`, `date`,
-    - Default field value
-    - Bi-direction aliased field name
 - Add `vhost` support
 - `App` error handler
 - Refactor `router`
@@ -18,9 +14,16 @@
 - add `?md5sum` to url of resource file when render templates or registry partials
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
-- `Model` add method `validate`
 
-0.5.1 (2012/06/??)
+
+0.5.2 (2012/06/16)
+---------
+- `Model`
+  - add method `validate`
+  - New field type for `Model`: `array`, `regexp`, `date`,
+  - Default field value
+
+0.5.1 (2012/06/16)
 ---------
 - `View`
   - add script loader support (head.js)
@@ -30,6 +33,7 @@
   - basic `layout` manager
 - `Model`
   - `model.attr([key1, key2])` get group of attributes as hash object
+  - Bi-direction aliased field name
 - `App` support application level and route level `routePreHook`
 - Introduce `Role`
 
