@@ -142,7 +142,14 @@
       this.emit('publish', err, {blogType: matched1, jsonObj: json});
     },
     ```
+    当调用实例函数的最后一个参数是函数时, 这个函数将会替代`this.emit`:
 
+    ```javascript
+    myBlogApp.publish('blog type', json, rawData, function(err, resultObj) {
+
+    });
+    ```
+    由于不触发事件, `callback`只会在当前上下文运行.
 
 ## 事件 ##
 

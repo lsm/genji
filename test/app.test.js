@@ -243,6 +243,13 @@ exports['test App result events'] = function () {
   });
   myapp.signup('premium', {username: 'user', password: 'pass'});
 
+  myapp.signup('manager', {username: 'm1', password: 'pass1'}, function (err, userInfo) {
+    assert.eql(err, null);
+    assert.eql(userInfo.accountType, 'manager');
+    assert.eql(userInfo.username, 'm1');
+    assert.eql(userInfo.password, 'pass1');
+  });
+
   genji.loadApp(myapp);
 };
 
