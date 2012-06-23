@@ -1,7 +1,7 @@
 // benchmark scripts copied from Class.js (TJ Holowaychuk)
 var genji = require('../lib/genji').short();
 var Base = genji.Base;
-var sys = require('sys'),
+var util = require('util'),
   times = 500000;
 
 var Benchmark = require('benchmark');
@@ -34,7 +34,7 @@ suite.add('prototype', function() {
     var Admin = function(name) {
       User.call(this, name);
     };
-    sys.inherits(Admin, User);
+    util.inherits(Admin, User);
   })
   .add('genji#base', function() {
     var User = Base(function(name) {
@@ -88,7 +88,7 @@ UserSys.prototype.auth = function(username, password) {
 var AdminSys = function(name) {
   UserSys.call(this, name);
 };
-sys.inherits(AdminSys, UserSys);
+util.inherits(AdminSys, UserSys);
 // genji#base
 var UserBase = Base(function(name) {
   if (name && typeof name === 'string') {
