@@ -14,14 +14,25 @@
 - add `?md5sum` to url of resource file when render templates or registry partials
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+- `defer().next(otherDeferrable)`
+- `defer().callback(cb)`
 
-
-0.5.2 (2012/06/16)
+0.5.3 (2012/07/xx)
 ---------
 - `Model`
   - add method `validate`
-  - New field type for `Model`: `array`, `regexp`, `date`,
   - Default field value
+  - allow remove attributes
+
+0.5.2 (2012/07/05)
+---------
+- `Model`
+  - new field type and type validator: `array`, `regexp`, `date`, `bool`
+  - dynamic fields validation status
+  - instance function accepts callback function as last argument,
+    call `this.emit()` as usual will call the callback and event won't be emitted.
+  - use `toDoc()` instead of `toData('alias')`
+  - bug fix for type validation
 
 0.5.1 (2012/06/16)
 ---------
