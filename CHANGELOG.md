@@ -33,6 +33,8 @@
     call `this.emit()` as usual will call the callback and event won't be emitted.
   - use `toDoc()` instead of `toData('alias')`
   - bug fix for type validation
+- `App`
+  - bug fix for instance function not return result
 
 0.5.1 (2012/06/16)
 ---------
