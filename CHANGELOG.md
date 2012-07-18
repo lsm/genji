@@ -28,7 +28,7 @@
 - `View`
   - default context for specific file or partial
 
-0.5.2.1 (2012/07/18)
+0.5.2-1 (2012/07/18)
 ---------
 - Bug fix for `App`
 
