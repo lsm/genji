@@ -17,12 +17,20 @@
 - `defer().next(otherDeferrable)`
 - `defer().callback(cb)`
 
+
+
 0.5.3 (2012/07/xx)
 ---------
 - `Model`
   - add method `validate`
   - Default field value
   - allow remove attributes
+- `View`
+  - default context for specific file or partial
+
+0.5.2.1 (2012/07/18)
+---------
+- Bug fix for `App`
 
 0.5.2 (2012/07/05)
 ---------
