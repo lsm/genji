@@ -28,6 +28,10 @@
 - `View`
   - default context for specific file or partial
 
+0.5.2-2 (2012/07/21)
+---------
+- Bug fix for `Model`
+
 0.5.2-1 (2012/07/18)
 ---------
 - Bug fix for `App`
