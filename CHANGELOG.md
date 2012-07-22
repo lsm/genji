@@ -25,6 +25,7 @@
   - add method `validate`
   - Default field value
   - allow remove attributes
+  - `toData` and `toDoc` accept array as argument
 - `View`
   - default context for specific file or partial
 
