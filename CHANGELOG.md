@@ -26,8 +26,15 @@
   - Default field value
   - allow remove attributes
   - `toData` and `toDoc` accept array as argument
+  - `Model.isValid` validate single field without instantiation
 - `View`
   - default context for specific file or partial
+  - reload partials
+- `App`
+  - shortcuts for `routeResults`
+  - `routePreHook` allow bulk set prehook for routes
+- `handler`
+  `sendAsFile` detect Buffer when calculate data length
 
 0.5.2-2 (2012/07/21)
 ---------
