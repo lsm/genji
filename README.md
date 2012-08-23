@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/zir/genji.png)](http://travis-ci.org/zir/genji)
 A simple micro-framework for nodejs.
 
 ## Features
