@@ -1,4 +1,4 @@
-0.3.x (?)
+0.5.x
 ---------
 - Add `vhost` support
 - `App` error handler
@@ -11,17 +11,74 @@
 - allow later-binding middleware/router
 - documentation of inline code
 - manual
+- add `?md5sum` to url of resource file when render templates or registry partials
+- `enderjs` support
+- add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
+- `defer().next(otherDeferrable)`
+- `defer().callback(cb)`
 
 
-0.3.4 (2012/05/??)
+
+0.5.3 (2012/07/xx)
+---------
+- `Model`
+  - add method `validate`
+  - Default field value
+  - allow remove attributes
+  - `toData` and `toDoc` accept array as argument
+  - `Model.isValid` validate single field without instantiation
+- `View`
+  - default context for specific file or partial
+  - reload partials
+- `App`
+  - shortcuts for `routeResults`
+  - `routePreHook` allow bulk set prehook for routes
+- `handler`
+  `sendAsFile` detect Buffer when calculate data length
+
+0.5.2-2 (2012/07/21)
+---------
+- Bug fix for `Model`
+
+0.5.2-1 (2012/07/18)
+---------
+- Bug fix for `App`
+
+0.5.2 (2012/07/05)
+---------
+- `Model`
+  - new field type and type validator: `array`, `regexp`, `date`, `bool`
+  - dynamic fields validation status
+  - instance function accepts callback function as last argument,
+    call `this.emit()` as usual will call the callback and event won't be emitted.
+  - use `toDoc()` instead of `toData('alias')`
+  - bug fix for type validation
+- `App`
+  - bug fix for instance function not return result
+
+0.5.1 (2012/06/16)
+---------
+- `View`
+  - add script loader support (head.js)
+  - change `addViewPath` to `setViewPath`
+  - add support for default context (e.g. var view = new View(engine, {context: {title: 'Title'}});)
+  - merge `BaseView` with `ViewWithCompiler`
+  - basic `layout` manager
+- `Model`
+  - `model.attr([key1, key2])` get group of attributes as hash object
+  - Bi-direction aliased field name
+- `App` support application level and route level `routePreHook`
+- Introduce `Role`
+
+0.5.0 (2012/06/05)
 ---------
 - external app loader
-- `enderjs` support
+- New `App` module
+- `genji.app` renamed to `genji.route`
 
 0.3.3 (2012/05/19)
 ---------
 - expose submodules by default, `genji.short` and `genji.require` are deprecated
-- add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 - rewrite `lib/model.js`, added test
 - support multi-root path for view template (with namespace)
 - add `Model#changed`, return object which contains changed fields/values after initialized.

@@ -16,7 +16,6 @@ exports['test model definition'] = function () {
         }
       }
     },
-    id: '_id',
     aliases: {id: '_id'},
     setTitle:function (title) {
       return title.toUpperCase();
@@ -73,7 +72,7 @@ exports['test model definition'] = function () {
   assert.eql(postExtended.attr('content'), 'another valid post content');
   assert.eql(postExtended.changed(), {'content': 'another valid post content'});
 
-  var postExtendedDoc = postExtended.toData('alias');
+  var postExtendedDoc = postExtended.toDoc();
   assert.eql(postExtendedDoc._id, 'postId_20');
   assert.eql(postExtendedDoc.title, 'ANOTHER POST');
   assert.eql(postExtendedDoc.postAuthor, 'post author');
@@ -84,4 +83,12 @@ exports['test model definition'] = function () {
     author: 'post author'
   });
   assert.eql(postExtendedInvalid.isValid(), false);
+
+  var postExtended2 = new PostExtended({
+    _id: 20,
+    title: 'another post',
+    content: 'is a valid post content',
+    postAuthor: 'post author'
+  });
+  assert.eql(postExtended2.attr('author'), 'post author');
 };
