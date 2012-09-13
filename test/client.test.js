@@ -3,16 +3,16 @@ var assert = require('assert');
 var Client = genji.client.Client;
 
 exports['test client#get/post'] = function() {
-  var app = genji.app();
+  var route = genji.route();
   var data = 'Hello world!';
-  app.get('^/helloworld/').fn(function(handler) {
+  route.get('^/helloworld/').fn(function(handler) {
     var params = handler.params;
     assert.eql(params.a, '1');
     assert.eql(params.b, '2');
     handler.send(data);
   });
 
-  app.post('^/hellopost$').fn(function(handler) {
+  route.post('^/hellopost$').fn(function(handler) {
     handler.on('params', function(params) {
       assert.eql(params.a, '1');
       assert.eql(params.b, '2');
@@ -20,7 +20,7 @@ exports['test client#get/post'] = function() {
     });
   });
 
-  app.put('^/putjson').fn(function(handler) {
+  route.put('^/putjson').fn(function(handler) {
     assert.eql(handler.params.q, 'query');
     handler.on('json', function(json) {
       assert.eql(json.a, 1);

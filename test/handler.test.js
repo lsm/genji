@@ -4,9 +4,9 @@ var assert = require('assert');
 var timeout = 500;
 
 exports['test header operations 1'] = function() {
-  var app = genji.app();
+  var route = genji.route();
   var data = 'get: Hello world!';
-  var appRoute = app.get('^/header1$');
+  var appRoute = route.get('^/header1$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
@@ -33,9 +33,9 @@ exports['test header operations 1'] = function() {
 };
 
 exports['test header operations 2'] = function() {
-  var app = genji.app();
+  var route = genji.route();
   var data = 'get: Hello world!';
-  var appRoute = app.get('^/header2$');
+  var appRoute = route.get('^/header2$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.addHeader('key2', 'value2');
@@ -57,8 +57,8 @@ exports['test header operations 2'] = function() {
 };
 
 exports['test error and redirect'] = function() {
-  var app = genji.app();
-  var appRoute = app.get('^/error$');
+  var route = genji.route();
+  var appRoute = route.get('^/error$');
   appRoute.fn(function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
@@ -76,7 +76,7 @@ exports['test error and redirect'] = function() {
         assert.isUndefined(res.headers.key2);
       });
 
-  app.get('^/301$', function(handler) {
+  route.get('^/301$', function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
     handler.redirect('/to301', true);
@@ -93,7 +93,7 @@ exports['test error and redirect'] = function() {
         assert.isUndefined(res.headers.key2);
       });
 
-  app.get('^/302$', function(handler) {
+  route.get('^/302$', function(handler) {
     handler.addHeader('key1', 'value1');
     handler.setHeader('key2', 'value2');
     handler.redirect('/to302', false);
@@ -112,9 +112,9 @@ exports['test error and redirect'] = function() {
 };
 
 exports['test send, sendJSON, sendHTML'] = function() {
-  var app = genji.app();
+  var route = genji.route();
 
-  app.get('^/testsend$').fn(function(handler) {
+  route.get('^/testsend$').fn(function(handler) {
     handler.send('body', 200, {key1: 'headerValue'}, 'utf8');
   });
   assert.response(genji.createServer(), {
@@ -127,7 +127,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
     assert.eql(res.headers.key1, 'headerValue');
   });
 
-  app.get('^/testsendJSON$').fn(function(handler) {
+  route.get('^/testsendJSON$').fn(function(handler) {
     handler.setHeader('key2', 'json');
     handler.sendJSON({data: "body"});
   });
@@ -143,7 +143,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
     assert.eql(res.headers['content-type'], 'application/json; charset=utf-8');
   });
 
-  app.get('^/testsendHTML$').fn(function(handler) {
+  route.get('^/testsendHTML$').fn(function(handler) {
     handler.setHeader('key2', 'html');
     handler.sendHTML('<html></html>');
   });
@@ -159,7 +159,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
   });
 
   var jsonStr = JSON.stringify({key: "value"});
-  app.post('^/receiveJSON$').fn(function(handler) {
+  route.post('^/receiveJSON$').fn(function(handler) {
     handler.on('json', function(json, data, error) {
       if (!error) {
         assert.eql(json.key, 'value');
@@ -184,7 +184,7 @@ exports['test send, sendJSON, sendHTML'] = function() {
 
 exports['test cookie'] = function() {
   var Cookie = genji.cookie;
-  var app = genji.app();
+  var route = genji.route();
   var cookieOptions = {
     expires: new Date(10000),
     path: '/cookie',
@@ -192,7 +192,7 @@ exports['test cookie'] = function() {
     secure: true,
     httponly: true
   };
-  app.get('^/cookie$').fn(function(handler) {
+  route.get('^/cookie$').fn(function(handler) {
     var clientCookieValue = handler.getCookie('client_cookie');
     assert.eql(clientCookieValue, 'client_value');
     assert.eql(Cookie.checkLength(handler.headers.cookie), true);
@@ -221,10 +221,10 @@ exports['test cookie'] = function() {
 };
 
 exports['test sending file or file like content'] = function() {
-  var app = genji.app();
+  var route = genji.route();
   var crypto = genji.crypto;
 
-  app.get('^/testStaticFile.js$').fn(function(handler) {
+  route.get('^/testStaticFile.js$').fn(function(handler) {
     handler.staticFile(__filename);
   });
   assert.response(genji.createServer(), {
@@ -241,7 +241,7 @@ exports['test sending file or file like content'] = function() {
   });
 
   var fs = require('fs');
-  app.get('^/testSendAsFile.js$').fn(function(handler) {
+  route.get('^/testSendAsFile.js$').fn(function(handler) {
     fs.readFile(__filename, 'utf8', function(err, data) {
       if (!err) {
         handler.sendAsFile(data, {ext: '.js'});
