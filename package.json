@@ -1,7 +1,7 @@
 {
   "name": "genji",
   "description": "A simple micro-framework for nodejs.",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "keywords": ["middleware", "router", "async", "model", "view", "micro"],
   "homepage": "http://github.com/zir/genji",
   "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
