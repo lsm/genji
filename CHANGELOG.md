@@ -16,11 +16,6 @@
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 - `defer().next(otherDeferrable)`
 - `defer().callback(cb)`
-
-
-
-0.5.3 (2012/07/xx)
----------
 - `Model`
   - add method `validate`
   - Default field value
@@ -35,6 +30,17 @@
   - `routePreHook` allow bulk set prehook for routes
 - `handler`
   `sendAsFile` detect Buffer when calculate data length
+
+0.5.4 (2012/09/14)
+---------
+ - set default context for layout
+ - batch attache prehook to routes
+ - allow set cookie during resirection
+ - default options for `Role`
+
+0.5.3 (2012/08/17)
+---------
+- node 0.8.x compatibility
 
 0.5.2-2 (2012/07/21)
 ---------
