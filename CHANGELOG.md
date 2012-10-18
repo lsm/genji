@@ -14,8 +14,7 @@
 - add `?md5sum` to url of resource file when render templates or registry partials
 - `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
-- `defer().next(otherDeferrable)`
-- `defer().callback(cb)`
+
 - `Model`
   - add method `validate`
   - Default field value
@@ -24,18 +23,24 @@
   - `Model.isValid` validate single field without instantiation
 - `View`
   - default context for specific file or partial
-  - reload partials
+  - reload partials in uncached model
 - `App`
   - shortcuts for `routeResults`
   - `routePreHook` allow bulk set prehook for routes
 - `handler`
   `sendAsFile` detect Buffer when calculate data length
 
+0.5.5 (2012/10/??)
+---------
+- `control`
+  - `defer().defer(otherDeferrable)`
+  - `defer().callback(cb)`
+
 0.5.4 (2012/09/14)
 ---------
  - set default context for layout
  - batch attache prehook to routes
- - allow set cookie during resirection
+ - allow set cookie during redirection
  - default options for `Role`
 
 0.5.3 (2012/08/17)

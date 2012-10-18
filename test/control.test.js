@@ -151,6 +151,11 @@ module.exports = {
   'test control#defer': function() {
     var emitter = new EventEmitter;
     var readFile = defer(fs.readFile, fs, emitter), finished = 0;
+    var otherFn = defer(function (delay, callback) {
+      setTimeout(function () {
+        callback(null, 'fromOtherFn');
+      }, delay);
+    });
     fs.readFile(__filename, function(err, data1) {
       if (err) throw err;
       emitter.on('done', function() {
@@ -158,24 +163,41 @@ module.exports = {
         finished = 2;
       });
       readFile(__filename)
-          .then(function(data2) {
-            assert.eql(data1, data2);
-          })
-          .then(function(data2) {
-            assert.eql(data1, data2);
-          })
-          .and(function(defer, data2) {
-            assert.eql(data1, data2);
-            defer.next(10);
-          })
-          .and(function(defer, data3) {
-            assert.eql(data3, 10);
-            return finished = 1;
-          })
-          .done(function() {
-            // done is called after second `and`
-            assert.eql(finished, 2);
-          });
+        .then(function (data2) {
+          assert.eql(data1, data2);
+        })
+        .then(function (data2) {
+          assert.eql(data1, data2);
+        })
+        .and(function (defer, data2) {
+          assert.eql(data1, data2);
+          defer.next(10);
+        })
+        .and(function (defer, data3) {
+          assert.eql(data3, 10);
+          return true;
+        })
+        .and(function (defer, data4) {
+          otherFn(1000).then(function (d) {
+            assert.eql(data4, 10);
+          }).defer(defer);
+        })
+        .and(function (defer, data5) {
+          otherFn(1000).and(function (d, d5) {
+            assert.eql(d5, 'fromOtherFn');
+            assert.eql(data5, 'fromOtherFn');
+            d.next(30);
+          }).callback(function (err, data6) {
+              assert.eql(data6, 30);
+              finished = 1;
+              err ? defer.error(err) : defer.next(data6);
+            });
+        })
+        .done(function () {
+          // done is called after second `and` and after the `done` event
+          assert.eql(finished, 2);
+        });
+
       emitter.on('fail', function(err) {
         assert.eql('ENOENT', err.code);
       });
