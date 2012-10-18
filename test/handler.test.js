@@ -89,8 +89,8 @@ exports['test error and redirect'] = function() {
         assert.equal(res.body, '');
         assert.equal(res.statusCode, 301);
         assert.equal(res.headers.location, '/to301');
-        assert.isUndefined(res.headers.key1);
-        assert.isUndefined(res.headers.key2);
+        assert.equal(res.headers.key1, 'value1');
+        assert.equal(res.headers.key2, 'value2');
       });
 
   route.get('^/302$', function(handler) {
@@ -106,8 +106,8 @@ exports['test error and redirect'] = function() {
         assert.equal(res.body, '');
         assert.equal(res.statusCode, 302);
         assert.equal(res.headers.location, '/to302');
-        assert.isUndefined(res.headers.key1);
-        assert.isUndefined(res.headers.key2);
+        assert.equal(res.headers.key1, 'value1');
+        assert.equal(res.headers.key2, 'value2');
       });
 };
 
