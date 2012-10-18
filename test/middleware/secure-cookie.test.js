@@ -20,8 +20,7 @@ var testCookie = {
           if (user.expires && expires - new Date(user.expires) != 0) {
             throw new Error('expires not match');
           }
-          var data = user.data ? JSON.parse(user.data) : {};
-          if (data.a != 1) {
+          if (!user.data || user.data.a !== 1) {
             throw new Error('data not match');
           }
         } else {
