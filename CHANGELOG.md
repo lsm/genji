@@ -30,7 +30,11 @@
 - `handler`
   `sendAsFile` detect Buffer when calculate data length
 
-0.5.5 (2012/10/??)
+0.5.6 (2012/10/31)
+---------
+- `crypto#decipher` handle exception 'TypeError: DecipherFinal fail' when decipher string with different key ciphered
+
+0.5.5 (2012/10/26)
 ---------
 - `control`
   - `defer().defer(otherDeferrable)`
