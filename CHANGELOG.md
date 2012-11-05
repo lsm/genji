@@ -30,6 +30,9 @@
 - `handler`
   `sendAsFile` detect Buffer when calculate data length
 
+0.5.7 (2012/11/??)
+- `util#expose` export sub modules
+
 0.5.6 (2012/10/31)
 ---------
 - `crypto#decipher` handle exception 'TypeError: DecipherFinal fail' when decipher string with different key ciphered
