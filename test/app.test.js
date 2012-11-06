@@ -253,7 +253,7 @@ exports['test App result events'] = function () {
   genji.loadApp(myapp);
 };
 
-exports['test App#preHook'] = function () {
+exports['test App#routePreHook'] = function () {
 
   var MyApp = App('MyApp', {
     testAppLevelPreHook:function (params) {
@@ -264,9 +264,19 @@ exports['test App#preHook'] = function () {
       this.emit('testRouteLevelPreHook', null, result);
     },
 
+    testBulkPreHook1: function (result) {
+      this.emit('testBulkPreHook1', null, result);
+    },
+
+    testBulkPreHook2: function (result) {
+      this.emit('testBulkPreHook2', null, result);
+    },
+
     routes: {
       testAppLevelPreHook: {method: 'get', url: '^/prehook/app'},
-      testRouteLevelPreHook: {method: 'get', url: '^/prehook/route/([a-z_]*)'}
+      testRouteLevelPreHook: {method: 'get', url: '^/prehook/route/([a-z_]*)'},
+      testBulkPreHook1: {method: 'get', url: '^/prehook/bulk/1/([a-z_]*)'},
+      testBulkPreHook2: {method: 'get', url: '^/prehook/bulk/2/([a-z_]*)'}
     },
 
     routeResults: {
@@ -280,6 +290,18 @@ exports['test App#preHook'] = function () {
         assert.eql(err, null);
         assert.eql(result, 'app_route_result [app] [route]');
         this.handler.send('route prehook tested ok');
+      },
+
+      testBulkPreHook1: function (err, result) {
+        assert.eql(err, null);
+        assert.eql(result, 'bulk_hook_one [app] [bulk]');
+        this.handler.send('route bulk prehook 1 tested ok');
+      },
+
+      testBulkPreHook2: function (err, result) {
+        assert.eql(err, null);
+        assert.eql(result, 'bulk_hook_two [app] [bulk]');
+        this.handler.send('route bulk prehook 2 tested ok');
       }
     }
   });
@@ -289,7 +311,7 @@ exports['test App#preHook'] = function () {
   // app level route prehook
   myApp.routePreHook(function (handler, result) {
     if (result) {
-      // this request comes from `testRouteLevelPreHook`
+      // this request comes from `testRouteLevelPreHook` or bulk prehook
       var self = this;
       setTimeout(function () {
         // async prehook
@@ -307,6 +329,11 @@ exports['test App#preHook'] = function () {
   // prehook for specific route
   myApp.routePreHook('testRouteLevelPreHook', function (handler, result) {
     this.next(handler, result + ' [route]');
+  });
+
+  // prehook for bulk of routes
+  myApp.routePreHook(['testBulkPreHook1', 'testBulkPreHook2'], function (handler, result) {
+    this.next(handler, result + ' [bulk]');
   });
   
   genji.loadApp(myApp);
@@ -327,6 +354,24 @@ exports['test App#preHook'] = function () {
   }, function (res) {
     assert.equal(res.statusCode, 200);
     assert.equal(res.body, 'route prehook tested ok');
+  });
+
+  assert.response(genji.createServer(), {
+    url: '/prehook/bulk/1/bulk_hook_one',
+    timeout: timeout,
+    method: 'GET'
+  }, function (res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, 'route bulk prehook 1 tested ok');
+  });
+
+  assert.response(genji.createServer(), {
+    url:'/prehook/bulk/2/bulk_hook_two',
+    timeout:timeout,
+    method:'GET'
+  }, function (res) {
+    assert.equal(res.statusCode, 200);
+    assert.equal(res.body, 'route bulk prehook 2 tested ok');
   });
 
   myApp.onResult('testAppLevelPreHook', function (err, result) {
