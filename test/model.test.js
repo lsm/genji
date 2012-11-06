@@ -77,6 +77,21 @@ exports['test model definition'] = function () {
   assert.eql(postExtendedDoc.title, 'ANOTHER POST');
   assert.eql(postExtendedDoc.postAuthor, 'post author');
 
+  // test `toDoc(keys)`
+  var selectedFieldsDoc = postExtended.toDoc(['id', 'title', 'author']);
+  assert.eql(selectedFieldsDoc._id, 'postId_20');
+  assert.eql(selectedFieldsDoc.title, 'ANOTHER POST');
+  assert.eql(selectedFieldsDoc.postAuthor, 'post author');
+  assert.eql(selectedFieldsDoc.hasOwnProperty('author'), false);
+  assert.eql(selectedFieldsDoc.hasOwnProperty('content'), false);
+
+  // test `toData(keys)`
+  var selectedFieldsData = postExtended.toData(['id', 'author', 'content']);
+  assert.eql(selectedFieldsData.id, 'postId_20');
+  assert.eql(selectedFieldsData.author, 'post author');
+  assert.eql(selectedFieldsData.content, 'another valid post content');
+  assert.eql(selectedFieldsData.hasOwnProperty('title'), false);
+
   var postExtendedInvalid = new PostExtended({
     id: 21,
     content: 'is a valid post content, but not a valid model',
