@@ -10,6 +10,7 @@ A simple micro-framework for nodejs.
 
 ## Quick start guide
 
+```javascript
     var genji = require('genji');
 
     // create an app instance
@@ -25,15 +26,15 @@ A simple micro-framework for nodejs.
 
     // start handling request
     server.listen(8888, '127.0.0.1');
-
+```
 
 ## Run test
-
+```bash
     npm install expresso -g # this will install expresso in global scope
     git clone git://github.com/zir/genji.git
     cd genji
     npm test
-
+```
 ## How To Contribute
 
 Feel free to open issue or send pull request

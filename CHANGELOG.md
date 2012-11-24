@@ -20,15 +20,21 @@
   - Default field value
   - allow remove attributes
   - `Model.isValid` validate single field without instantiation
+  - iterate over `fields` when calling `toDoc/toData`
 - `View`
   - default context for specific file or partial
   - reload partials in uncached model
 - `App`
   - shortcuts for `routeResults`
-- `handler`
-  `sendAsFile` detect Buffer when calculate data length
+
+0.5.8 (2012/11/24)
+---------
+- `handler#sendAsFile`
+  - allow customize response headers
+  - detect Buffer when calculate data length
 
 0.5.7 (2012/11/06)
+---------
 - `util#expose` export sub modules
 - remove `client.js`
 - `Model` `toData` and `toDoc` accept array as argument to indicate the fields you need to get.
