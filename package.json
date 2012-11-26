@@ -22,6 +22,6 @@
     "test": "expresso -I lib && expresso -I lib test/middleware/*"
   },
   "engines": {
-    "node": ">= 0.4.8"
+    "node": ">= 0.6.0"
   }
 }
