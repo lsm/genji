@@ -15,7 +15,6 @@
     "example": "./example"
   },
   "devDependencies": {
-    "expresso": "0.9.x",
     "hogan.js": "2.0.0"
   },
   "scripts": {
