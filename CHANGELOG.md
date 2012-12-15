@@ -11,21 +11,27 @@
 - allow later-binding middleware/router
 - documentation of inline code
 - manual
-- add `?md5sum` to url of resource file when render templates or registry partials
-- `enderjs` support
 - add `sendEvent` to `handler#Handler`, allow send middleware level event with handler instance.
 
 - `Model`
   - add method `validate`
   - Default field value
-  - allow remove attributes
-  - `Model.isValid` validate single field without instantiation
+  - remove attributes
+  - `Model.isValid` validate fields without instantiation
   - iterate over `fields` when calling `toDoc/toData`
+  - only return fields pre-defined in strict mode
 - `View`
   - default context for specific file or partial
   - reload partials in uncached model
+  - add `?md5sum` to url of resource file when render templates or registry partials
 - `App`
-  - shortcuts for `routeResults`
+  - idea of "app fontend" (e.g. http request router, event etc.)
+- avoid global shared object in `lib/genji.js`
+
+0.5.9 (2012/12/15)
+---------
+- `View#minify`
+- `json`, `html`, `text` shortcuts for `App#routeResults`
 
 0.5.8 (2012/11/24)
 ---------
