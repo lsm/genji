@@ -28,6 +28,11 @@
   - idea of "app fontend" (e.g. http request router, event etc.)
 - avoid global shared object in `lib/genji.js`
 
+0.5.10 (2012/12/15)
+---------
+- `App` clone routes object before use
+- `Handler` keep parsed and raw http request data
+
 0.5.9 (2012/12/15)
 ---------
 - `View#minify`
