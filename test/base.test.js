@@ -168,7 +168,7 @@ module.exports = {
     assert.equal(leadWorker.getRole(), 'worker');
   },
 
-  'test extending wrrong object': function() {
+  'test extending wrong object': function() {
     try {
       Class.include('');
       assert.equal(1, 2); // should not be called
