@@ -1,11 +1,7 @@
-0.5.x
+0.7.x
 ---------
 - Add `vhost` support
 - `App` error handler
-- Refactor `router`
-    - umount/remove routes
-    - alias routes
-    - overwrite routes which has same url pattern and http method
 - support more cache levels for `view` (cache renderered and compiled)
 - profile/settings
 - allow later-binding middleware/router
@@ -24,9 +20,20 @@
   - default context for specific file or partial
   - reload partials in uncached model
   - add `?md5sum` to url of resource file when render templates or registry partials
-- `App`
-  - idea of "app fontend" (e.g. http request router, event etc.)
-- avoid global shared object in `lib/genji.js`
+
+
+0.7.0 (2013/01/??)
+---------
+**NOTE** This version is not compatible with version 0.5.x
+
+- Documentation
+- Separate routing from App logic
+- Separate matching from router logic
+- Introduce `site` to avoid global shared object in `lib/genji.js`
+- Refactor `router`
+    - umount/remove routes
+    - alias routes
+    - overwrite routes which has same url pattern and http method
 
 0.5.10 (2012/12/15)
 ---------
