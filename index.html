@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Genji by zir</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Genji</h1>
+        <p>A simple micro-framework for nodejs.</p>
+
+        <p class="view"><a href="https://github.com/zir/genji">View the Project on GitHub <small>zir/genji</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/zir/genji/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/zir/genji/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/zir/genji">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <p><a href="http://travis-ci.org/zir/genji"><img src="https://secure.travis-ci.org/zir/genji.png" alt="build status"></a>
+A simple micro-framework for nodejs.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Simple and fast <strong>middleware</strong> layer and functionalities.</li>
+<li>Dynamic url <strong>routing</strong> with plugin support</li>
+<li>Http request/response <strong>handler</strong>
+</li>
+<li>
+<strong>Async</strong> operation helpers (e.g. promise, parallel)</li>
+<li>Javascript <strong>class</strong>
+</li>
+</ul><h2>Quick start guide</h2>
+
+<div class="highlight"><pre>    <span class="kd">var</span> <span class="nx">genji</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'genji'</span><span class="p">);</span>
+
+    <span class="c1">// create an app instance</span>
+    <span class="kd">var</span> <span class="nx">helloApp</span> <span class="o">=</span> <span class="nx">genji</span><span class="p">.</span><span class="nx">app</span><span class="p">();</span>
+
+    <span class="c1">// routing url to function</span>
+    <span class="nx">helloApp</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'^/$'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">handler</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">handler</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">'Hello world!'</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="c1">// create a http server</span>
+    <span class="kd">var</span> <span class="nx">server</span> <span class="o">=</span> <span class="nx">genji</span><span class="p">.</span><span class="nx">createServer</span><span class="p">();</span>
+
+    <span class="c1">// start handling request</span>
+    <span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8888</span><span class="p">,</span> <span class="s1">'127.0.0.1'</span><span class="p">);</span>
+</pre></div>
+
+<h2>Run test</h2>
+
+<div class="highlight"><pre>    npm install expresso -g <span class="c"># this will install expresso in global scope</span>
+    git clone git://github.com/zir/genji.git
+    <span class="nb">cd </span>genji
+    npm <span class="nb">test</span>
+</pre></div>
+
+<h2>How To Contribute</h2>
+
+<p>Feel free to open issue or send pull request</p>
+
+<h2>About GenJi</h2>
+
+<p>The word <code>Gen</code> <code>Ji</code> in Chinese means <code>root</code> <code>base</code> and
+it's also the name of the <a href="http://en.wikipedia.org/wiki/Genji#Era">Japanese era name</a> which was created to mark the beginning of a new 60-year cycle of the Chinese zodiac.
+So, basically it means something <strong>fundamental</strong> or <strong>beginning</strong> of something.
+The philosophy of this project follows this meaning.</p>
+
+<h2>License</h2>
+
+<p>(The MIT License)</p>
+
+<p>Copyright (c) 2010-2012 Senmiao Liu <a href="mailto:zir.echo@gmail.com">zir.echo@gmail.com</a></p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/zir">zir</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
