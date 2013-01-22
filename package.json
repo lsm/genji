@@ -1,8 +1,8 @@
 {
   "name": "genji",
-  "description": "Writing flexible, resuable event-driven applications.",
+  "description": "Writing reusable and flexible event-driven application.",
   "version": "0.7.0",
-  "keywords": ["event", "rest", "middleware", "router", "async", "model", "view", "micro"],
+  "keywords": ["genji", "event", "rest", "framework", "middleware", "router", "async", "mvc", "app", "api"],
   "homepage": "http://github.com/zir/genji",
   "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
   "repository" : {

@@ -1,62 +1,28 @@
-[![build status](https://secure.travis-ci.org/zir/genji.png)](http://travis-ci.org/zir/genji)
-A simple micro-framework for nodejs.
+# Genji [![build status](https://secure.travis-ci.org/zir/genji.png)](http://travis-ci.org/zir/genji)
+Writing reusable and flexible node.js application made easy. 
 
-## Features
-- Simple and fast **middleware** layer and functionalities.
-- Dynamic url **routing** with plugin support
-- Http request/response **handler**
-- **Async** operation helpers (e.g. promise, parallel)
-- Javascript **class**
+## Introduction
 
-## Quick start guide
+Genji is not a full stack web framework, instead it focus on making your code reusable and flexible enough to integrate with other components and frameworks.
+In development of modern web application, your service usually consumed by various kinds of clients with different manners. You may have web site for browser user, private apis for mobile clients, external http public apis for third-party developers and internal apis for queues or job workers.
+Genji helps you write reusable code by providing url router with hooks, routing agnostic application class, models fields validation and custom getter/setter method, views layout manager with namespaced template overriding. While it doesn't mean you have to stick with a particular development style or technology, genji is highly modular designed and customizable, so you can decide which part of the framework to use and how.
 
-```javascript
-    var genji = require('genji');
+- For docs and everything else see: [http://lsm.github.com/genji/documentation](http://lsm.github.com/genji/)
+- Ideas, bug report or general discussion are always welcome, feel free to open issue at: [https://github.com/lsm/genji/issues](https://github.com/lsm/genji/issues)
 
-    // create an app instance
-    var helloApp = genji.app();
+#### About "GenJi"
 
-    // routing url to function
-    helloApp.get('^/$', function(handler) {
-      handler.send('Hello world!');
-    });
-
-    // create a http server
-    var server = genji.createServer();
-
-    // start handling request
-    server.listen(8888, '127.0.0.1');
-```
-
-## Run test
-```bash
-    npm install expresso -g # this will install expresso in global scope
-    git clone git://github.com/zir/genji.git
-    cd genji
-    npm test
-```
-## How To Contribute
-
-Feel free to open issue or send pull request
-
-
-## About GenJi
 The word `Gen` `Ji` in Chinese means `root` `base` and
 it's also the name of the [Japanese era name](http://en.wikipedia.org/wiki/Genji#Era) which was created to mark the beginning of a new 60-year cycle of the Chinese zodiac.
 So, basically it means something **fundamental** or **beginning** of something.
 The philosophy of this project follows this meaning.
 
 
-
-
-
-
-
 ## License
 
 (The MIT License)
 
-Copyright (c) 2010-2012 Senmiao Liu <zir.echo@gmail.com>
+Copyright (c) 2010-2013 Senmiao Liu <zir.echo@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
