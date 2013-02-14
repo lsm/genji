@@ -94,6 +94,24 @@ myBlog.on('createPost', function(err, result){
 myBlog.createPost('I do not care about the result', 'Yes, there is no callback after me.');
 ```
 
+Sometime it makes sense to let other object to handle all the events. You can delegate all the events to other event emitter object by setting the `delegate` property to that object.
+
+```javascript
+
+var otherEmitter = new EventEmitter();
+
+myBlog.delegate = otherEmitter;
+
+otherEmitter.on('createPost', function(err, result) {
+  // handle the event
+});
+
+myBlog.on('createPost', function(err, result) {
+  // this will never be called as you allready delegate events to `otherEmitter`
+});
+
+```
+
 ## Extending
 
 It's easy to extend an existent app class, use the app class you want to extend just like you use `App`:
