@@ -179,7 +179,7 @@ Controller use app name and it's functions' name for mapping url automatically. 
  - `blog/ceate/post` to match `Blog` app's `createPost` function.
  - `awesomeblog/create/post` map to `AwesomeBlog`'s `createPost`.
  - `blog/camel/cased/function/name` to match `Blog`'s `camelCasedFunctionName` function.
-
+ - if the function name start with low dash `_` (e.g. `_privateFunc`), no url will map to this function.
 
 #### Error first callback style
 
