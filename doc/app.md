@@ -84,7 +84,7 @@ Sometime you don't care about if the post is saved or not. And as the app instan
 
 ```javascript
 // the event callback's argument is same as how you call the callback in the `createPost` function
-myBlog.on('createPost', function(err, result){
+myBlog.on('createPost', function(err, result) {
   // handle the event  
 });
 
@@ -174,7 +174,7 @@ You can always use `this` refer to the instance of app inside of instance functi
 
 #### Naming and url mapping
 
-Controller use app name and it's functions' name for mapping url automatically. For example:
+Controller use `name` property of app and it's functions' name for mapping url automatically. For example:
 
  - `blog/ceate/post` to match `Blog` app's `createPost` function.
  - `awesomeblog/create/post` map to `AwesomeBlog`'s `createPost`.
@@ -183,7 +183,7 @@ Controller use app name and it's functions' name for mapping url automatically. 
 
 #### Error first callback style
 
-We follow the native node.js api's callback, which put the error object at the first argument of a callback function. It's true for the event listening function as well.
+We follow the native node.js api's callback style, which put the error object at the first argument of a callback function. It's true for the event listening function as well.
 
 #### Other reserved properties
 
