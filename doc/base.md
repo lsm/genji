@@ -1,0 +1,47 @@
+Base
+====
+
+The `base` module exports two classes
+  - `Klass` is a lightweight javascript OO implementation. It only gives you a way to inherit class and nothig more.
+  - `Base` is a feature rich javascript OO implementation. It supports mixin for instance/static property.
+
+## Klass
+
+  - instance property will be overridden during subclassing
+  - no `super` method in instance method
+  - `instanceof` operator works, but `Klass` itself is not parent class of any subclass defined
+  - the root super class's constructor cannot be overridden and will always be called during initialization
+
+### Klass(SuperClass:Function, module:Object)
+
+ - `SuperClass` is constructor function of your parent class
+ - `module` is an object of instance properties which you want to override or add to the subclass
+ - returns `Subclass` which you can continue to subclass by calling `Subclass(module:Object)`
+ - the initial SuperClass constructor function (root super class) will always be called and cannot be overridden during subclassing
+
+### Example
+
+```javascript
+
+  var Person = Klass(function(name){
+    this.name = name;
+  }, {
+    getName: function(){
+      return this.name;
+    }
+  });
+
+  var Worker = Person({
+    work: function(task) {
+      return this.getName() + ' start working on ' + task;
+    }
+  });
+
+  var steve = new Worker('Steve');
+
+  var result = steve.work('writing report');
+
+  // 'Steve start working on writing report' true true
+  console.log(result, worker instanceof Worker, worker instanceof Person);
+
+```
