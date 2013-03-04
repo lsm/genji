@@ -1,5 +1,6 @@
 var genji = require('../index');
 var Base = genji.Base;
+var Klass = genji.Klass;
 var Class, ClassPlus, ClassPlusPlus, Class4
     , klass, klassPlus, klassPlusPlus, klass4;
 var assert = require('assert');
@@ -60,7 +61,7 @@ function setup() {
 }
 
 module.exports = {
-  'test inherits': function() {
+  'Base: test inherits': function() {
     setup();
     assert.equal(klass.constructor, Class);
     assert.equal(klass instanceof Class, true);
@@ -75,7 +76,7 @@ module.exports = {
     assert.isUndefined(klassPlus.getName);
   },
 
-  'test constructor': function() {
+  'test Base constructor': function() {
     assert.equal(klass.name, 'class');
     assert.equal(klassPlus.age, 18);
     assert.equal(klassPlus.name, 'classPlus1');
@@ -87,7 +88,7 @@ module.exports = {
     assert.equal(klassPlusPlus.getAge(), 26);
   },
 
-  'test mixin - extend': function() {
+  'Base: test mixin - extend': function() {
     ClassPlus.extend({
           hello: function() {
             return 'hello';
@@ -125,7 +126,7 @@ module.exports = {
     assert.equal(ClassPlus.setEmail, undefined);
   },
 
-  'test convert module to class': function() {
+  'Base: test convert module to class': function() {
     var Engine = Base({
       init: function(name) {
         this.name = name;
@@ -140,16 +141,16 @@ module.exports = {
     assert.equal(engine.start(), 'engine e90 started');
   },
 
-  'test extend class like module': function() {
+  'Base: test extend class like module': function() {
     var Person = function(name) {
       this.name = name;
-    }
+    };
     var Worker = function() {
       this.role = 'worker';
-    }
+    };
     Worker.prototype.work = function() {
       return this.role + ' can work';
-    }
+    };
 
     var WorkerClass = Base(Person, Worker);
     var worker = new WorkerClass('john');
@@ -159,21 +160,49 @@ module.exports = {
 
     var Leader = function() {
       this.role = 'leader';
-    }
+    };
     Leader.prototype.getRole = function() {
       return this.role;
-    }
+    };
     WorkerClass.include(Leader); // `Leader` will be treated as a module
     var leadWorker = new WorkerClass('tom');
     assert.equal(leadWorker.getRole(), 'worker');
   },
 
-  'test extending wrong object': function() {
+  'Base: test extending wrong object': function() {
     try {
       Class.include('');
       assert.equal(1, 2); // should not be called
     } catch (e) {
       assert.equal(e.message, 'Type not accepted');
     }
+  },
+
+  'Klass: test inherits': function () {
+    var Class = Klass(function(name) {
+      this.name = name;
+    }, {
+      getName: function () {
+        return this.name;
+      }
+    });
+
+    var Subclass = Class({
+      getName: function () {
+        return 'Subclass: ' + this.name;
+      }
+    });
+
+    var cls = new Class('john');
+    var subclass = new Subclass('mike');
+
+    assert.equal(false, cls instanceof Klass);
+    assert.equal(true, cls instanceof Class);
+    assert.equal('john', cls.getName());
+
+    assert.equal(false, subclass instanceof Klass);
+    assert.equal(true, subclass instanceof Class);
+    assert.equal(true, subclass instanceof Subclass);
+    assert.equal('Subclass: mike', subclass.getName());
   }
-}
+};
