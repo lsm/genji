@@ -16,12 +16,15 @@ The `base` module exports two classes
 
  - `SuperClass` is constructor function of your parent class
  - `module` is an object of instance properties which you want to override or add to the subclass
+    - `init` is a reserved property in module object. If it's a function it will be called during initialization after SuperClass constructor function has been called. The `init` defined in parent class will be overridden by subclass just like normal property.
  - returns `Subclass` which you can continue to subclass by calling `Subclass(module:Object)`
  - the initial SuperClass constructor function (root super class) will always be called and cannot be overridden during subclassing
 
 ### Example
 
 ```javascript
+
+  var Klass = require('genji').Klass;
 
   var Person = Klass(function(name){
     this.name = name;
@@ -32,6 +35,10 @@ The `base` module exports two classes
   });
 
   var Worker = Person({
+    init: function(name) {
+      this.name += ' Worker';
+    },
+
     work: function(task) {
       return this.getName() + ' start working on ' + task;
     }
@@ -41,7 +48,7 @@ The `base` module exports two classes
 
   var result = steve.work('writing report');
 
-  // 'Steve start working on writing report' true true
+  // 'Steve Worker start working on writing report' true true
   console.log(result, worker instanceof Worker, worker instanceof Person);
 
 ```
