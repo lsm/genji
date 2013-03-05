@@ -193,12 +193,22 @@ module.exports = {
       }
     });
 
+    var Class2 = Class(function (name) {
+      this.name = 'Class2:' + name;
+    });
+
     var cls = new Class('john');
+    var cls2 = new Class2('john');
     var subclass = new Subclass('mike');
 
     assert.equal(false, cls instanceof Klass);
     assert.equal(true, cls instanceof Class);
     assert.equal('john', cls.getName());
+
+    assert.equal(false, cls2 instanceof Klass);
+    assert.equal(true, cls2 instanceof Class);
+    assert.equal(true, cls2 instanceof Class2);
+    assert.equal('Class2:john', cls2.getName());
 
     assert.equal(false, subclass instanceof Klass);
     assert.equal(true, subclass instanceof Class);
