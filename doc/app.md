@@ -1,7 +1,11 @@
-genji.App
+App
 =========
 
-An app is a `class` where you define and implement your core business logic. App can have instance property and static property. Properties can be overrode by subclassing existent app.
+An app is a `class` where you define and implement your core business logic. App it self is an event emitter. Properties can be overridden by subclassing existent app. `App` is exported by:
+
+```
+  var App = require('genji').App;
+```
 
 ## Define an app
 
@@ -9,8 +13,8 @@ You can define an `App` like this:
 
 ```javascript
 
-  var BlogApp = App(/* instance property */ i, /* static property */ s);
- 
+  var BlogApp = App(/* instance properties */ properties);
+
 ```
 Let's go through a simple example to see how we can define an app.
 
@@ -23,7 +27,7 @@ var BlogApp = App({// instance properties object
      * name of your app
      */
     name: 'Blog',
-    
+
     /**
      * Constructor function
      */
@@ -37,22 +41,11 @@ var BlogApp = App({// instance properties object
     createPost: function(title, content, callback) {
       // Make the post object
       var post = {title: title, content: content, created: new Date()};
-      // call static function
-      post.weekday = BlogApp.weekdayOfDate(post.created);
       // save to the db
       this.db.save(post).then(function(result){
         // error first callback style
         callback(null, result);
       });
-    }
-  }, {// the static properties object
-
-    /**
-     * Convert a date object to a weekday string
-     */
-    weekdayOfDate: function(date) {
-      // your code here
-      // return weekday;
     }
   });
 
@@ -71,7 +64,7 @@ var myBlog =  new BlogApp(db);
 // create a blog post in db
 myBlog.createPost('My awesome post', 'Some contents', function(err, result) {
   // handle error and result here
-  // you can still emit the event
+  // you can emit the event manually
   this.emit(err, result);
 });
 
@@ -79,13 +72,13 @@ myBlog.createPost('My awesome post', 'Some contents', function(err, result) {
 
 #### Event style
 
-Sometime you don't care about if the post is saved or not. And as the app instance itself is **event emitter**, you can listen the event in other part of your code. Actually, if the last arguments is not a function, genji will generate one for you to do the emit job.
+Sometime you don't care about if the post is saved or not. And as the app instance itself is **event emitter**, you can listen the event in other part of your code. Actually, if the last arguments is not a callback function when you call instance function, genji will generate one for you to do the emit job.
 
 
 ```javascript
 // the event callback's argument is same as how you call the callback in the `createPost` function
 myBlog.on('createPost', function(err, result) {
-  // handle the event  
+  // handle the event
 });
 
 //...
@@ -119,7 +112,7 @@ It's easy to extend an existent app class, use the app class you want to extend 
 ```javascript
 
 var AwesomeBlogApp = BlogApp({
-    
+
     name: 'AwesomeBlog',
 
     createPost: function(title, content, callback) {
@@ -150,8 +143,6 @@ createPost: function(context, title, content, callback) {
       user: context.user,
       title: title, content: content, created: new Date()
     };
-    // call static function
-    post.weekday = BlogApp.weekdayOfDate(post.created);
     // save to the db
     this.db.save(post).then(function(result){
       // error first callback style
@@ -185,10 +176,28 @@ Controller use `name` property of app and it's functions' name for mapping url a
 
 We follow the native node.js api's callback style, which put the error object at the first argument of a callback function. It's true for the event listening function as well.
 
-#### Other reserved properties
+## Properties and methods
 
-- `init` the constructor function, it will be called once and only once at the time of initilization, you can not call it manually.
+- `name` is the name of your app in *string*, name should be upper camel case.
 
-- `emitCallback` an enum value ('after', 'before', false) which tells genji automatically emit event `after`/`before` callback is called when you handle result inline. Default is boolean `false` which means not to emit.
+- `init` is the constructor *function*, it will be called once and only once at the time of initialization, you should not call it manually.
 
+- `emitInlineCallback` is an enum value ('after', 'before', false) which tells genji automatically emit event `after`/`before` callback is called when you handle result inline. Default is boolean `false` which means not to emit.
+
+- `prefixDelegatedEvent` is an enum value indicates whether or not to prefix the event name when using `delegate` as emitter:
+    - `true` event name will be prefixed, the prefix is `'name of app' + ':'` (e.g. `createPost` -> `Blog:createPost`). This is the default value
+    - `false` not to prefix
+    - Any non-empty *string* value as customized prefix
+
+- `publicMethods` is an *object* of functions created upon initialization which considered as public methods, `controller` uses this property to map url to function.
+
+- `reservedMethodNames` is an *array* of reserved names which cannot be used as public method, the default value is:
+
+    ```
+      ["setMaxListeners","emit","addListener","on","once","removeListener","removeAllListeners","listeners", "init", "isPublicMethodName"]
+    ```
+
+- `isPublicMethodName` is a *function* use to check if a string can be used as public method name or not. The default rule is:
+
+    The name must be a non-empty string and must not equal to one of the `reservedMethodNames` and not start with lower dash `_`.
 
