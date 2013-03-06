@@ -55,7 +55,7 @@ The `BlogApp` you just defined can be used as a standalone application class. It
 
 ## Handle app result
 
-#### Inline callback style
+### Inline callback style
 
 ```javascript
 
@@ -64,16 +64,17 @@ var myBlog =  new BlogApp(db);
 // create a blog post in db
 myBlog.createPost('My awesome post', 'Some contents', function(err, result) {
   // handle error and result here
-  // you can emit the event manually
-  this.emit(err, result);
+  // this == myBlog, so you can emit event manually
+  this.emit('createPost', err, result);
 });
 
 ```
 
-#### Event style
+### Event style
 
-Sometime you don't care about if the post is saved or not. And as the app instance itself is **event emitter**, you can listen the event in other part of your code. Actually, if the last arguments is not a callback function when you call instance function, genji will generate one for you to do the emit job.
-
+##### Default callback
+Sometime you don't care about if the post is saved or not, you may wish to handle the result in other part of your code.
+So when you call instance function and the last argument is not a callback, genji will generate a default callback for you to do the emitting job.
 
 ```javascript
 // the event callback's argument is same as how you call the callback in the `createPost` function
@@ -87,7 +88,28 @@ myBlog.on('createPost', function(err, result) {
 myBlog.createPost('I do not care about the result', 'Yes, there is no callback after me.');
 ```
 
-Sometime it makes sense to let other object to handle all the events. You can delegate all the events to other event emitter object by setting the `delegate` property to that object.
+There is one **exception**. When your instance function is synchronized and returns non-undefined value on calling. The event/callback will not be emitted/invoked in async operation.
+
+```javascript
+
+  getDB: function(cb) {
+    cb(); // will call `theCallback`, if no callback gived event will be emitted
+    process.nextTick(function(){
+      cb(); // `theCallback` will not be called end emit event
+    });
+    return this.db;
+  }
+
+  function theCallback() {
+    // this function will never be called in async operation
+  }
+
+  var db = myBlog.getDB(theCallback);
+
+```
+
+##### Delegation
+You can delegate all the events to other event emitter object by setting the `delegate` property to that emitter.
 
 ```javascript
 
@@ -95,13 +117,16 @@ var otherEmitter = new EventEmitter();
 
 myBlog.delegate = otherEmitter;
 
-otherEmitter.on('createPost', function(err, result) {
+// event name will be prefixed by app name on delegation by default
+otherEmitter.on('Blog:createPost', function(err, result) {
   // handle the event
 });
 
 myBlog.on('createPost', function(err, result) {
   // this will never be called as you allready delegate events to `otherEmitter`
 });
+
+myBlog.createPost('title', 'content');
 
 ```
 
@@ -130,7 +155,7 @@ var AwesomeBlogApp = BlogApp({
 
 App introduced a very thin mechanism to organize business logic code. To make the app works simple and efficient with other part of system, here are the conventions you may need to know and understand.
 
-#### Context
+### Context
 
 Although we call defined app `class`, but actually we use individial instance functions in a `functional programming` style in conjuction with `genji.Controller`. This allow genji to reuse a single app instance for multiple requests instead of constructing for each one of them. You may noticed that, there's no session info passed to `createPost` in the above example, this is not possible in a real world application. So we put the context object which contains session and other request specific info as the first argument of app's instance function when working with controller. So your instance function will become some sort of `context first callback last` style of function signature:
 
@@ -158,12 +183,12 @@ createPost: function(context, title, content, callback) {
 To make the app class more reusable, don't put any http stack object as the function argument (e.g. request/response object of node.js etc.). That will make you loose the flexiblity and coupled with http stack.
 Leave that job to `genji.Controller` to make you life easier.
 
-#### The `this` object
+### The `this` object
 
 You can always use `this` refer to the instance of app inside of instance function, callback function and event listening function.
 
 
-#### Naming and url mapping
+### Naming and url mapping
 
 Controller use `name` property of app and it's functions' name for mapping url automatically. For example:
 
@@ -172,7 +197,7 @@ Controller use `name` property of app and it's functions' name for mapping url a
  - `blog/camel/cased/function/name` to match `Blog`'s `camelCasedFunctionName` function.
  - if the function name start with low dash `_` (e.g. `_privateFunc`), no url will map to this function.
 
-#### Error first callback style
+### Error first callback style
 
 We follow the native node.js api's callback style, which put the error object at the first argument of a callback function. It's true for the event listening function as well.
 

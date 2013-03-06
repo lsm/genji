@@ -3,381 +3,96 @@ var assert = require('assert');
 var App = genji.App;
 var timeout = 500;
 
-exports['test route#get'] = function() {
-  var route = genji.route();
-  var data = 'get: Hello world!';
-  route.get('helloworld$').fn(function(handler) {
-    handler.send(data);
-  });
-  assert.response(genji.createServer(), {
-        url: '/helloworld',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.body, data);
-      });
+var MyApp = App({
+  name: 'MyApp',
+  init: function (key) {
+    this.key = key;
+  },
 
-  genji.route('foo').get('$', function(handler) {
-    handler.send('is at /foo ');
-  });
-    assert.response(genji.createServer(), {
-        url: '/foo',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.body, 'is at /foo ');
-      });
-  
-  genji.route('foo').get('/$', function(handler) {
-    handler.send('is at /foo/ ');
-  });
-    assert.response(genji.createServer(), {
-        url: '/foo/',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.body, 'is at /foo/ ');
-      });
+  getName: function () {
+    return this.name;
+  }
+});
 
-  genji.route('bar').get('/$', function(handler) {
-    handler.send('is at /bar/ ');
-  });
-    assert.response(genji.createServer(), {
-        url: '/bar/',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.body, 'is at /bar/ ');
-      });
-};
-
-exports['test route#post'] = function() {
-  var route = genji.route('namedApp');
-  var data = 'post: Hello world!';
-
-  var postData1 = 'x=r&y=t';
-  route.post('/helloworld$', function(handler) {
-    handler.on('params', function(params, raw) {
-      if (params.x === 'r' && params.y === 't' && raw === 'x=r&y=t') {
-        handler.send(data, 201, {Server: 'GenJi'});
-      } else {
-        handler.setStatus(500).finish('error');
-      }
+var SubMyApp = MyApp({
+  name: 'SubMyApp',
+  getKey: function (cb) {
+    cb('synchronized');
+    process.nextTick(function () {
+      cb && cb(null);
     });
-  });
-  assert.response(genji.createServer(), {
-        url: '/namedApp/helloworld',
-        timeout: timeout,
-        method: 'POST',
-        data: postData1,
-        headers:{'content-length': postData1.length}
-      }, function(res) {
-        assert.equal(res.body, data);
-        assert.equal(res.statusCode, 201);
-        assert.equal(res.headers.server, 'GenJi');
-      });
+    return this.key;
+  },
 
-  var postData2 = 'x=c&y=d';
-  route.post('helloworld$', function(handler) {
-    handler.on('data', function(params, raw) {
-      if (params.x === 'c' && params.y === 'd' && raw === 'x=c&y=d') {
-        handler.send(data, 201, {Server: 'GenJi'});
-      } else {
-        handler.setStatus(500).finish('error');
-      }
+  doAsyncJob: function (input, cb) {
+    assert.equal('function', typeof cb);
+    process.nextTick(function () {
+      cb(null, input);
     });
-  });
-  assert.response(genji.createServer(), {
-        url: '/namedApphelloworld',
-        timeout: timeout,
-        method: 'POST',
-        data: postData2,
-        headers:{'content-length': postData2.length}
-      }, function(res) {
-        assert.equal(res.body, 'error');
-        assert.equal(res.statusCode, 500);
-      });
+  }
+});
 
-  var postData3 = 'x=a&y=b';
-  route.post('^/fullurlpattern$', function(handler) {
-    handler.on('params', function(params, raw) {
-      if (params.x === 'a' && params.y === 'b' && raw === 'x=a&y=b') {
-        handler.send(data, 201, {Server: 'GenJi'});
-      } else {
-        handler.setStatus(500).finish('error');
-      }
-    });
-  });
-  assert.response(genji.createServer(), {
-        url: '/fullurlpattern',
-        timeout: timeout,
-        method: 'POST',
-        data: postData3,
-        headers:{'content-length': postData3.length}
-      }, function(res) {
-        assert.equal(res.body, data);
-        assert.equal(res.statusCode, 201);
-        assert.equal(res.headers.server, 'GenJi');
-      });
+exports['test define and init app'] = function () {
+  var myApp = new MyApp('myApp');
+  assert.equal('MyApp', myApp.name);
+  assert.equal('myApp', myApp.key);
 };
 
-exports['test route#put'] = function() {
-  var route = genji.route('a put app', {root:'/put'});
-  var data = 'put: Hello world!';
-  route.put('/helloworld$', function (handler) {
-    handler.send(data);
+exports['test App callback and event'] = function () {
+  var subMyApp = new SubMyApp('key');
+
+  assert.equal('SubMyApp', subMyApp.name);
+
+  subMyApp.on('getName', function () {
+    throw new Error('Instance function which returns value should not emit event');
   });
-  assert.response(genji.createServer(), {
-    url:'/put/helloworld',
-    timeout:timeout,
-    method:'PUT',
-    headers:{'content-length':0}
-  }, function (res) {
-    assert.equal(res.body, data);
-  });
-};
 
-exports['test route#del'] = function() {
-  var route = genji.route();
-  var data = 'del: Hello world!';
-  route.del('/helloworld$', function(handler) {
-    handler.send(data);
-  });
-  assert.response(genji.createServer(), {
-        url: '/helloworld',
-        timeout: timeout,
-        method: 'DELETE'
-      }, function(res) {
-        assert.equal(res.body, data);
-      });
-};
+  assert.equal('SubMyApp', subMyApp.getName());
 
-exports['test route#head'] = function() {
-  var route = genji.route();
-  route.head('/helloworld$', function(handler) {
-    handler.setStatus(304);
-    handler.finish();
-  });
-  assert.response(genji.createServer(), {
-        url: '/helloworld',
-        timeout: timeout,
-        method: 'HEAD'
-      }, function(res) {
-        assert.equal(res.statusCode, 304);
-      });
-};
-
-exports['test route#notFound'] = function() {
-  var route = genji.route();
-  route.notFound('/*', function(handler) {
-    handler.error(404, 'not found: ' + this.request.url);
-  });
-  assert.response(genji.createServer(), {
-        url: '/noexistenturl',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.statusCode, 404);
-        assert.equal(res.body, 'not found: /noexistenturl');
-      });
-};
-
-exports['test route#mount'] = function() {
-  var route = genji.route();
-  var data = 'mount+get: Hello world!';
-  var method = 'get';
-  function fn(handler) {
-    handler.send(data);
-  };
-  route.mount([
-    ['^/mount/helloworld$', fn, method]
-  ]);
-  assert.response(genji.createServer(), {
-        url: '/mount/helloworld',
-        timeout: timeout,
-        method: 'GET'
-      }, function(res) {
-        assert.equal(res.body, data);
-      });
-};
-
-exports['test App result events'] = function () {
-  var MyLoginApp = App('MyLoginApp', {
-
-    init:function (options) {
-      this.serverUrl = options.serverUrl;
-    },
-
-    // the app business logic
-    login:function (params) {
-      this.emit('login', null, params.username === 'user' && params.password === 'pass');
-      return this;
-    },
-
-    signup:function (accountType, userInfo) {
-      userInfo.accountType = accountType;
-      this.emit('signup', null, userInfo);
-      return this;
-    },
-
-    routes:{
-     signup: {method: 'post', type:'json', url: '^/signup/([a-zA-Z]*)'},
-     login: {method:'post', url:'^/login'}
+  subMyApp.on('getKey', function (err) {
+    if (err !== 'synchronized') {
+      throw new Error('Instance function which returns value should not emit event asynchronously');
     }
   });
+  assert.equal('key', subMyApp.getKey());
 
-  var myapp = new MyLoginApp({serverUrl: 'http://rayplus.cc/'});
-  assert.eql(myapp.serverUrl, 'http://rayplus.cc/');
-  assert.eql(myapp.urlRoot, '^/myloginapp');
+  assert.equal('key', subMyApp.getKey(function (err) {
+    if (err !== 'synchronized') {
+      throw new Error('If instance function returns a value other than undefined callback should not be called asynchronously');
+    }
+  }));
 
-  myapp.onResult('login', function (err, loginResult) {
-    assert.eql(err, null);
-    assert.eql(loginResult, true);
-  }).login({username: 'user', password: 'pass'});
+  var input = 'hello';
 
-  myapp.onResult('signup', function (err, userInfo) {
-    assert.eql(err, null);
-    assert.eql(userInfo.accountType, 'premium');
-    assert.eql(userInfo.username, 'user');
-    assert.eql(userInfo.password, 'pass');
-  });
-  myapp.signup('premium', {username: 'user', password: 'pass'});
-
-  myapp.signup('manager', {username: 'm1', password: 'pass1'}, function (err, userInfo) {
-    assert.eql(err, null);
-    assert.eql(userInfo.accountType, 'manager');
-    assert.eql(userInfo.username, 'm1');
-    assert.eql(userInfo.password, 'pass1');
+  subMyApp.on('doAsyncJob', function (err, result) {
+    assert.equal(this, subMyApp);
+    assert.equal(null, err);
+    assert.equal(input, result);
   });
 
-  genji.loadApp(myapp);
+  assert.isUndefined(subMyApp.doAsyncJob(input));
+
+  subMyApp.doAsyncJob('world', function (err, result) {
+    assert.equal(this, subMyApp);
+    assert.equal(null, err);
+    assert.equal('world', result);
+  })
 };
 
-exports['test App#routePreHook'] = function () {
+exports['test prefixed event on delegation'] = function () {
+  var subMyApp = new SubMyApp('key');
+  var emitter = new MyApp;
+  subMyApp.delegate = emitter;
 
-  var MyApp = App('MyApp', {
-    testAppLevelPreHook:function (params) {
-      this.emit('testAppLevelPreHook', null, params.result);
-    },
-
-    testRouteLevelPreHook:function (result) {
-      this.emit('testRouteLevelPreHook', null, result);
-    },
-
-    testBulkPreHook1: function (result) {
-      this.emit('testBulkPreHook1', null, result);
-    },
-
-    testBulkPreHook2: function (result) {
-      this.emit('testBulkPreHook2', null, result);
-    },
-
-    routes: {
-      testAppLevelPreHook: {method: 'get', url: '^/prehook/app'},
-      testRouteLevelPreHook: {method: 'get', url: '^/prehook/route/([a-z_]*)'},
-      testBulkPreHook1: {method: 'get', url: '^/prehook/bulk/1/([a-z_]*)'},
-      testBulkPreHook2: {method: 'get', url: '^/prehook/bulk/2/([a-z_]*)'}
-    },
-
-    routeResults: {
-      testAppLevelPreHook:function (err, result) {
-        assert.eql(err, null);
-        assert.eql(result, 'app prehook result [app]');
-        this.handler.send('app prehook tested ok');
-      },
-
-      testRouteLevelPreHook:function(err, result) {
-        assert.eql(err, null);
-        assert.eql(result, 'app_route_result [app] [route]');
-        this.handler.send('route prehook tested ok');
-      },
-
-      testBulkPreHook1: function (err, result) {
-        assert.eql(err, null);
-        assert.eql(result, 'bulk_hook_one [app] [bulk]');
-        this.handler.send('route bulk prehook 1 tested ok');
-      },
-
-      testBulkPreHook2: function (err, result) {
-        assert.eql(err, null);
-        assert.eql(result, 'bulk_hook_two [app] [bulk]');
-        this.handler.send('route bulk prehook 2 tested ok');
-      }
-    }
+  emitter.on('SubMyApp:doAsyncJob', function (err, result) {
+    assert.equal('hello', result);
+    subMyApp.prefixDelegatedEvent = 'CustomPrefix';
+    subMyApp.doAsyncJob('world');
   });
 
-  var myApp = new MyApp;
+  subMyApp.doAsyncJob('hello');
 
-  // app level route prehook
-  myApp.routePreHook(function (handler, result) {
-    if (result) {
-      // this request comes from `testRouteLevelPreHook` or bulk prehook
-      var self = this;
-      setTimeout(function () {
-        // async prehook
-        // you must put all your arguments in `self.next`, otherwise your app/route won't work.
-        self.next(handler, result + ' [app]');
-      }, 200);
-    } else {
-      // this request comes from `testAppLevelPreHook`
-      handler.params = handler.params || {};
-      handler.params.result = 'app prehook result' + ' [app]';
-      return true;
-    }
+  emitter.on('CustomPrefix:doAsyncJob', function (err, result) {
+    assert.equal('world', result);
   });
-
-  // prehook for specific route
-  myApp.routePreHook('testRouteLevelPreHook', function (handler, result) {
-    this.next(handler, result + ' [route]');
-  });
-
-  // prehook for bulk of routes
-  myApp.routePreHook(['testBulkPreHook1', 'testBulkPreHook2'], function (handler, result) {
-    this.next(handler, result + ' [bulk]');
-  });
-  
-  genji.loadApp(myApp);
-
-  assert.response(genji.createServer(), {
-    url:'/prehook/app',
-    timeout:timeout,
-    method:'GET'
-  }, function (res) {
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body, 'app prehook tested ok');
-  });
-
-  assert.response(genji.createServer(), {
-    url:'/prehook/route/app_route_result',
-    timeout:timeout,
-    method:'GET'
-  }, function (res) {
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body, 'route prehook tested ok');
-  });
-
-  assert.response(genji.createServer(), {
-    url: '/prehook/bulk/1/bulk_hook_one',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body, 'route bulk prehook 1 tested ok');
-  });
-
-  assert.response(genji.createServer(), {
-    url:'/prehook/bulk/2/bulk_hook_two',
-    timeout:timeout,
-    method:'GET'
-  }, function (res) {
-    assert.equal(res.statusCode, 200);
-    assert.equal(res.body, 'route bulk prehook 2 tested ok');
-  });
-
-  myApp.onResult('testAppLevelPreHook', function (err, result) {
-    assert.eql(err, null);
-    typeof result === 'number' && assert.eql(result, 10);
-  });
-  // prehooks should not be involved in direct calls
-  myApp.testAppLevelPreHook({result: 10});
 };
