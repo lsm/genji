@@ -1,5 +1,5 @@
 App
-=========
+===
 
 An app is a `class` where you define and implement your core business logic. App it self is an event emitter. Properties can be overridden by subclassing existent app. `App` is exported by:
 
@@ -49,6 +49,20 @@ var BlogApp = App({// instance properties object
     }
   });
 
+  var BlogApp = App({
+
+    name: 'Blog',
+
+    createPost: function(context, post, callback) {
+      // create a new blog post
+    },
+
+    readPost: function(context, id, callback) {
+      // get an existent blog post
+    }
+
+  });
+
 ```
 
 The `BlogApp` you just defined can be used as a standalone application class. It means you don't need the http stack to run your app code. Once you get the `BlogApp` class, you initialize and use it just like any other classes. The `init` function will be called on initialization and it's optional.
@@ -74,7 +88,8 @@ myBlog.createPost('My awesome post', 'Some contents', function(err, result) {
 
 ##### Default callback
 Sometime you don't care about if the post is saved or not, you may wish to handle the result in other part of your code.
-So when you call instance function and the last argument is not a callback, genji will generate a default callback for you to do the emitting job.
+So when you call instance function and the last argument is not a callback, genji will generate a default callback for you.
+An event with the name of the method will be triggered if you call the generated function.
 
 ```javascript
 // the event callback's argument is same as how you call the callback in the `createPost` function
@@ -201,11 +216,13 @@ Controller use `name` property of app and it's functions' name for mapping url a
 
 We follow the native node.js api's callback style, which put the error object at the first argument of a callback function. It's true for the event listening function as well.
 
-## Properties and methods
+## API
+
+`App` is exposed by `require('genji').App`. Inherits from EventEmitter.
+
+### Properties
 
 - `name` is the name of your app in *string*, name should be upper camel case.
-
-- `init` is the constructor *function*, it will be called once and only once at the time of initialization, you should not call it manually.
 
 - `emitInlineCallback` is an enum value ('after', 'before', false) which tells genji automatically emit event `after`/`before` callback is called when you handle result inline. Default is boolean `false` which means not to emit.
 
@@ -221,6 +238,10 @@ We follow the native node.js api's callback style, which put the error object at
     ```
       ["setMaxListeners","emit","addListener","on","once","removeListener","removeAllListeners","listeners", "init", "isPublicMethodName"]
     ```
+
+### Methods
+
+- `init` is the constructor *function*, it will be called once and only once at the time of initialization, you should not call it manually.
 
 - `isPublicMethodName` is a *function* use to check if a string can be used as public method name or not. The default rule is:
 
