@@ -3,10 +3,10 @@ var router = genji.router;
 var assert = require('assert');
 
 module.exports = {
-  'test router': function() {
-    var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, preHookSub1, preHookSub2,
-        hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4,
-        defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2;
+  'test router': function () {
+    var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, postHook1 = 0, preHookSub1, preHookSub2,
+      hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4,
+      defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2, override;
 
     function DefaultHandler() {
       defaultHandler++;
@@ -16,104 +16,153 @@ module.exports = {
       anotherHandler++;
     }
 
-    var urls = [
-      ['^/hello/$', function() {
-        helloGet = true;
-      }, 'get'],
-      ['^/hello/$', function() {
-        helloPost = true;
-      }, 'post'],
-      ['^/hello2/$', [
-        function() {
-          if (preHook2) {
-            preHook1 = true;
-            return true;
-          }
-        },
-        function() {
-          hello2Get = true;
-        }
-      ], 'get', {pre: [
-        function() {
-          preHook2 = true;
-          return true;
-        }
-      ]}
-      ],
-      ['^/', function() {
-        notFound = true;
-      }, 'notfound', AnotherHandler],
-      ['^/parent/', [
-        [
-          '^sub1/$', function() {
-          sub1 = true;
-        },  {pre: [function() {
-          if (preHook3 == 1) {
-            preHookSub1 = true;
-            return true;
-          }
-        }]}
-        ],
-        [
-          '^sub2/$', function() {
-          sub2 = true
-        }, 'post'
-        ],
-        [
-          '^sub3/$', function() {
-          sub3 = true;
-        },  DefaultHandler, {pre: [function() {
-          if (preHook3 == 3) {
-            preHookSub2 = true;
-            return true;
-          }
-        }]}
-        ],
-        [
-          '^sub4/$', function() {
-          sub4 = true;
-        },  DefaultHandler
-        ]
-      ], 'get', AnotherHandler, {pre: [function() {
-        preHook3++;
-        this.next();
+    function helloGetFn(handler) {
+      helloGet = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+    }
+
+    function helloPostFn(handler) {
+      helloPost = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+    }
+
+    function hello2GetFn(handler) {
+      hello2Get = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+    }
+
+    function preHook1Fn(handler) {
+      preHook1 = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+      return true;
+    }
+
+    function preHook2Fn(handler, next) {
+      preHook2 = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+      next();
+    }
+
+    function notFoundFn(handler) {
+      notFound = true;
+      assert.equal(true, handler instanceof AnotherHandler);
+    }
+
+    function sub1Fn(handler) {
+      sub1 = true;
+      assert.equal(true, handler instanceof AnotherHandler);
+      return true;
+    }
+
+    function preHookSub1Fn() {
+      if (preHook3 === 1) {
+        preHookSub1 = true;
+        return true;
       }
-      ]}
-      ],
+    }
+
+    function sub2Fn(handler) {
+      sub2 = true;
+      assert.equal(true, handler instanceof AnotherHandler);
+      return true;
+    }
+
+    function sub3Fn(handler) {
+      sub3 = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+      return false;
+    }
+
+    function preHookSub2Fn() {
+      if (preHook3 === 3) {
+        preHookSub2 = true;
+        return true;
+      }
+    }
+
+    function sub4Fn(handler) {
+      sub4 = true;
+      assert.equal(true, handler instanceof DefaultHandler);
+      return true;
+    }
+
+    function preHook3Fn(handler, next) {
+      preHook3++;
+      if (preHook3 < 3) {
+        assert.equal(true, handler instanceof AnotherHandler);
+      } else {
+        assert.equal(true, handler instanceof DefaultHandler);
+      }
+      next();
+    }
+
+    function postHook1Fn(handler) {
+      postHook1++;
+      if (postHook1 < 3) {
+        assert.equal(true, handler instanceof AnotherHandler);
+      } else {
+        assert.equal(true, handler instanceof DefaultHandler);
+      }
+      return true;
+    }
+
+    function nestedSubFn(handler) {
+      nestedSub = true;
+      assert.equal(true, handler instanceof AnotherHandler);
+    }
+
+    function nestedSub2Fn(handler) {
+      nestedSub2 = true;
+      assert.equal(true, handler instanceof AnotherHandler);
+    }
+
+    var urls = [
+      ['^/hello/$', helloGetFn, 'get'],
+      ['^/hello/$', helloPostFn, 'post'],
+      ['^/hello2/$', hello2GetFn, 'get', {hooks: [preHook1Fn, preHook2Fn]}],
+      ['^/', notFoundFn, 'notfound', AnotherHandler],
+      ['^/parent/', [
+        ['^sub1/$', sub1Fn, [preHookSub1Fn]],
+        ['^sub2/$', sub2Fn, 'post'],
+        ['^sub3/$', sub3Fn, {hooks: preHookSub2Fn, handlerClass: DefaultHandler}],
+        ['^sub4/$', sub4Fn, DefaultHandler]
+      ], 'get', {handlerClass: AnotherHandler, hooks: [preHook3Fn, null, postHook1Fn]}],
       ['^/a/', [
         ['^b/', [
           ['^c/', [
-            ['^d/$', function() {
-              nestedSub = true;
-            }, 'post', AnotherHandler]
+            ['^d/$', nestedSubFn, 'post', AnotherHandler]
           ]]
         ]],
         ['^1/', [
           ['^2/', [
-            ['^3/$', function() {
-              nestedSub2 = true
-            }, AnotherHandler]
+            ['^3/$', nestedSub2Fn, AnotherHandler]
           ], 'delete']
         ], 'put']
-      ]]
+      ]],
+      ['^/override/$', function () {
+        throw new Error('This function should be overridden');
+      }, 'post']
     ];
-    var r = new router.Router(urls, DefaultHandler);
-    var rules = r.toRules();
-    var route = router.route;
+
+    var _router = new router.Router(urls, DefaultHandler);
+    _router.add('post', '^/override/$', function () {
+      override = true;
+    });
     // do matching
-    route({type: 'GET', condition: '/hello/'}, rules);
-    route({type: 'POST', condition: '/hello/'}, rules);
-    route({type: 'GET', condition: '/hello2/'}, rules);
-    route({type: 'HEAD', condition: '/hello/'}, rules);
-    route({type: 'GET', condition: 'hello/'}, rules, function() {
-          notFound2 = true;
-        });
-    route({type: 'GET', condition: '/parent/sub1/'}, rules);
-    route({type: 'POST', condition: '/parent/sub2/'}, rules);
-    route({type: 'GET', condition: '/parent/sub3/'}, rules);
-    route({type: 'GET', condition: '/parent/sub4/'}, rules);
-    route({type: 'POST', condition: '/a/b/c/d/'}, rules);
-    route({type: 'DELETE', condition: '/a/1/2/3/'}, rules);
+    _router.route('GET', '/hello/', this);
+    _router.route('POST', '/hello/', this);
+    _router.route('GET', '/hello2/', this);
+    _router.route('HEAD', '/hello/', this);
+    _router.route('GET', 'hello/', this, function () {
+      notFound2 = true;
+    });
+    _router.route('GET', '/parent/sub1/', this);
+    _router.route('POST', '/parent/sub2/', this);
+    _router.route('GET', '/parent/sub3/', this);
+    _router.route('GET', '/parent/sub4/', this);
+    _router.route('POST', '/a/b/c/d/', this);
+    _router.route('DELETE', '/a/1/2/3/', this);
+    _router.route('POST', '/override/', this);
 
     // check results
     assert.equal(helloGet, true);
@@ -131,17 +180,19 @@ module.exports = {
     assert.equal(sub4, true);
     assert.equal(nestedSub, true);
     assert.equal(nestedSub2, true);
+    assert.equal(override, true);
     assert.equal(preHook3, 4);
-    assert.equal(defaultHandler, 5);
+    assert.equal(postHook1, 3);
+    assert.equal(defaultHandler, 6);
     assert.equal(anotherHandler, 5);
     try {
       (new router.Router([
-        [1, function() {
+        [1, function () {
         }]
-      ])).toRules();
+      ])).getRoutes();
       assert.equal(1, 2); // should never be called
     } catch (e) {
       assert.equal(e.message, 'Invaild url pattern');
     }
   }
-}
+};
