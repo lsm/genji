@@ -158,9 +158,7 @@ module.exports = {
       }, 'post']
     ];
 
-    var _router = new router.Router(urls, DefaultHandler);
-
-
+    var _router = new router.Router(urls, {defaultHandlerClass: DefaultHandler});
 
     _router.add('post', '^/override/$', function () {
       override = true;
@@ -212,7 +210,7 @@ module.exports = {
       (new router.Router([
         [1, function () {
         }]
-      ])).getRoutes();
+      ], {})).getRoutes();
       assert.equal(1, 2); // should never be called
     } catch (e) {
       assert.equal(e.message, 'Invaild url pattern');
