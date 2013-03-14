@@ -5,7 +5,7 @@ var assert = require('assert');
 module.exports = {
   'test router': function () {
     var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, postHook1 = 0, preHookSub1, preHookSub2,
-      hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4,
+      hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, globalPreHook = 0, globalPostHook = 0,
       defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2, override;
 
     function DefaultHandler() {
@@ -16,14 +16,26 @@ module.exports = {
       anotherHandler++;
     }
 
+    function globalPreHookFn(handler) {
+      globalPreHook++;
+      return true;
+    }
+
+    function globalPostHookFn(handler, next) {
+      globalPostHook++;
+      next();
+    }
+
     function helloGetFn(handler) {
       helloGet = true;
       assert.equal(true, handler instanceof DefaultHandler);
+      return true;
     }
 
     function helloPostFn(handler) {
       helloPost = true;
       assert.equal(true, handler instanceof DefaultHandler);
+      return true;
     }
 
     function hello2GetFn(handler) {
@@ -109,11 +121,13 @@ module.exports = {
     function nestedSubFn(handler) {
       nestedSub = true;
       assert.equal(true, handler instanceof AnotherHandler);
+      return true;
     }
 
-    function nestedSub2Fn(handler) {
+    function nestedSub2Fn(handler, next) {
       nestedSub2 = true;
       assert.equal(true, handler instanceof AnotherHandler);
+      next();
     }
 
     var urls = [
@@ -145,11 +159,18 @@ module.exports = {
     ];
 
     var _router = new router.Router(urls, DefaultHandler);
+
+
+
     _router.add('post', '^/override/$', function () {
       override = true;
     });
+
     // do matching
     _router.route('GET', '/hello/', this);
+
+    _router.hook([globalPreHookFn, null, globalPostHookFn]);
+
     _router.route('POST', '/hello/', this);
     _router.route('GET', '/hello2/', this);
     _router.route('HEAD', '/hello/', this);
@@ -185,6 +206,8 @@ module.exports = {
     assert.equal(postHook1, 3);
     assert.equal(defaultHandler, 6);
     assert.equal(anotherHandler, 5);
+    assert.equal(globalPreHook, 10);
+    assert.equal(globalPostHook, 6);
     try {
       (new router.Router([
         [1, function () {
