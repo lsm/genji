@@ -160,7 +160,7 @@ module.exports = {
 
     var _router = new router.Router(urls, {defaultHandlerClass: DefaultHandler});
 
-    _router.add('post', '^/override/$', function () {
+    _router.post('^/override/$', function () {
       override = true;
     });
 
