@@ -21,20 +21,20 @@ module.exports = {
 
   'test chaining functions and call with order of FIFC': function() {
     var c2 = new Chain, res = 0, order = [];
-    c2.add('fc', function(n) {
+    c2.add('fc', function(n, next) {
       res += n;
       order.push(0);
-      this.next(res);
+      next(res);
     });
     c2.add('fc', function(n) {
       res += n;
       order.push(1);
       return res; // == this.next(1);
     });
-    c2.add('fc', function(n) {
+    c2.add('fc', function(n, next) {
       res += n;
       order.push(2);
-      this.next(res);
+      next(res);
     });
     c2.get('fc')(1);
     assert.equal(res, 3);
