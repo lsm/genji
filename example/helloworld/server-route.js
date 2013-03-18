@@ -1,19 +1,28 @@
+/**
+ * Example for using Router of Genji
+ */
 
-// the genji lib
-var genji = require('genji');
+/**
+ * Module dependencies
+ */
+var http = require('http');
+var genji = require('../../lib/genji');
 
-// create a route instance
-var helloRoute = genji.route();
+// create a router instance
+var router = genji.route();
 
 // routing url to function
-helloRoute.get('^/$', function(handler) {
-  handler.send('Hello world!');
+router.get('^/$', function(context) {
+  context.send('Hello world!');
 });
 
 // create a http server
-var server = genji.createServer();
+var server = http.createServer();
+
+// listen to the request event of server
+router.listen(server);
 
 // start handling request
 server.listen(8888, '127.0.0.1');
 
-// now open up http://127.0.0.1:8888/ in your browser
+// open http://127.0.0.1:8888/

@@ -1,14 +1,22 @@
+/**
+ * Example for using a simple Genji middleware plugin
+ */
 
-// the genji lib
-var genji = require('genji');
+var genji = require('../../lib/genji');
 
-// use a middleware (at `genji/lib/middleware/helloworld.js`)
-genji.use('helloworld');
+// Create a Site instance
+var site = genji.site();
 
-// create a http server
-var server = genji.createServer();
+// Use the "helloworld" plugin
+site.use('helloworld');
 
-// start handling request
-server.listen(8888, '127.0.0.1');
+// handle "helloworld" event emits from the plugin
+site.on('helloworld', function () {
+  console.log('Got helloworld request');
+});
 
-// now open up http://127.0.0.1:8888/ in your browser
+// start a http server
+site.start();
+
+// now
+// open http://127.0.0.1:8888/
