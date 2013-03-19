@@ -222,28 +222,30 @@ We follow the native node.js api's callback style, which put the error object at
 
 ### Properties
 
-- `name` is the name of your app in *string*, name should be upper camel case.
+  - `name` is the name of your app in *string*, name should be upper camel case.
 
-- `emitInlineCallback` is an enum value ('after', 'before', false) which tells genji automatically emit event `after`/`before` callback is called when you handle result inline. Default is boolean `false` which means not to emit.
+  - `emitInlineCallback` is an enum value ('after', 'before', false) which tells genji automatically emit event `after`/`before` callback is called when you handle result inline. Default is boolean `false` which means not to emit.
 
-- `prefixDelegatedEvent` is an enum value indicates whether or not to prefix the event name when using `delegate` as emitter:
-    - `true` event name will be prefixed, the prefix is `'name of app' + ':'` (e.g. `createPost` -> `Blog:createPost`). This is the default value
-    - `false` not to prefix
-    - Any non-empty *string* value as customized prefix
+  - `prefixDelegatedEvent` is an enum value indicates whether or not to prefix the event name when using `delegate` as emitter:
+      - `true` event name will be prefixed, the prefix is `'name of app' + ':'` (e.g. `createPost` -> `Blog:createPost`). This is the default value
+      - `false` not to prefix
+      - Any non-empty *string* value as customized prefix
 
-- `publicMethods` is an *object* of functions created upon initialization which considered as public methods, `controller` uses this property to map url to function.
+  - `publicMethods` is an *object* of functions created upon initialization which considered as public methods, `controller` uses this property to map url to function.
 
-- `reservedMethodNames` is an *array* of reserved names which cannot be used as public method, the default value is:
+  - `reservedMethodNames` is an *array* of reserved names which cannot be used as public method, the default value is:
 
-    ```
-      ["setMaxListeners","emit","addListener","on","once","removeListener","removeAllListeners","listeners", "init", "isPublicMethodName"]
-    ```
+      ```
+        ["setMaxListeners","emit","addListener","on","once","removeListener","removeAllListeners","listeners", "init", "isPublicMethodName"]
+      ```
+
+  - `site` is the `site` instance when works with `genji.site` is optional but reserved
 
 ### Methods
 
-- `init` is the constructor *function*, it will be called once and only once at the time of initialization, you should not call it manually.
+  - `init` is the constructor *function*, it will be called once and only once at the time of initialization, you should not call it manually.
 
-- `isPublicMethodName` is a *function* use to check if a string can be used as public method name or not. The default rule is:
+  - `isPublicMethodName` is a *function* use to check if a string can be used as public method name or not. The default rule is:
 
-    The name must be a non-empty string and must not equal to one of the `reservedMethodNames` and not start with lower dash `_`.
+      The name must be a non-empty string and must not equal to one of the `reservedMethodNames` and not start with lower dash `_`.
 
