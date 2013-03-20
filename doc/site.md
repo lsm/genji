@@ -2,7 +2,7 @@ Site
 ====
 
 Site is the organizer for your applications. And using site is the recommended way to use genji when you have a
-large/complex project. It has the follwoing features:
+large/complex project. It has the following features:
   - It inherits `EventEmitter`
   - It has setter/getter methods and can be used to save and retrieve `settings`
   - It can load and expose your `app` to external world and manage maps between url and app function
@@ -20,7 +20,7 @@ var mySite = genji.site();
 
 ### Getter/Setter
 
-You can use `mySite` to save and get values.
+You can use `mySite` to set and get settings.
 
 ```javascript
 
@@ -43,7 +43,7 @@ var settings = mySite.get(['title', 'host', 'port']);
 
 ### Use middleware
 
-You don't have to initialize middleware manager by yourself when you use site. You only need to call `use` method of the
+You don't have to initialize [middleware manager](#core) by yourself when you use site. You only need to call `use` method of the
 site instance.
 
 ```javascript
@@ -74,7 +74,7 @@ mySite.load(blog);
 ```
 
 If you have a lots of apps which have similar initializing options. Then you can set the default app options and let
-the site initialize it for you.
+site initialize them for you.
 
 ```javascript
 
@@ -92,8 +92,7 @@ mySite.load([SomeApp1, SomeApp2, SomeApp3], someOptions);
 ### Routing
 
 All methods in the `app.publicMethods` property will be mapped to url by default follows the [convention](app#naming-and-url-mapping).
-For example, the `blog.createPost` will be mapped to url that matches `^/blog/create/post`.
-And since there is nothing about http method in app/method name both `GET` and `POST` requests will be accepted.
+For example, the `blog.createPost` will be mapped to url that matches `^/blog/create/post` by default.
 Of course, if the default convention/mapping does not meet your needs, you can use the `map` function to map individual
 url to app method and override the default options.
 
@@ -104,8 +103,8 @@ mySite.map({
   blogCreatePost: {method: 'post'}
   // handle both `GET` and `POST` requests for url '/blog/read/post/:id'
   blogReadPost: {url: '^/blog/read/post/[0-9]{16}'},
-  // change the default handler class
-  blogUpdatePost: {handlerClass: MyHandler, method: 'put'}
+  // add hooks
+  blogUpdatePost: {method: 'put', hooks: [preFn1, null, postFn1]}
 });
 
 ```
@@ -113,9 +112,11 @@ mySite.map({
 If you have predefined routing definition object, you can load it at the same time when loading app.
 
 ```javascript
+
 var routes = {
-  // it's an app global settings if the property key of the route is one of the app's name (in lower case)
-  blog: {hooks: [fn1, null, fn2], method: 'get'},
+  // it's an app default settings if the property key of the route is one of the app's name (in lower case)
+  blog: {hooks: [fn1, null, fn2], method: 'get', urlRoot: '^/blog/'},
+  blogReadPost: {url: '^/blog/read/post/[0-9]{16}'},
   // a comprehensive route definition
   blogCreatePost: {
     url: '/create/post',
@@ -126,6 +127,28 @@ var routes = {
 };
 
 mySite.load(AnotherApp, someOptions, routes);
+```
+
+The `routes.blog` object holds default settings for all `publicMethods` of `blog` instance. It means if some setting is
+not specified in route, it will use the default one provided by `routes.blog`. And hooks will be combined. So the final
+routes of above example normalized by genji would be:
+
+```javascript
+var routes = {
+  blogReadPost: {
+    url: '^/blog/read/post/[0-9]{16}',
+    method: 'get',
+    hooks: [fn1, null, fn2],
+    view: 'html' // site default value, see [Output result](#output-result)
+  },
+  // a comprehensive route definition
+  blogCreatePost: {
+    url: '^/blog/create/post',
+    method: 'post',
+    hooks: [fn1, fn3, fn4, null, fn5, fn2],
+    view: 'json' // see [Output result](#output-result)
+  }
+};
 ```
 
 ### Output result
@@ -157,12 +180,12 @@ We already knew how to map a url to an app's method. Let's see how we can output
       this.error(err);
       return;
     }
-    this.handler.sendJSON(result);
+    this.sendJSON(result);
   }}
 
 ```
 
-When you use genji's view system, site can render view template automatically for you.
+When you use genji's `view` system, site can render view template automatically for you.
 
 ```javascript
 
@@ -174,8 +197,8 @@ mySite.map({
   // render template file at "rootViewPath + /blog/views/read_post.html"
   blogReadPost: {url: '^/blog/read/post/[0-9]{16}', view: '/blog/views/read_post.html'},
 
-  // the default behavior is try to find a template file at "rootViewPath + /blog/views/update_post.html" if you use the view system
-  blogUpdatePost: {handlerClass: MyHandler, method: 'put'}
+  // the default behavior is try to find a template file at "rootViewPath + /blog/update_post.html" if you use the view system
+  blogUpdatePost: {method: 'put'}
 
 });
 
@@ -185,24 +208,23 @@ Of course, it's possible to do some tweaks and render manually.
 
 ```javascript
 
-  blogUpdatePost: {handlerClass: MyHandler, method: 'put', view: function(err, result) {
+  blogUpdatePost: {method: 'put', view: function(err, result) {
     result.someValue = 1;
 
     // auto template file discovery, render and send
     this.render(result);
 
     // or indicates template view name manually
-    this.render('blog:update_post.html', result);
+    this.render('blog/update_post.html', result);
 
-    var handler = this.handler;
+    var self = this;
     // or render and send manually
     this.render('/path/to/blog/views/update_post.html', result, function (err, html) {
-      handler.sendHTML(html);
+      self.sendHTML(html);
     });
   }}
 
 ```
-
 
 ### Environment
 
