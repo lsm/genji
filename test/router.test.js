@@ -205,6 +205,9 @@ module.exports = {
     assert.equal(defaultContext, 12);
     assert.equal(globalPreHook, 10);
     assert.equal(globalPostHook, 6);
+    assert.equal('app/function/name', _router.slashCamelCase('appFunctionName'));
+    assert.equal('^/prefix/url', _router.prefixUrl('^/prefix/', '/url'));
+    assert.equal('^/url', _router.prefixUrl('^/prefix', '^/url'));
     try {
       (new Router([
         [1, function () {
