@@ -1,68 +1,64 @@
 var genji = require('../index');
-var router = genji.router;
+var Router = genji.Router;
 var assert = require('assert');
 
 module.exports = {
   'test router': function () {
     var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, postHook1 = 0, preHookSub1, preHookSub2,
       hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, globalPreHook = 0, globalPostHook = 0,
-      defaultHandler = 0, anotherHandler = 0, nestedSub, nestedSub2, override;
+      defaultContext = 0, nestedSub, nestedSub2, override;
 
-    function DefaultHandler() {
-      defaultHandler++;
+    function DefaultContext() {
+      defaultContext++;
     }
 
-    function AnotherHandler() {
-      anotherHandler++;
-    }
-
-    function globalPreHookFn(handler) {
+    function globalPreHookFn(context) {
       globalPreHook++;
       return true;
     }
 
-    function globalPostHookFn(handler, next) {
+    function globalPostHookFn(context, next) {
       globalPostHook++;
       next();
     }
 
-    function helloGetFn(handler) {
+    function helloGetFn(context) {
       helloGet = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function helloPostFn(handler) {
+    function helloPostFn(context) {
       helloPost = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function hello2GetFn(handler) {
+    function hello2GetFn(context) {
       hello2Get = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
     }
 
-    function preHook1Fn(handler) {
+    function preHook1Fn(context) {
       preHook1 = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function preHook2Fn(handler, next) {
+    function preHook2Fn(context, next) {
       preHook2 = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       next();
     }
 
-    function notFoundFn(handler) {
+    function notFoundFn(context) {
       notFound = true;
-      assert.equal(true, handler instanceof AnotherHandler);
+      assert.equal(true, context instanceof DefaultContext);
     }
 
-    function sub1Fn(handler) {
+    function sub1Fn(context) {
       sub1 = true;
-      assert.equal(true, handler instanceof AnotherHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
@@ -73,15 +69,15 @@ module.exports = {
       }
     }
 
-    function sub2Fn(handler) {
+    function sub2Fn(context) {
       sub2 = true;
-      assert.equal(true, handler instanceof AnotherHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function sub3Fn(handler) {
+    function sub3Fn(context) {
       sub3 = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return false;
     }
 
@@ -92,64 +88,64 @@ module.exports = {
       }
     }
 
-    function sub4Fn(handler) {
+    function sub4Fn(context) {
       sub4 = true;
-      assert.equal(true, handler instanceof DefaultHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function preHook3Fn(handler, next) {
+    function preHook3Fn(context, next) {
       preHook3++;
       if (preHook3 < 3) {
-        assert.equal(true, handler instanceof AnotherHandler);
+        assert.equal(true, context instanceof DefaultContext);
       } else {
-        assert.equal(true, handler instanceof DefaultHandler);
+        assert.equal(true, context instanceof DefaultContext);
       }
       next();
     }
 
-    function postHook1Fn(handler) {
+    function postHook1Fn(context) {
       postHook1++;
       if (postHook1 < 3) {
-        assert.equal(true, handler instanceof AnotherHandler);
+        assert.equal(true, context instanceof DefaultContext);
       } else {
-        assert.equal(true, handler instanceof DefaultHandler);
+        assert.equal(true, context instanceof DefaultContext);
       }
       return true;
     }
 
-    function nestedSubFn(handler) {
+    function nestedSubFn(context) {
       nestedSub = true;
-      assert.equal(true, handler instanceof AnotherHandler);
+      assert.equal(true, context instanceof DefaultContext);
       return true;
     }
 
-    function nestedSub2Fn(handler, next) {
+    function nestedSub2Fn(context, next) {
       nestedSub2 = true;
-      assert.equal(true, handler instanceof AnotherHandler);
+      assert.equal(true, context instanceof DefaultContext);
       next();
     }
 
     var urls = [
       ['^/hello/$', helloGetFn, 'get'],
       ['^/hello/$', helloPostFn, 'post'],
-      ['^/hello2/$', hello2GetFn, 'get', {hooks: [preHook1Fn, preHook2Fn]}],
-      ['^/', notFoundFn, 'notfound', AnotherHandler],
+      ['^/hello2/$', hello2GetFn, 'get', [preHook1Fn, preHook2Fn]],
+      ['^/', notFoundFn, 'notfound'],
       ['^/parent/', [
         ['^sub1/$', sub1Fn, [preHookSub1Fn]],
         ['^sub2/$', sub2Fn, 'post'],
-        ['^sub3/$', sub3Fn, {hooks: preHookSub2Fn, handlerClass: DefaultHandler}],
-        ['^sub4/$', sub4Fn, DefaultHandler]
-      ], 'get', {handlerClass: AnotherHandler, hooks: [preHook3Fn, null, postHook1Fn]}],
+        ['^sub3/$', sub3Fn, preHookSub2Fn],
+        ['^sub4/$', sub4Fn]
+      ], 'get', [preHook3Fn, null, postHook1Fn]],
       ['^/a/', [
         ['^b/', [
           ['^c/', [
-            ['^d/$', nestedSubFn, 'post', AnotherHandler]
+            ['^d/$', nestedSubFn, 'post']
           ]]
         ]],
         ['^1/', [
           ['^2/', [
-            ['^3/$', nestedSub2Fn, AnotherHandler]
+            ['^3/$', nestedSub2Fn]
           ], 'delete']
         ], 'put']
       ]],
@@ -158,30 +154,34 @@ module.exports = {
       }, 'post']
     ];
 
-    var _router = new router.Router(urls, {defaultHandlerClass: DefaultHandler});
+    function getContext() {
+      return new DefaultContext();
+    }
+
+    var _router = new Router(urls);
 
     _router.post('^/override/$', function () {
       override = true;
     });
 
     // do matching
-    _router.route('GET', '/hello/', this);
+    _router.route('GET', '/hello/', getContext());
 
     _router.hook([globalPreHookFn, null, globalPostHookFn]);
 
-    _router.route('POST', '/hello/', this);
-    _router.route('GET', '/hello2/', this);
-    _router.route('HEAD', '/hello/', this);
-    _router.route('GET', 'hello/', this, function () {
+    _router.route('POST', '/hello/', getContext());
+    _router.route('GET', '/hello2/', getContext());
+    _router.route('HEAD', '/hello/', getContext());
+    _router.route('GET', 'hello/', getContext(), function () {
       notFound2 = true;
     });
-    _router.route('GET', '/parent/sub1/', this);
-    _router.route('POST', '/parent/sub2/', this);
-    _router.route('GET', '/parent/sub3/', this);
-    _router.route('GET', '/parent/sub4/', this);
-    _router.route('POST', '/a/b/c/d/', this);
-    _router.route('DELETE', '/a/1/2/3/', this);
-    _router.route('POST', '/override/', this);
+    _router.route('GET', '/parent/sub1/', getContext());
+    _router.route('POST', '/parent/sub2/', getContext());
+    _router.route('GET', '/parent/sub3/', getContext());
+    _router.route('GET', '/parent/sub4/', getContext());
+    _router.route('POST', '/a/b/c/d/', getContext());
+    _router.route('DELETE', '/a/1/2/3/', getContext());
+    _router.route('POST', '/override/', getContext());
 
     // check results
     assert.equal(helloGet, true);
@@ -202,12 +202,11 @@ module.exports = {
     assert.equal(override, true);
     assert.equal(preHook3, 4);
     assert.equal(postHook1, 3);
-    assert.equal(defaultHandler, 6);
-    assert.equal(anotherHandler, 5);
+    assert.equal(defaultContext, 12);
     assert.equal(globalPreHook, 10);
     assert.equal(globalPostHook, 6);
     try {
-      (new router.Router([
+      (new Router([
         [1, function () {
         }]
       ], {})).getRoutes();
