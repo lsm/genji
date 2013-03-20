@@ -1,54 +1,59 @@
-var genji = require('genji');
+/**
+ * Example of using "Site" and "App"
+ */
+
+/**
+ * Module dependencies
+ */
+
+var genji = require('../../');
 var App = genji.App;
 
-var HelloWorldApp = App('HelloWorld', {
-  hello:function (name) {
-    var self = this;
-    setTimeout(function () {
-      self.emit('hello', null, 'Hello, ' + name);
-    }, 300);
-  },
+// Define an app
+var GreetingApp = App({
 
-  thanks:function () {
-    this.emit('thanks');
-  },
+  name: 'Greeting',
 
-  routes: {
-    hello: {method: 'get', url:'^/hello/(.*)'},
-    thanks: {method: 'get', url: '/thanks'},
-    notfound: {method: 'notfound', url: '^/*', handleFunction:function (handler) {
-      handler.error(404, 'Content not found');
-    }}
-  },
-
-  routeResults: {
-    hello:function (err, text) {
-      var thanksLink = '<br /><a href="/helloworld/thanks">go thanks</a>';
-      this.handler.sendHTML(text + thanksLink);
-    },
-    notfound:function () {
-      this.handler.error(404, 'Content not found')
-    }
+  hello: function (name, callback) {
+    callback(null, 'Hello, ' + name);
   }
 });
 
-var helloWorld = new HelloWorldApp();
-// normal result event listener
-helloWorld.onResult('hello', function (err, text) {
-  console.log(text);
+var ClockApp = App({
+
+  name: 'Clock',
+
+  getDate: function (callback) {
+    callback(null, new Date);
+  },
+
+  getUTCFullYear: function (callback) {
+    callback(null, (new Date).getUTCFullYear());
+  }
 });
 
-// route result event listener
-helloWorld.onRouteResult('thanks', function (err) {
-  this.handler.send('Thank you!');
+// Define a customized routes
+var routes = {
+  greeting: {urlRoot: '^/app'},
+  greetingHello: {url: '/hello/(.*)'}
+};
+
+// Create site instance
+var site = genji.site();
+
+// Load the apps into site with routes
+site.load(GreetingApp, routes);
+site.load(ClockApp);
+
+// Map and alter route after app loaded
+site.map({
+  clockGetUTCFullYear: {url: '^/year$', method: 'post'}
 });
 
-genji.loadApp(helloWorld);
+// Start handling request
+site.start();
 
-// create a http server
-var server = genji.createServer();
-
-// start handling request
-server.listen(8888, '127.0.0.1');
-
-// now open up http://127.0.0.1:8888/hello/john in your browser
+// try on console:
+// curl http://127.0.0.1:8888/app/hello/john
+// curl http://127.0.0.1:8888/clock/get/date
+// curl -X POST http://127.0.0.1:8888/year
