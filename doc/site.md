@@ -7,7 +7,7 @@ large/complex project. It has the following features:
   - It has setter/getter methods and can be used to save and retrieve `settings`
   - It can load and expose your `app` to external world and manage maps between url and app function
   - It works with `middleware`
-  - It works with `view` and renders result by convension
+  - It works with `view` and renders result by convention
   - Settings, middleware and apps are all namespaced by `env`
 
 ## Usage
@@ -77,12 +77,17 @@ If you have a lots of apps which have similar initializing options. Then you can
 site initialize them for you.
 
 ```javascript
-
+var options = {x: 1, y: 2};
 mySite.set('appOptions', options);
 mySite.load(BlogApp);
 mySite.load(MyOtherApp);
+```
 
-var someOptions = {};
+The default options could be overridden and inherited.
+
+```javascript
+var someOptions = {y: 3, z: 2};
+// the actual intializing option is {x: 1, y: 3, z: 2}
 mySite.load(SomeApp, someOptions);
 // load three apps at once
 mySite.load([SomeApp1, SomeApp2, SomeApp3], someOptions);
