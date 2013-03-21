@@ -215,7 +215,7 @@ module.exports = {
       ], {})).getRoutes();
       assert.equal(1, 2); // should never be called
     } catch (e) {
-      assert.equal(e.message, 'Invaild url pattern');
+      assert.equal(e.message, 'Invalid url pattern');
     }
   }
 };
