@@ -1,4 +1,4 @@
-var genji = require('../../index');
+var genji = require('../index');
 var assert = require('assert');
 
 // options for `secure-cookie` middleware
