@@ -2,7 +2,7 @@
  * Example for using a simple Genji middleware plugin
  */
 
-var genji = require('../../lib/genji');
+var genji = require('../lib/genji');
 
 // Create a Site instance
 var site = genji.site();

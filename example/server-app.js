@@ -6,7 +6,7 @@
  * Module dependencies
  */
 
-var genji = require('../../');
+var genji = require('.');
 var App = genji.App;
 
 // Define an app

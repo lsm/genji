@@ -6,7 +6,7 @@
  * Module dependencies
  */
 var http = require('http');
-var genji = require('../../lib/genji');
+var genji = require('../lib/genji');
 
 // create a router instance
 var router = genji.route();
