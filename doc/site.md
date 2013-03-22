@@ -1,16 +1,15 @@
 Site
 ====
 
-Site is the organizer for your applications. And using site is the recommended way to use genji when you have a
+**Site** is the organizer for your applications. And using **Site** is the recommended way to use Genji when you have a
 large/complex project. It has the following features:
-  - It inherits `EventEmitter`
-  - It has setter/getter methods and can be used to save and retrieve `settings`
-  - It can load and expose your `app` to external world and manage maps between url and app function
-  - It works with `middleware`
-  - It works with `view` and renders result by convention
-  - Settings, middleware and apps are all namespaced by `env`
 
-## Usage
+- It inherits `EventEmitter`
+- It has setter/getter methods which can be used to save and retrieve `settings`
+- It can load and expose your `app` to external world and manage maps between url and app function
+- It works with [Core](core.html) - the `plugin` system
+- It works with `view` and renders result by convention
+- Settings, plugins and apps are all namespaced by `env`
 
 A `site` object can be created by calling `genji.site()`:
 
@@ -18,7 +17,7 @@ A `site` object can be created by calling `genji.site()`:
 var mySite = genji.site();
 ```
 
-### Getter/Setter
+## Getter/Setter
 
 You can use `mySite` to set and get settings.
 
@@ -41,9 +40,9 @@ var settings = mySite.get(['title', 'host', 'port']);
 
 ```
 
-### Use middleware
+## Use middleware
 
-You don't have to initialize [middleware manager](#core) by yourself when you use site. You only need to call `use` method of the
+You don't have to initialize [middleware manager](#core.html) by yourself when you use site. You only need to call `use` method of the
 site instance.
 
 ```javascript
@@ -59,7 +58,7 @@ mySite.use(function(core, conf) {
   }, conf);
 ```
 
-### Load app
+## Load app
 
 Using app with site is as simple as middleware. But instead of `use` you need to call `load` with app instance.
 
@@ -94,7 +93,7 @@ mySite.load([SomeApp1, SomeApp2, SomeApp3], someOptions);
 
 ```
 
-### Routing
+## Routing
 
 All methods in the `app.publicMethods` property will be mapped to url by default follows the [convention](app#naming-and-url-mapping).
 For example, the `blog.createPost` will be mapped to url that matches `^/blog/create/post` by default.
@@ -156,7 +155,7 @@ var routes = {
 };
 ```
 
-### Output result
+## Output result
 
 We already knew how to map a url to an app's method. Let's see how we can output the result.
 
@@ -231,7 +230,7 @@ Of course, it's possible to do some tweaks and render manually.
 
 ```
 
-### Environment
+## Environment
 
 By using `env` you can have different settings, middlewares and apps for different environments. The default environment
 named `default`.
@@ -255,7 +254,7 @@ mySite.env(); // or mySite.env('default')
 The `dev` environment inherits `default`. It means all settings, middlewares and apps setted before you switched to `dev`
 are also setted/used/loaded. So when you switched to new environment, `set/use/load` overrides the differences.
 
-### Start your site
+## Start your site
 
 Start the server is easy
 

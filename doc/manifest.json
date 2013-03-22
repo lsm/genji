@@ -1,0 +1,5 @@
+{
+  "title": "Genji Documentation",
+  "github": "lsm/genji",
+  "files": ["../README.md", "./way.md", "./router.md", "./app.md", "./site.md", "./base.md", "../CHANGELOG.md"]
+}

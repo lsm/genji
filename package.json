@@ -1,10 +1,10 @@
 {
   "name": "genji",
-  "description": "Writing reusable and flexible event-driven application.",
+  "description": "Writing reusable, modular and flexible node.js application made easy.",
   "version": "0.7.0",
   "keywords": ["genji", "event", "rest", "framework", "middleware", "router", "async", "mvc", "app", "api"],
-  "homepage": "http://github.com/zir/genji",
-  "author": "Senmiao Liu <zir.echo@gmail.com> http://vitecho.com",
+  "homepage": "http://github.com/lsm/genji",
+  "author": "Senmiao Liu <senmiao.liu@gmail.com> http://vitecho.com",
   "repository" : {
     "type" : "git",
     "url" : "http://github.com/zir/genji.git"

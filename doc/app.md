@@ -1,21 +1,20 @@
 App
 ===
 
-An app is a `class` where you define and implement your core business logic. App it self is an event emitter. Properties can be overridden by subclassing existent app. `App` is exported by:
+An app is a `class` where you define and implement your core business logic. App it self is an event emitter.
+Properties can be overridden by subclassing existent app.
 
-```
-  var App = require('genji').App;
-```
-
-## Define an app
+## Define app
 
 You can define an `App` like this:
 
 ```javascript
 
+  var App = require('genji').App;
   var BlogApp = App(/* instance properties */ properties);
 
 ```
+
 Let's go through a simple example to see how we can define an app.
 
 ```javascript
@@ -24,12 +23,12 @@ var App = require('genji').App;
 
 var BlogApp = App({// instance properties object
     /**
-     * name of your app
+     * Name of your app
      */
     name: 'Blog',
 
     /**
-     * Constructor function
+     * App constructor function
      */
     init: function(db) {
       this.db = db;
@@ -48,26 +47,14 @@ var BlogApp = App({// instance properties object
       });
     }
   });
-
-  var BlogApp = App({
-
-    name: 'Blog',
-
-    createPost: function(context, post, callback) {
-      // create a new blog post
-    },
-
-    readPost: function(context, id, callback) {
-      // get an existent blog post
-    }
-
-  });
-
 ```
 
 The `BlogApp` you just defined can be used as a standalone application class. It means you don't need the http stack to run your app code. Once you get the `BlogApp` class, you initialize and use it just like any other classes. The `init` function will be called on initialization and it's optional.
 
-## Handle app result
+## Handle result
+
+There are two different ways to handle result of the instance function. One is to add callback as the last argument and
+handle result inline. Another is to listen to the event emitted from object of app instance.
 
 ### Inline callback style
 
@@ -86,13 +73,15 @@ myBlog.createPost('My awesome post', 'Some contents', function(err, result) {
 
 ### Event style
 
-##### Default callback
-Sometime you don't care about if the post is saved or not, you may wish to handle the result in other part of your code.
+**Default callback**
+
+Sometime you don't care about if the post is saved or not. And you may wish to handle the result in other part of your code.
 So when you call instance function and the last argument is not a callback, genji will generate a default callback for you.
-An event with the name of the method will be triggered if you call the generated function.
+You call the callback as usual and an event with the name of the instance method will be triggered.
 
 ```javascript
-// the event callback's argument is same as how you call the callback in the `createPost` function
+
+// the event callback's argument is same as how you call the callback inside the "createPost" function
 myBlog.on('createPost', function(err, result) {
   // handle the event
 });
@@ -101,6 +90,7 @@ myBlog.on('createPost', function(err, result) {
 
 // create and forget
 myBlog.createPost('I do not care about the result', 'Yes, there is no callback after me.');
+
 ```
 
 There is one **exception**. When your instance function is synchronized and returns non-undefined value on calling. The event/callback will not be emitted/invoked in async operation.
@@ -123,7 +113,8 @@ There is one **exception**. When your instance function is synchronized and retu
 
 ```
 
-##### Delegation
+**Delegation**
+
 You can delegate all the events to other event emitter object by setting the `delegate` property to that emitter.
 
 ```javascript
@@ -168,24 +159,28 @@ var AwesomeBlogApp = BlogApp({
 
 ## Conventions
 
-App introduced a very thin mechanism to organize business logic code. To make the app works simple and efficient with other part of system, here are the conventions you may need to know and understand.
+App introduced a very thin mechanism to organize business logic code. To make app works simply and efficiently with
+other part of system, here are the conventions you may need to know and understand.
 
-### Context
+### Session
 
-Although we call defined app `class`, but actually we use individial instance functions in a `functional programming` style in conjuction with `genji.Controller`. This allow genji to reuse a single app instance for multiple requests instead of constructing for each one of them. You may noticed that, there's no session info passed to `createPost` in the above example, this is not possible in a real world application. So we put the context object which contains session and other request specific info as the first argument of app's instance function when working with controller. So your instance function will become some sort of `context first callback last` style of function signature:
+Although we call defined app `class`, but actually we use individial instance functions in a `functional programming`
+style in conjuction with [Site](site.html) and [Router](router.html). This allow genji to reuse a single app instance
+for multiple requests instead of constructing for each one of them. You may noticed that, there's no session info passed
+to `createPost` in the above example, this is not possible in a real world application. So Genji put the session object
+which may contains credential or other user specific info as the first argument of app's instance function when working
+with Site. So your instance function will have some sort of `session first callback last` style of function signature.
 
 ```javascript
 
-createPost: function(context, title, content, callback) {
-  if (context.group === 'admin' && context.user) {
+createPost: function(session, title, content, callback) {
+  if (session.group === 'author' && session.user) {
     // Make the post object with user info
     var post = {
-      user: context.user,
+      user: session.user,
       title: title, content: content, created: new Date()
     };
-    // save to the db
     this.db.save(post).then(function(result){
-      // error first callback style
       callback(null, result);
     });
   } else {
@@ -195,8 +190,9 @@ createPost: function(context, title, content, callback) {
 
 ```
 
-To make the app class more reusable, don't put any http stack object as the function argument (e.g. request/response object of node.js etc.). That will make you loose the flexiblity and coupled with http stack.
-Leave that job to `genji.Controller` to make you life easier.
+To make the app class more reusable, don't put any http stack object as the function argument
+(e.g. request/response object of node.js etc.). That will make you loose the flexiblity and coupled with http stack.
+Leave that job to `genji.Site` to make you life easier.
 
 ### The `this` object
 
@@ -205,7 +201,7 @@ You can always use `this` refer to the instance of app inside of instance functi
 
 ### Naming and url mapping
 
-Controller use `name` property of app and it's functions' name for mapping url automatically. For example:
+Site use `name` property of app and it's functions' name for mapping url automatically. For example:
 
  - `blog/ceate/post` to match `Blog` app's `createPost` function.
  - `awesomeblog/create/post` map to `AwesomeBlog`'s `createPost`.

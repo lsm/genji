@@ -4,9 +4,7 @@ Router
 Router routes http request to designated handling function based on the requesting url. It supports calling hook
 function before/after dispatch to handling function. Router can be used standalone which means no site/middleware/app involved.
 
-## Usage
-
-### Add route definition
+## Add route definition
 
 ```javascript
   var genji = require('genji');
@@ -14,21 +12,21 @@ function before/after dispatch to handling function. Router can be used standalo
   var router = genji.route({urlRoot: '/home'});
 
   // handle GET request for url '/home/hello?title=Mr' (urlRoot + url)
-  router.get('/hello/(.*)', function(handler, name) {
-    handler.sendHTML('Hello, ' + handler.query.title + ' ' + name);
+  router.get('/hello/(.*)', function(context, name) {
+    context.sendHTML('Hello, ' + context.query.title + ' ' + name);
   });
 
   // 'urlRoot` will not be prefixed before your url if it starts with '^'
-  router.post('^/post', function(handler) {
-    // post parameters will be parsed if handler listen to the 'params' event.
-    handler.on('params', function(params) {
+  router.post('^/post', function(context) {
+    // post parameters will be parsed if context listen to the 'params' event.
+    context.on('params', function(params) {
       // do something
-      handler.send('ok');
+      context.send('ok');
     });
   });
 ```
 
-### Hooks
+## Hooks
 
 You can use `Hooks` to do some tasks before and after dispatch. Hook functions together with handle function will be chained
 into an array by router. And all functions in chain will be called in order during dispatch. During the dispatching process,
@@ -41,14 +39,13 @@ handle function. Some special cases when:
   - the hook is a function, it means the function is a pre hook (e.g. fn1 === [fn1])
 
 ```javascript
-
-  function preHook(handler, next) {
+  function preHook(context, next) {
     // you can call `next` asynchronously, the next function in chain won't be called
     // until you call `next`
     setTimeout(next, 1000);
   }
 
-  function postHook(handler, next) {
+  function postHook(context, next) {
     // if you return true, the next function in chain (if any) will be called immediately
     return true;
   }
@@ -57,7 +54,7 @@ handle function. Some special cases when:
 
 ```
 
-### Listen to server event
+## Listen to server event
 
 You can use router directly with HttpServer instance.
 
@@ -87,34 +84,30 @@ Takes **optional** options and create a new `genji.Router` instance.
 Supported options:
 
  - `urlRoot` is the base url of the router, default value is '^/'.
- - `handlerClass` the default handler class for each request. See [Handler](#handler) for more info.
+ - `contextClass` the default context class for each request. See [Context](#context) for more info.
 
 ### Methods
 
-#### Router#{get|post|put|delete|head}(url:{String|RegExp}, handleFunction:Function, /\*optional\*/ options:Object)
+
+##### {get|post|put|delete|head}(url:{String|RegExp}, handleFunction:Function, /\*optional\*/ options:Object)
 
 The `get/post/put/delete/head` route defining methods of `Router` instance have the same signature:
 
-  - `url` The RegExp instance or string representation of it, string will be converted to regular expression
-    If it's string, router will check if the given string starts with `^` if not the `urlRoot` will be prepended to the string.
-    This is not true for RegExp object.
-  - `handleFunction` Function to handle the request, the handling function has following signature:
-    function handleFunction(handler, /\*optional\*/ matched..., /\*optional\*/ query) {}
-    - `handler` Instance of `Handler` object
-    - `matched` *Optional* arguments matched from your url regular expression (e.g. /path/to/item/**([0-9]\*)** )
-    - `query` *Optional* query object parsed from url (e.g. /path/to/item?**id=1234**)
-  - `options` An optional object for advanced customization:
-    - `handlerClass` custom handler for this specific rule
-    - `hooks` a function or array of functions which will be called before dispatch to handling function
+  - **url** The RegExp instance or string representation of it, string will be converted to regular expression.
+    If it's string, router will check if the given string starts with `^`. If not the `urlRoot` will be prepended to the string.
 
-The `options` has following transformations:
-  - *Function* which means `options` is `handlerClass`
-  - *Array* which means `options` is `hooks`
+  - **handleFunction** Function to handle the request, the handling function has following signature:
+
+    **function handleFunction(context, /\*optional\*/ matched...) {}**
+      - `context` Instance object of `Context`
+      - `matched` *Optional* values matched from your url regular expression (e.g. /path/to/item/**([0-9]\*)** )
+
+  - **hooks** a function or array of functions which will be called during dispatch
 
 Routing rules are grouped by http method. Previous rule could be overriden by subsequently calling routing method with same
 http method and url. That means you can have different handling functions for the same url with different http method.
 
-#### Router#mount(urls:{Array})
+##### mount(urls:{Array})
 
 Add batch of routing rules at once. Each element in the `urls` array should be an array with members of following order:
 
@@ -123,17 +116,17 @@ Add batch of routing rules at once. Each element in the `urls` array should be a
   - `httpMethod` *Optional* http method that accepted, default to 'GET'
   - `options` *Optional* same as described above
 
-#### Router#notFound(url:{String|RegExp}, handleFunction:Function)
+##### notFound(url:{String|RegExp}, handleFunction:Function)
 
 The miss matched matcher. You can use it to handle miss matched requests based on different url.
 
 ```javascript
 
-  router.notFound('^/blog/*', function(handler) {
+  router.notFound('^/blog/*', function(context) {
     // for miss matched url start with `/blog/`
   });
 
-  router.notFound('^/*', function(handler) {
+  router.notFound('^/*', function(context) {
     // for any other cases
   });
 
