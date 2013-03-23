@@ -81,7 +81,7 @@ exports['test App callback and event'] = function () {
 
 exports['test prefixed event on delegation'] = function () {
   var subMyApp = new SubMyApp('key');
-  var emitter = new MyApp;
+  var emitter = new MyApp();
   subMyApp.delegate = emitter;
 
   emitter.on('SubMyApp:doAsyncJob', function (err, result) {
