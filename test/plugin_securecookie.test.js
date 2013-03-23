@@ -28,13 +28,12 @@ var testCookiePlugin = {
   }
 };
 
-
-
 exports['test plugin securecookie'] = function () {
   var site = genji.site();
   site.use('securecookie', secureCookieOptions);
   site.use(testCookiePlugin);
-  var server = site.start().server;
+  site.set('port', 8889);
+  var server = site.start();
   assert.response(server, {
     url: '/sign',
     timeout: 2000,
@@ -45,7 +44,7 @@ exports['test plugin securecookie'] = function () {
     var site = genji.site();
     site.use('securecookie', secureCookieOptions);
     site.use(testCookiePlugin);
-    var server = site.start().server;
+    var server = site.start();
     assert.response(server, {
       url: '/verify',
       timeout: 500,
