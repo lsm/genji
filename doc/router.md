@@ -89,16 +89,16 @@ Supported options:
 ### Methods
 
 
-##### {get|post|put|delete|head}(url:{String|RegExp}, handleFunction:Function, /\*optional\*/ options:Object)
+##### {get|post|put|delete|head}(url:{String|RegExp}, handler:Function, /\*optional\*/ options:Object)
 
 The `get/post/put/delete/head` route defining methods of `Router` instance have the same signature:
 
   - **url** The RegExp instance or string representation of it, string will be converted to regular expression.
     If it's string, router will check if the given string starts with `^`. If not the `urlRoot` will be prepended to the string.
 
-  - **handleFunction** Function to handle the request, the handling function has following signature:
+  - **handler** Function to handle the request, the handling function has following signature:
 
-    **function handleFunction(context, /\*optional\*/ matched...) {}**
+    **function handler(context, /\*optional\*/ matched...) {}**
       - `context` Instance object of `Context`
       - `matched` *Optional* values matched from your url regular expression (e.g. /path/to/item/**([0-9]\*)** )
 
@@ -112,11 +112,11 @@ http method and url. That means you can have different handling functions for th
 Add batch of routing rules at once. Each element in the `urls` array should be an array with members of following order:
 
   - `url` same as described above in `get/post/put/delete/head` methods
-  - `handleFunction` same as described above
+  - `handler` same as described above
   - `httpMethod` *Optional* http method that accepted, default to 'GET'
   - `options` *Optional* same as described above
 
-##### notFound(url:{String|RegExp}, handleFunction:Function)
+##### notFound(url:{String|RegExp}, handler:Function)
 
 The miss matched matcher. You can use it to handle miss matched requests based on different url.
 

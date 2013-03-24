@@ -14,7 +14,7 @@ exports['test parser and router plugins'] = function () {
     receiveJSON: {
       url: '/receive$',
       method: 'POST',
-      handleFunction: function (context) {
+      handler: function (context) {
         context.on('json', function (json, data, error) {
           if (!error) {
             assert.eql(json.key, 'value');
@@ -105,7 +105,7 @@ exports['test app customized routing and hooks'] = function () {
   var routes = {
     customized: {hooks: [null, postHook]},
     testExampleFunction: {url: '^/example/(.*)', view: 'json', hooks: [preHook, null, postHook]},
-    customizedRoute: {url: '^/another/example/(.*)', method: 'post', handleFunction: function (context, param, next) {
+    customizedRoute: {url: '^/another/example/(.*)', method: 'post', handler: function (context, param, next) {
       context.session = {user: 'john'};
       assert.eql('test', param);
       context.send(result);
