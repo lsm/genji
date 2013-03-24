@@ -14,7 +14,8 @@ and custom getter/setter method, views layout manager and namespaced template ov
 While it doesn't mean you have to stick with a particular development style or technology, genji is highly modular
 designed and customizable, so you can decide which part of the framework to use and how.
 
-- For docs and everything else see: [http://lsm.github.com/genji](http://lsm.github.com/genji)
+- For documentations see: [http://lsm.github.com/genji](http://lsm.github.com/genji)
+- Check out the [test coverage](http://lsm.github.com/genji/coverage.html) and [plato report](http://lsm.github.com/genji/plato) for source analysis
 - Ideas, bug report or general discussion are always welcome, feel free to open issue at: [https://github.com/lsm/genji/issues](https://github.com/lsm/genji/issues)
 
 
