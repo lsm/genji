@@ -8,7 +8,7 @@ var genji = require('../lib/genji');
 var site = genji.site();
 
 // Use the "helloworld" plugin
-site.use('helloworld');
+site.use(require('./plugin-helloworld'));
 
 // handle "helloworld" event emits from the plugin
 site.on('helloworld', function () {
