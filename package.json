@@ -7,7 +7,7 @@
   "author": "Senmiao Liu <senmiao.liu@gmail.com> http://vitecho.com",
   "repository" : {
     "type" : "git",
-    "url" : "http://github.com/zir/genji.git"
+    "url" : "http://github.com/lsm/genji.git"
   },
   "main": "./index",
   "directories": {
@@ -15,11 +15,12 @@
     "example": "./example"
   },
   "devDependencies": {
-    "expresso": "0.9.x",
+    "mocha": "1.8.2",
+    "supertest": "0.5.1",
     "hogan.js": "2.0.0"
   },
   "scripts": {
-    "test": "expresso -I lib"
+    "test": "make test"
   },
   "engines": {
     "node": ">= 0.6.0"

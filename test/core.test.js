@@ -1,141 +1,136 @@
 var genji = require('../index');
 var http = require('http');
 var assert = require('assert');
-var timeout = 500;
+var request = require('supertest');
 
-exports['test parser and router plugins'] = function () {
-  var core = new genji.Core();
-  core.loadPlugin('parser');
-  core.loadPlugin('router', {urlRoot: '^/json'});
+describe('Core', function () {
+  var App = genji.App;
+  var core;
+  var server;
+  beforeEach(function () {
+    core = new genji.Core();
+    server = http.createServer();
+  });
 
-  var jsonStr = JSON.stringify({key: "value"});
+  it('should use parser and router plugins to route and parse json request', function (done) {
+    core.loadPlugin('parser');
+    core.loadPlugin('router', {urlRoot: '^/json'});
 
-  var routes = {
-    receiveJSON: {
-      url: '/receive$',
-      method: 'POST',
-      handler: function (context) {
-        context.on('json', function (json, data, error) {
-          if (!error) {
-            assert.eql(json.key, 'value');
-            assert.eql(data, jsonStr);
-            context.sendJSON({ok: true});
-          }
-        });
+    var jsonStr = JSON.stringify({key: "value"});
+
+    var routes = {
+      receiveJSON: {
+        url: '/receive$',
+        method: 'POST',
+        handler: function (context) {
+          context.on('json', function (json, data, error) {
+            if (!error) {
+              assert.equal(json.key, 'value');
+              assert.equal(data, jsonStr);
+              context.sendJSON({ok: true});
+            }
+          });
+        }
       }
-    }
-  };
+    };
 
-  core.mapRoutes(routes);
-  var server = http.createServer(core.getListener());
+    core.mapRoutes(routes);
+    server.on('request', core.getListener());
 
-  assert.response(server, {
-    url: '/json/receive',
-    timeout: timeout,
-    data: jsonStr,
-    method: 'POST',
-    headers: {'content-length': jsonStr.length}
-  }, function (res) {
-    var json = JSON.parse(res.body);
-    assert.eql(json.ok, true);
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'application/json; charset=utf-8');
-  });
-};
-
-exports['test app auto routing'] = function () {
-  var App = genji.App;
-  var core = new genji.Core();
-  core.loadPlugin('parser');
-  core.loadPlugin('router');
-
-  var result = 'Test result!';
-
-  var TestApp = App({
-    name: 'Test',
-    exampleFunction: function (callback) {
-      callback(null, result);
-    }
+    request(server)
+      .post('/json/receive')
+      .send(jsonStr)
+      .set('Content-Type', 'application/json')
+      .set('content-length', jsonStr.length)
+      .expect(200)
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .end(function (err, res) {
+        if (err) {
+          throw err;
+        }
+        assert.equal(true, res.body.ok);
+        done();
+      });
   });
 
-  var testApp = new TestApp();
-  core.mapRoutes(testApp);
-  var server = http.createServer(core.getListener());
+  it('should app auto routing', function (done) {
+    core.loadPlugin('router');
+    var result = 'Test result!';
 
-  assert.response(server, {
-    url: '/test/example/function',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.eql(res.body, result);
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'text/html; charset=utf-8');
-  });
-};
+    var TestApp = App({
+      name: 'Test',
+      exampleFunction: function (callback) {
+        callback(null, result);
+      }
+    });
 
-exports['test app customized routing and hooks'] = function () {
-  var App = genji.App;
-  var core = new genji.Core();
-  core.loadPlugin('router');
+    var testApp = new TestApp();
+    core.mapRoutes(testApp);
+    server.on('request', core.getListener());
 
-  var result = 'Test result!';
-
-  var TestApp = App({
-    name: 'Test',
-    exampleFunction: function (session, param, callback) {
-      assert.eql('test', param);
-      assert.eql('john', session.user);
-      callback(null, {user: session.user, message: result});
-    }
+    request(server)
+      .get('/test/example/function')
+      .expect('Content-Type', 'text/html; charset=utf-8')
+      .expect(200, result, done);
   });
 
-  var testApp = new TestApp();
+  it('should app customized routing and hooks', function (done) {
+    core.loadPlugin('router');
 
-  var preHook = function (context, param, next) {
-    assert.eql('test', param);
-    context.session = {user: 'john'};
-    setTimeout(next, 50);
-  };
+    var result = 'Test result!';
 
-  var postHook = function (context, param, next) {
-    assert.eql('test', param);
-    assert.eql('john', context.session.user);
-  };
+    var TestApp = App({
+      name: 'Test',
+      exampleFunction: function (session, param, callback) {
+        assert.equal('test', param);
+        assert.equal('john', session.user);
+        callback(null, {user: session.user, message: result});
+      }
+    });
 
-  var routes = {
-    customized: {hooks: [null, postHook]},
-    testExampleFunction: {url: '^/example/(.*)', view: 'json', hooks: [preHook, null, postHook]},
-    customizedRoute: {url: '^/another/example/(.*)', method: 'post', handler: function (context, param, next) {
+    var testApp = new TestApp();
+
+    var preHook = function (context, param, next) {
+      assert.equal('test', param);
       context.session = {user: 'john'};
-      assert.eql('test', param);
-      context.send(result);
-      return true;
-    }}
-  };
+      setTimeout(next, 50);
+    };
 
-  core.mapRoutes(routes, testApp);
-  core.mapRoutes(routes);
-  var server = http.createServer(core.getListener());
+    var postHook = function (context, param, next) {
+      assert.equal('test', param);
+      assert.equal('john', context.session.user);
+    };
 
-  assert.response(server, {
-    url: '/example/test',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    var json = JSON.parse(res.body);
-    assert.eql('john', json.user);
-    assert.eql(result, json.message);
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'application/json; charset=utf-8');
+    var routes = {
+      customized: {hooks: [null, postHook]},
+      testExampleFunction: {url: '^/example/(.*)', view: 'json', hooks: [preHook, null, postHook]},
+      customizedRoute: {url: '^/another/example/(.*)', method: 'post', handler: function (context, param, next) {
+        context.session = {user: 'john'};
+        assert.equal('test', param);
+        context.send(result);
+        return true;
+      }}
+    };
+
+    core.mapRoutes(routes, testApp);
+    core.mapRoutes(routes);
+    server.on('request', core.getListener());
+
+    request(server)
+      .get('/example/test')
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200)
+      .end(function (err, res) {
+        if (err) {
+          throw err;
+        }
+        var json = res.body;
+        assert.equal('john', json.user);
+        assert.equal(result, json.message);
+        request(server)
+          .post('/another/example/test')
+          .expect('Content-Type', 'text/plain')
+          .expect(200, result, done);
+      });
   });
-
-  assert.response(server, {
-    url: '/another/example/test',
-    timeout: timeout,
-    method: 'POST'
-  }, function (res) {
-    assert.eql(result, res.body);
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'text/plain');
-  });
-};
+});

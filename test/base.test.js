@@ -2,53 +2,53 @@ var genji = require('../index');
 var Base = genji.Base;
 var Klass = genji.Klass;
 var Class, ClassPlus, ClassPlusPlus, Class4
-    , klass, klassPlus, klassPlusPlus, klass4;
+  , klass, klassPlus, klassPlusPlus, klass4;
 var assert = require('assert');
 
 function setup() {
-  Class = Base(function(name) {
+  Class = Base(function (name) {
     this.name = name;
   });
 
   ClassPlus = Class({
-    init: function(name, age) {
+    init: function (name, age) {
       this._super(name + 1);
       this.age = age;
     }
   });
 
   ClassPlusPlus = ClassPlus({
-    getName: function() {
+    getName: function () {
       return this.name;
     },
-    getAge:  function() {
+    getAge: function () {
       return this.age;
     },
     include: [
-      {getSchool: function() {
-        return 'MIT'
+      {getSchool: function () {
+        return 'MIT';
       }}
     ],
     extend: [
-      {getSchool: function() {
-        return 'NYU'
+      {getSchool: function () {
+        return 'NYU';
       }}
     ]
   });
 
   Class4 = ClassPlusPlus({
-    init: function(name, age) {
+    init: function (name, age) {
       this._super(name, age);
     },
     // instance method
     include: {
-      setAge: function(age) {
+      setAge: function (age) {
         this.age = age;
       }
     },
     // static method
     extend: {
-      getClassName: function() {
+      getClassName: function () {
         return 'Class4';
       }
     }
@@ -60,23 +60,24 @@ function setup() {
   klass4 = new Class4('class4', 14);
 }
 
-module.exports = {
-  'Base: test inherits': function() {
+describe('Base', function () {
+
+  it('should inherits', function () {
     setup();
     assert.equal(klass.constructor, Class);
     assert.equal(klass instanceof Class, true);
     assert.equal(klassPlus.constructor, ClassPlus);
     assert.equal(klassPlus instanceof Class, true);
     assert.equal(klassPlus instanceof ClassPlus, true);
-    assert.eql(klassPlusPlus.constructor, ClassPlusPlus);
+    assert.equal(klassPlusPlus.constructor, ClassPlusPlus);
     assert.equal(klassPlusPlus instanceof Class, true);
     assert.equal(klassPlusPlus instanceof ClassPlus, true);
     assert.equal(klassPlusPlus instanceof ClassPlusPlus, true);
-    assert.isUndefined(ClassPlus.prototype.getAge);
-    assert.isUndefined(klassPlus.getName);
-  },
+    assert.equal(undefined, ClassPlus.prototype.getAge);
+    assert.equal(undefined, klassPlus.getName);
+  });
 
-  'test Base constructor': function() {
+  it('should call constructor on initialization', function () {
     assert.equal(klass.name, 'class');
     assert.equal(klassPlus.age, 18);
     assert.equal(klassPlus.name, 'classPlus1');
@@ -86,18 +87,18 @@ module.exports = {
     assert.equal(klass4.getName(), 'class41');
     assert.equal(klassPlusPlus.getName(), 'classPlusPlus1');
     assert.equal(klassPlusPlus.getAge(), 26);
-  },
+  });
 
-  'Base: test mixin - extend': function() {
+  it('should extend constructor and instance', function () {
     ClassPlus.extend({
-          hello: function() {
-            return 'hello';
-          }
-        }, {
-          world: function() {
-            return 'world';
-          }
-        });
+      hello: function () {
+        return 'hello';
+      }
+    }, {
+      world: function () {
+        return 'world';
+      }
+    });
     // static functions
     assert.equal(ClassPlus.hello(), 'hello');
     assert.equal(ClassPlus.world(), 'world');
@@ -110,10 +111,10 @@ module.exports = {
     setup();
 
     klassPlusPlus.extend({
-      getEmail: function() {
+      getEmail: function () {
         return this.email;
       },
-      setEmail: function(email) {
+      setEmail: function (email) {
         this.email = email;
       }
     });
@@ -124,31 +125,31 @@ module.exports = {
     assert.equal(klass4.setEmail, undefined);
     assert.equal(Class4.setEmail, undefined);
     assert.equal(ClassPlus.setEmail, undefined);
-  },
+  });
 
-  'Base: test convert module to class': function() {
+  it('should convert module to class', function () {
     var Engine = Base({
-      init: function(name) {
+      init: function (name) {
         this.name = name;
       },
 
-      start: function() {
+      start: function () {
         return 'engine ' + this.name + ' started';
       }
     });
     var engine = new Engine('e90');
     assert.equal(engine instanceof Engine, true);
     assert.equal(engine.start(), 'engine e90 started');
-  },
+  });
 
-  'Base: test extend class like module': function() {
-    var Person = function(name) {
+  it('should extend class like a module', function () {
+    var Person = function (name) {
       this.name = name;
     };
-    var Worker = function() {
+    var Worker = function () {
       this.role = 'worker';
     };
-    Worker.prototype.work = function() {
+    Worker.prototype.work = function () {
       return this.role + ' can work';
     };
 
@@ -158,28 +159,30 @@ module.exports = {
     assert.equal(worker.role, 'worker');
     assert.equal(worker.work(), 'worker can work');
 
-    var Leader = function() {
+    var Leader = function () {
       this.role = 'leader';
     };
-    Leader.prototype.getRole = function() {
+    Leader.prototype.getRole = function () {
       return this.role;
     };
     WorkerClass.include(Leader); // `Leader` will be treated as a module
     var leadWorker = new WorkerClass('tom');
     assert.equal(leadWorker.getRole(), 'worker');
-  },
+  });
 
-  'Base: test extending wrong object': function() {
+  it('should throw exception when extending wrong object', function () {
     try {
       Class.include('');
       assert.equal(1, 2); // should not be called
     } catch (e) {
       assert.equal(e.message, 'Type not accepted');
     }
-  },
+  });
+});
 
-  'Klass: test inherits': function () {
-    var Class = Klass(function(name) {
+describe('Klass', function () {
+  it('should inherits', function () {
+    var Class = Klass(function (name) {
       this.name = name;
     }, {
       getName: function () {
@@ -230,5 +233,5 @@ module.exports = {
     assert.equal('Subclass: mike', subclass.getName());
 
     assert.equal(undefined, Class3.prototype.getKey);
-  }
-};
+  });
+});

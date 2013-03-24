@@ -2,8 +2,10 @@ var genji = require('../index');
 var Router = genji.Router;
 var assert = require('assert');
 
-module.exports = {
-  'test router': function () {
+describe('Router', function () {
+
+  it('should route by definitions', function () {
+
     var helloGet, helloPost, preHook1, preHook2, preHook3 = 0, postHook1 = 0, preHookSub1, preHookSub2,
       hello2Get, notFound, notFound2, sub1, sub2, sub3, sub4, globalPreHook = 0, globalPostHook = 0,
       defaultContext = 0, nestedSub, nestedSub2, override;
@@ -217,5 +219,6 @@ module.exports = {
     } catch (e) {
       assert.equal(e.message, 'Invalid url pattern');
     }
-  }
-};
+  });
+
+});

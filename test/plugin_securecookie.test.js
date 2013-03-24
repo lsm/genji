@@ -1,6 +1,7 @@
 var genji = require('../index');
 var assert = require('assert');
 var http = require('http');
+var request = require('supertest');
 
 // options for `secure-cookie` middleware
 var secureCookieOptions = {cookieName: '_testSecure', path: '../../lib/middleware', secureKey: 'cipher-key', serverKey: 'hmac-key'};
@@ -19,9 +20,9 @@ var testCookiePlugin = {
         this.end();
       } else if (req.url === '/verify') {
         var session = this.session;
-        assert.eql(session.cookieId, userData.cookieId);
-        assert.eql(new Date(session.cookieExpires), userData.cookieExpires);
-        assert.eql(session.cookieData.a, userData.cookieData.a);
+        assert.equal(session.cookieId, userData.cookieId);
+        assert.deepEqual(new Date(session.cookieExpires), userData.cookieExpires);
+        assert.equal(session.cookieData.a, userData.cookieData.a);
         this.writeHead(200, {data: JSON.stringify(session)});
         this.end();
       }
@@ -29,34 +30,34 @@ var testCookiePlugin = {
   }
 };
 
-exports['test plugin securecookie'] = function () {
-  var site = genji.site();
-  site.use('securecookie', secureCookieOptions);
-  site.use(testCookiePlugin);
-  var server = http.createServer();
-  site.start(server);
-  assert.response(server, {
-    url: '/sign',
-    timeout: 2000,
-    method: 'GET',
-    headers: {data: JSON.stringify(userData)}
-  }, function (res) {
-    var signedCookie = res.headers['set-cookie'];
+describe('Secure cookie plugin', function () {
+  it('should be able to sign and verify cookies', function (done) {
     var site = genji.site();
     site.use('securecookie', secureCookieOptions);
     site.use(testCookiePlugin);
     var server = http.createServer();
     site.start(server);
-    assert.response(server, {
-      url: '/verify',
-      timeout: 500,
-      method: 'GET',
-      headers: {'Cookie': signedCookie[0]}
-    }, function (res) {
-      var parsedData = JSON.parse(res.headers.data);
-      assert.eql(parsedData.cookieId, userData.cookieId);
-      assert.eql(new Date(parsedData.cookieExpires), userData.cookieExpires);
-      assert.eql(parsedData.cookieData.a, userData.cookieData.a);
-    });
+
+    request(server)
+      .get('/sign')
+      .set('data', JSON.stringify(userData))
+      .end(function (err, res) {
+        var signedCookie = res.headers['set-cookie'];
+        var site = genji.site();
+        site.use('securecookie', secureCookieOptions);
+        site.use(testCookiePlugin);
+        var server = http.createServer();
+        site.start(server);
+        request(server)
+          .get('/verify')
+          .set('Cookie', signedCookie[0])
+          .end(function (err, res) {
+            var parsedData = JSON.parse(res.headers.data);
+            assert.equal(parsedData.cookieId, userData.cookieId);
+            assert.deepEqual(new Date(parsedData.cookieExpires), userData.cookieExpires);
+            assert.equal(parsedData.cookieData.a, userData.cookieData.a);
+            done();
+          });
+      });
   });
-};
+});

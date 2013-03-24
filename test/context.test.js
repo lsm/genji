@@ -2,247 +2,253 @@ var genji = require('../index');
 var http = require('http');
 var Context = genji.Context;
 var assert = require('assert');
-var timeout = 500;
+var request = require('supertest');
 
-exports['test header operations 1'] = function () {
-  var router = genji.route();
-  var data = 'get: Hello world!';
-  router.get('^/header1$', function (context) {
-    context.addHeader('key1', 'value1');
-    context.setHeader('key2', 'value2');
-    context.addHeader('key2', 'value3');
-    context.addHeader('key3', 'value3');
-    assert.equal(context.getHeader('key3'), 'value3');
-    context.removeHeader('key3', 'value3');
-    assert.isUndefined(context.getHeader('key3'));
-    context.setStatusCode(202);
-    context.end(data);
+describe('Context', function () {
+  var router;
+  var server;
+
+  beforeEach(function () {
+    router = genji.route();
+    server = http.createServer();
   });
 
-  var server = http.createServer();
-  router.listen(server, Context);
+  describe('.setHeader', function () {
+    it('should override header added by addHeader', function (done) {
+      var data = 'get: Hello world!';
+      router.get('^/header1$', function (context) {
+        context.addHeader('key1', 'value1');
+        context.setHeader('key2', 'value2');
+        context.addHeader('key2', 'value3');
+        context.addHeader('key3', 'value3');
+        assert.equal(context.getHeader('key3'), 'value3');
+        context.removeHeader('key3', 'value3');
+        assert.equal(undefined, context.getHeader('key3'));
+        context.setStatusCode(202);
+        context.end(data);
+      });
 
-  assert.response(server, {
-    url: '/header1',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, data);
-    assert.equal(res.statusCode, 202);
-    assert.equal(res.headers.key1, 'value1');
-    assert.equal(res.headers.key2, 'value2');
-    assert.isUndefined(res.headers.key3);
-  });
-};
+      router.listen(server, Context);
 
-exports['test error and redirect'] = function () {
-  var router = genji.route();
-  router.get('^/error$', function (context) {
-    context.addHeader('key1', 'value1');
-    context.setHeader('key2', 'value2');
-    context.error({statusCode: 502, message: 'error 502'});
-  });
-
-  var server = http.createServer();
-  router.listen(server, Context);
-
-  assert.response(server, {
-    url: '/error',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, 'error 502');
-    assert.equal(res.statusCode, 502);
-    assert.eql('value1', res.headers.key1);
-    assert.eql('value2', res.headers.key2);
+      request(server)
+        .get('/header1')
+        .expect('key1', 'value1')
+        .expect('key2', 'value2')
+        .expect(202, data)
+        .end(function (err, res) {
+          assert.equal(res.headers.key3, undefined);
+          done();
+        });
+    });
   });
 
-  router.get('^/301$', function (context) {
-    context.addHeader('key1', 'value1');
-    context.setHeader('key2', 'value2');
-    context.redirect('/to301', true);
+  describe('.error(errObj)', function () {
+    it('should response status code and message supplied', function (done) {
+      router.get('^/error$', function (context) {
+        context.addHeader('key1', 'value1');
+        context.setHeader('key2', 'value2');
+        context.error({statusCode: 502, message: 'error 502'});
+      });
+
+      router.listen(server, Context);
+
+      request(server)
+        .get('/error')
+        .expect('key1', 'value1')
+        .expect('key2', 'value2')
+        .expect(502, 'error 502', done);
+    });
   });
 
-  router.build();
+  describe('.redirect(url[, permanent])', function () {
+    it('should redirect with status code 301', function (done) {
+      router.get('^/301$', function (context) {
+        context.addHeader('key1', 'value1');
+        context.setHeader('key2', 'value2');
+        context.redirect('/to301', true);
+      });
 
-  assert.response(server, {
-    url: '/301',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, '');
-    assert.equal(res.statusCode, 301);
-    assert.equal(res.headers.location, '/to301');
-    assert.equal(res.headers.key1, 'value1');
-    assert.equal(res.headers.key2, 'value2');
+      router.listen(server, Context);
+
+      request(server)
+        .get('/301')
+        .expect('key1', 'value1')
+        .expect('key2', 'value2')
+        .expect('location', '/to301')
+        .expect(301, '', done);
+    });
+
+    it('should redirect with status code 302', function (done) {
+      router.get('^/302$', function (context) {
+        context.addHeader('key1', 'value1');
+        context.setHeader('key2', 'value2');
+        context.redirect('/to302', false);
+      });
+
+      router.listen(server, Context);
+
+      request(server)
+        .get('/302')
+        .expect('key1', 'value1')
+        .expect('key2', 'value2')
+        .expect('location', '/to302')
+        .expect(302, '', done);
+    });
   });
 
-  router.get('^/302$', function (context) {
-    context.addHeader('key1', 'value1');
-    context.setHeader('key2', 'value2');
-    context.redirect('/to302', false);
+  describe('.send', function () {
+    it('should send body with status code and headers', function (done) {
+      router.get('^/test/send$', function (context) {
+        context.send('body', 201, {key1: 'headerValue'}, 'utf8');
+      });
+
+      router.listen(server, Context);
+
+      request(server)
+        .get('/test/send')
+        .expect('key1', 'headerValue')
+        .expect(201, 'body', done);
+    });
   });
 
-  router.build();
+  describe('.sendJSON', function () {
+    it('should send data object as json', function (done) {
+      router.get('^/test/sendJSON$', function (context) {
+        context.setHeader('key2', 'json');
+        context.sendJSON({data: "body"});
+      });
 
-  assert.response(server, {
-    url: '/302',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, '');
-    assert.equal(res.statusCode, 302);
-    assert.equal(res.headers.location, '/to302');
-    assert.equal(res.headers.key1, 'value1');
-    assert.equal(res.headers.key2, 'value2');
-  });
-};
+      router.listen(server, Context);
 
-exports['test send, sendJSON, sendHTML'] = function () {
-  var router = genji.route();
-  var ParserContext = Context(require('../lib/plugin/parser').module);
-
-  router.get('^/testsend$', function (context) {
-    context.send('body', 200, {key1: 'headerValue'}, 'utf8');
-  });
-
-  var server = http.createServer();
-  router.listen(server, ParserContext);
-
-  assert.response(server, {
-    url: '/testsend',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, 'body');
-    assert.equal(res.statusCode, 200);
-    assert.eql(res.headers.key1, 'headerValue');
+      request(server)
+        .get('/test/sendJSON')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect('key2', 'json')
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          assert.equal('body', res.body.data);
+          done();
+        });
+    });
   });
 
-  router.get('^/testsendJSON$', function (context) {
-    context.setHeader('key2', 'json');
-    context.sendJSON({data: "body"});
-  }).build();
+  describe('.sendHTML', function () {
+    it('should send data string as html text', function (done) {
+      var html = '<html>test html</html>';
+      router.get('^/test/sendHTML$', function (context) {
+        context.setHeader('key2', 'html');
+        context.sendHTML(html);
+      });
 
-  assert.response(server, {
-    url: '/testsendJSON',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    var json = JSON.parse(res.body);
-    assert.equal(json.data, 'body');
-    assert.equal(res.statusCode, 200);
-    assert.eql(res.headers.key2, 'json');
-    assert.eql(res.headers['content-type'], 'application/json; charset=utf-8');
+      router.listen(server, Context);
+
+      request(server)
+        .get('/test/sendHTML')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect('key2', 'html')
+        .expect(200, html, done);
+    });
   });
 
-  router.get('^/testsendHTML$', function (context) {
-    context.setHeader('key2', 'html');
-    context.sendHTML('<html></html>');
-  }).build();
-
-  assert.response(server, {
-    url: '/testsendHTML',
-    timeout: timeout,
-    method: 'GET'
-  }, function (res) {
-    assert.equal(res.body, '<html></html>');
-    assert.equal(res.statusCode, 200);
-    assert.eql(res.headers.key2, 'html');
-    assert.eql(res.headers['content-type'], 'text/html; charset=utf-8');
-  });
-};
-
-exports['test cookie plugin'] = function () {
-  var Cookie = genji.cookie;
-  var CookieContext = Context(require('../lib/plugin/cookie').module);
-  var cookieOptions = {
-    expires: new Date(10000),
-    path: '/cookie',
-    domain: 'test.com',
-    secure: true,
-    httponly: true
-  };
-
-  var router = genji.route({contextClass: CookieContext});
-
-  router.get('^/cookie$', function (context) {
-    var clientCookieValue = context.getCookie('client_cookie');
-    assert.eql(clientCookieValue, 'client_value');
-    assert.eql(Cookie.checkLength(context.request.headers.cookie), true);
-    context.setCookie('test_cookie', 'cookie_value', cookieOptions);
-    context.clearCookie('cookie_to_clear', {path: '/'});
-    context.sendHTML('<br />');
-  });
-
-  var server = http.createServer();
-  router.listen(server);
-
-  var clientCookie = 'client_cookie=client_value;';
-  assert.response(server, {
-    url: '/cookie',
-    timeout: timeout,
-    headers: {'Cookie': clientCookie},
-    method: 'GET'
-  }, function (res) {
-    var cookieValue = Cookie.parse(res.headers['set-cookie'][0], 'test_cookie');
+  it('should be able to set/parse cookie by using cookie plugin', function (done) {
+    var Cookie = genji.cookie;
+    var CookieContext = Context(genji.plugin.cookie.module);
+    var cookieOptions = {
+      expires: new Date(10000),
+      path: '/cookie',
+      domain: 'test.com',
+      secure: true,
+      httponly: true
+    };
+    var clientCookie = 'client_cookie=client_value;';
     var cookies = [
       'test_cookie=cookie_value; expires=Thu, 01 Jan 1970 00:00:10 GMT; path=/cookie; domain=test.com; secure=true; httponly=true',
       "cookie_to_clear=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
     ];
-    assert.eql(cookieValue, 'cookie_value');
-    assert.eql(res.headers['set-cookie'], cookies);
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.body, '<br />');
-    assert.eql(res.headers['content-type'], 'text/html; charset=utf-8');
-  });
-};
 
-exports['test file plugin'] = function () {
-  var router = genji.route();
-  var crypto = genji.crypto;
-  var fs = require('fs');
+    var router = genji.route({contextClass: CookieContext});
 
-  var FileContext = Context(require('../lib/plugin/file').module);
-
-  router.get('^/testStaticFile.js$', function (context) {
-    context.staticFile(__filename);
-  });
-
-  var server = http.createServer();
-  router.listen(server, FileContext);
-
-  assert.response(server, {
-    url: '/testStaticFile.js',
-    timeout: timeout,
-    method: 'get'
-  }, function (res) {
-    crypto.md5file(__filename, 'hex', function (err, hash) {
-      assert.eql(err, null);
-      assert.eql(crypto.md5(res.body, 'hex'), hash);
+    router.get('^/cookie$', function (context) {
+      var clientCookieValue = context.getCookie('client_cookie');
+      assert.equal(clientCookieValue, 'client_value');
+      assert.equal(Cookie.checkLength(context.request.headers.cookie), true);
+      context.setCookie('test_cookie', 'cookie_value', cookieOptions);
+      context.clearCookie('cookie_to_clear', {path: '/'});
+      context.sendHTML('<br />');
     });
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'application/javascript');
+
+    router.listen(server);
+
+    request(server)
+      .get('/cookie')
+      .set('Cookie', clientCookie)
+      .expect(200, '<br />')
+      .expect('content-type', 'text/html; charset=utf-8')
+      .end(function (err, res) {
+        var cookieValue = Cookie.parse(res.headers['set-cookie'][0], 'test_cookie');
+        assert.equal('cookie_value', cookieValue);
+        assert.equal(cookies[0], res.headers['set-cookie'][0]);
+        assert.equal(cookies[1], res.headers['set-cookie'][1]);
+        done();
+      });
   });
 
-  router.get('^/testSendAsFile.js$', function (context) {
-    fs.readFile(__filename, 'utf8', function (err, data) {
-      if (!err) {
-        context.sendAsFile(data, {ext: '.js'});
-      }
-    });
-  }).build();
+  describe('uses file plugin', function () {
+    var crypto = genji.crypto;
+    var fs = require('fs');
+    var FileContext = Context(genji.plugin.file.module);
 
-  assert.response(server, {
-    url: '/testSendAsFile.js',
-    timeout: timeout,
-    method: 'get'
-  }, function (res) {
-    crypto.md5file(__filename, 'hex', function (err, hash) {
-      assert.eql(err, null);
-      assert.eql(crypto.md5(res.body, 'hex'), hash);
+    it('should be able to serve static file', function (done) {
+      router.get('^/test/static/file.js$', function (context) {
+        context.staticFile(__filename);
+      });
+
+      router.listen(server, FileContext);
+
+      request(server)
+        .get('/test/static/file.js')
+        .expect('Content-Type', 'application/javascript')
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          crypto.md5file(__filename, 'hex', function (err, hash) {
+            assert.equal(null, err);
+            assert.equal(hash, crypto.md5(res.text, 'hex'));
+            done();
+          });
+        });
     });
-    assert.eql(res.statusCode, 200);
-    assert.eql(res.headers['content-type'], 'application/javascript');
+
+    it('should send data as file content', function (done) {
+      router.get('^/test/send/as/file.js$', function (context) {
+        fs.readFile(__filename, 'utf8', function (err, data) {
+          if (!err) {
+            context.sendAsFile(data, {ext: '.js'});
+          }
+        });
+      });
+
+      router.listen(server, FileContext);
+
+      request(server)
+        .get('/test/send/as/file.js')
+        .expect('Content-Type', 'application/javascript')
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          crypto.md5file(__filename, 'hex', function (err, hash) {
+            assert.equal(err, null);
+            assert.equal(crypto.md5(res.text, 'hex'), hash);
+            done();
+          });
+        });
+    });
   });
-};
+});
