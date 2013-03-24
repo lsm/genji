@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lib/base.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">66.03</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.07</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">72.69</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">184 / 103</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">/**
+ * Javascript OO helpers
+ */
+
+/**
+ * Module exports.
+ */
+
+exports.Base = Base;
+exports.Klass = Klass;
+
+/**
+ * Feature rich javascript OO implementation
+ * @param superCtor {Function|Object} Optional parent class's constructor or module object
+ * @param subModule {Object} Instance properties of subclass
+ * @return {Function}
+ * inspired by:
+ * http://rightjs.org/docs/class
+ * http://ejohn.org/blog/simple-javascript-inheritance/
+ */
+
+function Base(superCtor, subModule) {
+  var superClass;
+  if (typeof superCtor !== 'function') {
+    subModule = superCtor;
+    superCtor = function () {
+    };
+  }
+  if (typeof subModule === "function") {
+    superClass = subModule;
+    subModule = superClass.prototype;
+  }
+  var global = this;
+
+  // constructor
+  var ctor = function (module) {
+    // determine if current function was called directly or with a new operator
+    if (this !== global) {
+      // function is called in order to initialize a instance
+      if (superClass) {
+        superClass.call(this);
+      }
+      this.init.apply(this, arguments);
+    } else {
+      // ctor is called in order to define a subclass
+      return Base(ctor, module);
+    }
+  };
+  ctor.include = function () {
+    extend.call(ctor, ctor.prototype, arguments);
+    return ctor;
+  };
+
+  ctor.extend = function () {
+    return extend.call(ctor, ctor, arguments);
+  };
+
+  ctor = inherits(ctor, superCtor);
+  if (!ctor.prototype.init) {
+    ctor.prototype.init = superCtor;
+  }
+  // extending the prototype
+  if (subModule) {
+    extend.call(ctor, ctor.prototype, [subModule]);
+  }
+
+  ctor.prototype.extend = function () {
+    return extend.call(ctor, this, arguments);
+  };
+  ctor.constructor = ctor; // Class.constrcutor == Class
+  ctor.prototype.constructor = ctor; // instance.constructor == Class
+  return ctor;
+}
+
+/**
+ * Super lightweight javascript OO implementation
+ *
+ * @param superClass {Function} The parent class which you want to inherit from
+ * @param subModule {Object} Instance properties of subclass
+ * @param [inherit] {Function} Optional customized inheriting function for changing the default inheriting behaviour
+ * @return {Function} The inherited subclass
+ * @constructor
+ */
+
+function Klass(superClass, subModule, inherit) {
+  var global = this;
+  var superCtor = superClass;
+
+  if ('function' === typeof subModule) {
+    superCtor = subModule;
+    subModule = subModule.prototype;
+  }
+
+  var _inherit = function (prototype, subModule) {
+    Object.keys(subModule).forEach(function (key) {
+      prototype[key] = subModule[key];
+    });
+  };
+
+  if (inherit) {
+    _inherit = inherit;
+  }
+
+  function constructor(subModule, inherit) {
+    if (global !== this) {
+      superCtor.apply(this, arguments);
+      if ('function' === typeof this.init) {
+        this.init.apply(this, arguments);
+      }
+    } else {
+      return Klass(constructor, subModule, inherit || _inherit);
+    }
+  }
+
+  var prototype = constructor.prototype;
+  prototype.__proto__ = superClass.prototype;
+
+  if (subModule) {
+    _inherit(prototype, subModule);
+  }
+
+  return constructor;
+}
+
+/**
+ * Helper functions for Base
+ */
+
+function makeSuper(name, fn, oldSuper) {
+  return function () {
+    var tmp = this._super;
+    this._super = oldSuper;
+    var ret = fn.apply(this, arguments);
+    this._super = tmp;
+    return ret;
+  };
+}
+
+function extend(target, modules) {
+  for (var i = 0, len = modules.length; i < len; i++) {
+    var subModule = modules[i];
+    switch (typeof subModule) {
+      case 'function':
+        // a constructor function
+        subModule = subModule.prototype;
+        break;
+      case 'object':
+        if (subModule === null) {
+          continue;
+        }
+        // a module like object
+        if (subModule.hasOwnProperty("include")) {
+          if (Array.isArray(subModule.include)) {
+            this.include.apply(null, subModule.include);
+          } else {
+            this.include(subModule.include);
+          }
+          delete subModule.include;
+        }
+        if (subModule.hasOwnProperty("extend")) {
+          if (Array.isArray(subModule.extend)) {
+            this.extend.apply(null, subModule.extend);
+          } else {
+            this.extend(subModule.extend);
+          }
+          delete subModule.extend;
+        }
+        break;
+      default:
+        throw new Error("Type not accepted");
+    }
+
+    for (var name in subModule) {
+      if (typeof target[name] === "function" && typeof subModule[name] === "function") {
+        var _super = target[name];
+        target[name] = makeSuper(name, subModule[name], _super);
+        continue;
+      }
+      target[name] = subModule[name];
+    }
+  }
+  return target;
+}
+
+// copied from sys.inherits
+function inherits(target, parent) {
+  var tempCtor = function () {
+  };
+  tempCtor.prototype = parent.prototype;
+  target.prototype = new tempCtor();
+  return target;
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+<script>
+  $('[rel=popover]').popover();
+</script>
+
+</body>
+</html>

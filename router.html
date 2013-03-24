@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Genji Documentation</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="css/reset.css">
+    <link type="text/css" rel="stylesheet" href="css/docs.css">
+    <link type="text/css" rel="stylesheet" href="css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="">Genji Documentation</a></h1>
+            </header>
+        
+        
+
+
+    <div id="sidebar">
+        <nav id="toc">
+            
+    <ol>
+    
+        <li>
+            <a href="readme.html#genji">Genji </a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="readme.html#introduction">Introduction</a>
+            
+        </li>
+    
+        <li>
+            <a href="readme.html#license">License</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="way.html#the-way-to-genji">The way to Genji</a>
+            
+                
+    <ol>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="router.html#router">Router</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="router.html#add-route-definition">Add route definition</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#hooks">Hooks</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#listen-to-server-event">Listen to server event</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="app.html#app">App</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="app.html#define-app">Define app</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#handle-result">Handle result</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#extending">Extending</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#conventions">Conventions</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="site.html#site">Site</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="site.html#getter-setter">Getter/Setter</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#use-middleware">Use middleware</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#load-app">Load app</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#routing">Routing</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#output-result">Output result</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#environment">Environment</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#start-your-site">Start your site</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="base.html#klass">Klass</a>
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#changelog">CHANGELOG</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="changelog.html#07-2013">0.7 (2013)</a>
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#05-2012">0.5 (2012)</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+</ol>
+
+        </nav>
+    </div>
+
+<article id="content">
+    <a name="router"></a><h1>Router</h1>
+<p>Router routes http request to designated handling function based on the requesting url. It supports calling hook
+function before/after dispatch to handling function. Router can be used standalone which means no site/middleware/app involved.</p>
+<a name="add-route-definition"></a><h2>Add route definition</h2>
+<pre><code class="lang-javascript">  var genji = require(&#39;genji&#39;);
+
+  var router = genji.route({urlRoot: &#39;/home&#39;});
+
+  // handle GET request for url &#39;/home/hello?title=Mr&#39; (urlRoot + url)
+  router.get(&#39;/hello/(.*)&#39;, function(context, name) {
+    context.sendHTML(&#39;Hello, &#39; + context.query.title + &#39; &#39; + name);
+  });
+
+  // &#39;urlRoot` will not be prefixed before your url if it starts with &#39;^&#39;
+  router.post(&#39;^/post&#39;, function(context) {
+    // post parameters will be parsed if context listen to the &#39;params&#39; event.
+    context.on(&#39;params&#39;, function(params) {
+      // do something
+      context.send(&#39;ok&#39;);
+    });
+  });</code></pre>
+<a name="hooks"></a><h2>Hooks</h2>
+<p>You can use <code>Hooks</code> to do some tasks before and after dispatch. Hook functions together with handle function will be chained
+into an array by router. And all functions in chain will be called in order during dispatch. During the dispatching process,
+you must explicitly call <code>next</code> or return <code>true</code> in hook function to call the next function in chain.</p>
+<p>We use <code>null</code> to mark the position of the dispatch function. During dispatch, the <code>null</code> placeholder will be replaced by
+handle function. Some special cases when:
+  - <code>null</code> is at beginning of the array, all functions are post hook (e.g. [null, fn1, fn2])
+  - <code>null</code> is not presented or at the end of array, all functions are pre hook (e.g. [fn1, fn2] === [fn1, fn2, null])
+  - the hook is a function, it means the function is a pre hook (e.g. fn1 === [fn1])</p>
+<pre><code class="lang-javascript">  function preHook(context, next) {
+    // you can call `next` asynchronously, the next function in chain won&#39;t be called
+    // until you call `next`
+    setTimeout(next, 1000);
+  }
+
+  function postHook(context, next) {
+    // if you return true, the next function in chain (if any) will be called immediately
+    return true;
+  }
+
+  router.get(&#39;/hooked&#39;, function() {}, [preHook, null, postHook]);</code></pre>
+<a name="listen-to-server-event"></a><h2>Listen to server event</h2>
+<p>You can use router directly with HttpServer instance.</p>
+<pre><code class="lang-javascript">
+  // listen to &#39;request&#39; event of HttpServer instance
+  router.listen(server);</code></pre>
+<p>If you have more complex project, please use <a href="#site">Site</a> with <a href="#app">App</a>.</p>
+<a name="api"></a><h2>API</h2>
+<p><code>Router</code> exposed by <code>require(&#39;genji&#39;).Router</code>. Instance can be created by</p>
+<pre><code class="lang-javascript">
+    var router = require(&#39;genji&#39;).route(options);</code></pre>
+<a name="genjirouteoptionsobject"></a><h3>genji.route(options:Object)</h3>
+<p>Takes <strong>optional</strong> options and create a new <code>genji.Router</code> instance.</p>
+<p>Supported options:</p>
+<ul>
+<li><code>urlRoot</code> is the base url of the router, default value is &#39;^/&#39;.</li>
+<li><code>contextClass</code> the default context class for each request. See <a href="#context">Context</a> for more info.</li>
+</ul>
+<a name="methods"></a><h3>Methods</h3>
+<a name="get-post-put-delete-headurlstring-regexp-handlerfunction-optional-optionsobject"></a><h5>{get|post|put|delete|head}(url:{String|RegExp}, handler:Function, /*optional*/ options:Object)</h5>
+<p>The <code>get/post/put/delete/head</code> route defining methods of <code>Router</code> instance have the same signature:</p>
+<ul>
+<li><p><strong>url</strong> The RegExp instance or string representation of it, string will be converted to regular expression.
+If it&#39;s string, router will check if the given string starts with <code>^</code>. If not the <code>urlRoot</code> will be prepended to the string.</p>
+</li>
+<li><p><strong>handler</strong> Function to handle the request, the handling function has following signature:</p>
+<p><strong>function handler(context, /*optional*/ matched...) {}</strong></p>
+<ul>
+<li><code>context</code> Instance object of <code>Context</code></li>
+<li><code>matched</code> <em>Optional</em> values matched from your url regular expression (e.g. /path/to/item/<strong>([0-9]*)</strong> )</li>
+</ul>
+</li>
+<li><p><strong>hooks</strong> a function or array of functions which will be called during dispatch</p>
+</li>
+</ul>
+<p>Routing rules are grouped by http method. Previous rule could be overriden by subsequently calling routing method with same
+http method and url. That means you can have different handling functions for the same url with different http method.</p>
+<a name="mounturlsarray"></a><h5>mount(urls:{Array})</h5>
+<p>Add batch of routing rules at once. Each element in the <code>urls</code> array should be an array with members of following order:</p>
+<ul>
+<li><code>url</code> same as described above in <code>get/post/put/delete/head</code> methods</li>
+<li><code>handler</code> same as described above</li>
+<li><code>httpMethod</code> <em>Optional</em> http method that accepted, default to &#39;GET&#39;</li>
+<li><code>options</code> <em>Optional</em> same as described above</li>
+</ul>
+<a name="notfoundurlstring-regexp-handlerfunction"></a><h5>notFound(url:{String|RegExp}, handler:Function)</h5>
+<p>The miss matched matcher. You can use it to handle miss matched requests based on different url.</p>
+<pre><code class="lang-javascript">
+  router.notFound(&#39;^/blog/*&#39;, function(context) {
+    // for miss matched url start with `/blog/`
+  });
+
+  router.notFound(&#39;^/*&#39;, function(context) {
+    // for any other cases
+  });</code></pre>
+<a name="routerroutetypestring-urlstring-contextobject-optional-notfoundfunctionboolean"></a><h4>Router#route(type:String, url:String, context:Object, /*optional*/ notFound:Function):Boolean</h4>
+<p>The routing function, it takes input and try to match with existent rules. Return <code>true</code> on matched otherwise <code>flase</code>.</p>
+<ul>
+<li><code>type</code> is type of request <code>GET|POST|PUT|DELETE|HEAD|NOTFOUND</code></li>
+<li><code>url</code> is the request url</li>
+<li><code>context</code> is the <code>this</code> object for dispatching</li>
+<li><code>notFound</code> is an optional function which will be called when no rule matched the given input</li>
+</ul>
+<a name="routerhookfnfunction-array"></a><h4>Router#{hook}(fn:{Function|Array})</h4>
+<p>Add pre/post hook(s) to all existent url routing rules in the current router instance. Takes one argument which could be
+function (pre hook) or array of <code>null positioned</code> hooking functions. This method adds pre hook to the <code>left</code> side (begin)
+of existent pre hooks and adds post hook to <code>right</code> side (end) of existent post hooks.</p>
+<a name="routerlistenserverhttpserver-optional-notfoundfunction"></a><h4>Router#listen(server:{HttpServer}, /*optional*/ notFound:Function)</h4>
+<p>Listen to <code>request</code> event of the vanilla node.js <code>HttpServer</code> instance.</p>
+<ul>
+<li><code>server</code> is an instance of HttpServer</li>
+<li><code>notFound</code> is an optional function which will be called when all routes miss matched in the router.
+A default function that responds 404 to client and output error to <code>stderr</code> will be called if you omit the function</li>
+</ul>
+
+</article>
+
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="all.html?print=1">Print all pages</a>
+            
+                <a href="https://github.com/lsm/genji" id="fork-me-on-github">Fork me on Github</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

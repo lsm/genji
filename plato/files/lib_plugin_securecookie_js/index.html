@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lib/plugin/securecookie.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">54.32</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">0.81</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">22.19</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">122 / 67</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">/**
+ * Plugin for decrypting and verifying secure cookie
+ */
+
+/**
+ * Module dependencies
+ */
+
+var c = require('../crypto');
+var cipher = c.cipher;
+var decipher = c.decipher;
+var auth = require('../auth');
+var cookieHelper = require('../cookie');
+var parse = cookieHelper.parse;
+var stringify = cookieHelper.stringify;
+var extend = require('../util').extend;
+
+/**
+ * Module exports
+ *
+ * @type {{name: string, attach: Function}}
+ */
+
+module.exports = {
+
+  /**
+   * Name of the plugin
+   */
+
+  name: 'SecureCookie',
+
+  /**
+   * Plugin setup function
+   * @param core {Object} Instance object of Core
+   * @param options {Object} Plugin options:
+   *   - secureKey {String} Key use to encrypt the signed cookie
+   *   - serverKey {String} Hmac key use to sign the cookie
+   *   - cookieName {String} Name of the cookie
+   *   - [cookiePath] {String} Path of the cookie
+   *   - [cookieDomain] {String} Domain of the cookie
+   * @returns {Function}
+   */
+
+  attach: function (core, options) {
+    var secureKey = options.secureKey;
+    var cookieName = options.cookieName;
+    var cookiePath = options.cookiePath;
+    var cookieDomain = options.cookieDomain;
+    var serverKey = options.serverKey;
+    var cookieOption = {};
+
+    if (cookiePath) {
+      cookieOption.path = cookiePath;
+    }
+
+    if (cookieDomain) {
+      cookieOption.domain = cookieDomain;
+    }
+
+    // encrypt cookie if found in response header
+    core.add('writeHead', function (statusCode, headers, next) {
+      if (headers.hasOwnProperty(cookieName)) {
+        // build the cookie string from specified property of `headers`
+        var originalCookie = headers[cookieName];
+        // sign the cookie by hmac
+        var signed = auth.sign(originalCookie[0], originalCookie[1], originalCookie[2], serverKey);
+        // encrypt signed cookie into base64 string
+        var encryptedBase64 = cipher(signed, secureKey, {outputEncoding: 'base64'});
+        cookieOption.expires = originalCookie[1];
+        // set other cookie option if any
+        var option = originalCookie[3];
+        if (option) {
+          if (option.path) {
+            cookieOption.path = option.path;
+          }
+          if (option.domain) {
+            cookieOption.domain = option.domain;
+          }
+        }
+        // make the cookie
+        var cookieStr = stringify(cookieName, encryptedBase64, cookieOption);
+        // delete the original raw cookie
+        delete headers[cookieName];
+
+        // try to put the cookie string into `headers`
+        var setCookie = headers['Set-Cookie'] || headers['set-cookie'];
+        if (!setCookie) {
+          // just set if cookie not exists
+          headers['Set-Cookie'] = cookieStr;
+        } else if (Array.isArray(setCookie)) {
+          setCookie.push(cookieStr);
+          headers['Set-Cookie'] = setCookie;
+        } else {
+          throw new Error("Can not add cookie value to: " + JSON.stringify(setCookie));
+        }
+
+        next(statusCode, headers);
+      } else {
+        // do nothing and go to next step
+        return true;
+      }
+    });
+
+    return function (req, res, go) {
+      var cookies = parse(req.headers.cookie);
+      var cookie = cookies[cookieName];
+
+      if (cookie) {
+        var decrypted = auth.verify(decipher(cookie, secureKey, {inputEncoding: 'base64'}), serverKey);
+        if (!decrypted) {
+          return go();
+        }
+        var data = decrypted[2];
+        try {
+          data = JSON.parse(decrypted[2]);
+        } catch (e) {
+          console.error('JSON parsing error for object: %s', data);
+        }
+        this.session = extend({}, this.session, {
+          cookieId: decrypted[0],
+          cookieExpires: new Date(decrypted[1]),
+          cookieData: data
+        });
+        // for later usage
+        this.cookies = cookies;
+      }
+      go();
+    };
+  }
+};</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+<script>
+  $('[rel=popover]').popover();
+</script>
+
+</body>
+</html>

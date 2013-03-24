@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lib/site.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">67.61</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">1.63</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">44.23</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">277 / 117</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">/**
+ * Module dependencies
+ */
+
+var http = require('http');
+var EventEmitter = require('events').EventEmitter;
+var Klass = require('./base').Klass;
+var extend = require('./util').extend;
+var Core = require('./core').Core;
+
+/**
+ * Site constructor function
+ *
+ * @constructor
+ * @private
+ */
+
+function Site() {
+  EventEmitter.call(this);
+  if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'default';
+  }
+  this.data = {};
+  this.plugins = {};
+  this.apps = {};
+  this.core = new Core(this);
+  this.env();
+  this.set({
+    host: '127.0.0.1',
+    port: 8888
+  });
+}
+
+/**
+ * Site prototype object
+ *
+ * @type {Object}
+ */
+
+Site.prototype = {
+
+  /**
+   * Switch between different environments
+   *
+   * @param [name] {String} Optional env name, default is 'default'
+   * @returns {Site}
+   * @public
+   */
+
+  env: function (name) {
+    name = name || 'default';
+    if (!this.data[name]) {
+      this.data[name] = {};
+      this.plugins[name] = {};
+      this.apps[name] = {};
+    }
+    this._env = name;
+    return this;
+  },
+
+  /**
+   * Store a value for a key in current env
+   *
+   * @param key {String|Object} Key of the value or object of key/value pairs that need to be stored
+   * @param value {*} Value that need to be stored
+   * @returns {Object} The "this" object
+   * @public
+   */
+
+  set: function (key, value) {
+    return _set(this, this.data, key, value);
+  },
+
+  /**
+   * Get value for key
+   *
+   * @param key {String|Array} Key of the value or array of keys
+   * @returns {*} Value stored
+   * @public
+   */
+
+  get: function (key) {
+    return _get(this, this.data, key);
+  },
+
+  /**
+   * Use a plugin in current env
+   *
+   * @param plugin {String|Object} The name string of the built-in plugin or the plugin object
+   * @param [options] {Object} Optional plugin options
+   * @returns {Object} The "this" object
+   * @public
+   */
+
+  use: function (plugin, options) {
+    var name = 'string' === typeof plugin ? plugin : plugin.name;
+    var _plugin = {
+      plugin: plugin,
+      options: options
+    };
+
+    return _set(this, this.plugins, name, _plugin);
+  },
+
+  /**
+   * Process all the plugins with core
+   *
+   * @private
+   */
+
+  usePlugins: function () {
+    var plugins = extend({}, this.plugins['default']);
+    if (process.env.NODE_ENV && 'default' !== process.env.NODE_ENV) {
+      extend(plugins, this.plugins[process.env.NODE_ENV]);
+    }
+
+    var core = this.core;
+    Object.keys(plugins).forEach(function (name) {
+      var plugin = plugins[name];
+      core.loadPlugin(plugin.plugin, plugin.options);
+    });
+    return this;
+  },
+
+  /**
+   * Load an app for current env
+   *
+   * @param app {Function|Object|Array} App constructor or instance or array of apps
+   * @param [options] {Object} Optional options for app constructor or routes if app is an instance object
+   * @param [routes] {Object} Optional routes object
+   * @returns {Object}
+   * @public
+   */
+
+  load: function (app, options, routes) {
+    if (Array.isArray(app)) {
+      var self = this;
+      app.forEach(function (_app) {
+        self.load(_app, options, routes);
+      });
+    }
+
+    var name;
+
+    if ('function' === typeof app) {
+      name = app.prototype.name;
+      if (!routes) {
+        routes = options;
+      }
+    } else {
+      name = app.name;
+      routes = options;
+      options = null;
+    }
+
+    var _app = {
+      app: app,
+      options: options
+    };
+
+    this.map(routes);
+
+    return _set(this, this.apps, name, _app);
+  },
+
+  map: function (routes) {
+    if (routes) {
+      var _routes = this.get('routes') || {};
+      _routes = extend(_routes, routes);
+      this.set('routes', _routes);
+    }
+  },
+
+  /**
+   * Process all the apps/routes with router and core
+   *
+   * @private
+   */
+
+  loadApps: function () {
+    var apps = extend({}, this.apps['default']);
+    var routes = extend({}, this.data['default'].routes);
+    if (process.env.NODE_ENV && 'default' !== process.env.NODE_ENV) {
+      apps = extend(apps, this.apps[process.env.NODE_ENV]);
+      var dataEnv = this.data[process.env.NODE_ENV];
+      routes = dataEnv ? extend(routes, dataEnv.routes) : routes;
+    }
+
+    var defaultAppOptions = this.get('appOptions');
+    var self = this;
+
+    Object.keys(apps).forEach(function (k) {
+      var appObj = apps[k];
+      var appOptions = extend({}, defaultAppOptions, appObj.options);
+      var app = appObj.app;
+      if ('function' === typeof app) {
+        app = new app(appOptions);
+      }
+      app.delegate = self;
+      self.core.mapRoutes(routes, app);
+    });
+    self.core.mapRoutes(routes);
+
+    return this;
+  },
+
+  /**
+   * Create and start the http server using settings of current env
+   *
+   * @param [server] {Object} Optional HttpServer instance
+   * @returns {Object} HttpServer instance
+   * @public
+   */
+
+  start: function (server) {
+    this.usePlugins();
+    this.loadApps();
+    var listener = this.core.getListener();
+    if (server) {
+      server.on('request', listener);
+    } else {
+      server = http.createServer(listener);
+      server.listen(this.get('port'), this.get('host'));
+    }
+    this.server = server;
+    return server;
+  }
+};
+
+/**
+ * Exposes Site
+ */
+
+exports.Site = Klass(EventEmitter, Site);
+
+/**
+ * Private setter function
+ *
+ * @param self {Object} The `this` object
+ * @param data {Object} Data hash to store values
+ * @param key {String|Object} Key of the value or object of key/value pairs that need to be stored
+ * @param value {*} Value that need to be stored
+ * @returns {Object} Self object
+ * @private
+ */
+
+function _set(self, data, key, value) {
+  var _data = data[self._env];
+  if ('object' === typeof key) {
+    extend(_data, key);
+  } else {
+    _data[key] = value;
+  }
+  return self;
+}
+
+
+/**
+ * Private getter function
+ *
+ * @param self {Object} The `this` object
+ * @param data {Object} Data hash to store values
+ * @param key {String|Array} Key of the value or array of keys
+ * @returns {*} Value stored
+ * @private
+ */
+
+function _get(self, data, key) {
+  if (Array.isArray(key)) {
+    var values = {};
+    key.forEach(function (k) {
+      values[k] = _get(self, data, k);
+    });
+    return values;
+  }
+  var _data = data[process.env.NODE_ENV];
+  if (!_data || !_data.hasOwnProperty(key)) {
+    _data = data['default'];
+  }
+  return _data[key];
+}</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+<script>
+  $('[rel=popover]').popover();
+</script>
+
+</body>
+</html>

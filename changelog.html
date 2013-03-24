@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Genji Documentation</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="css/reset.css">
+    <link type="text/css" rel="stylesheet" href="css/docs.css">
+    <link type="text/css" rel="stylesheet" href="css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="">Genji Documentation</a></h1>
+            </header>
+        
+        
+
+
+    <div id="sidebar">
+        <nav id="toc">
+            
+    <ol>
+    
+        <li>
+            <a href="readme.html#genji">Genji </a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="readme.html#introduction">Introduction</a>
+            
+        </li>
+    
+        <li>
+            <a href="readme.html#license">License</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="way.html#the-way-to-genji">The way to Genji</a>
+            
+                
+    <ol>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="router.html#router">Router</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="router.html#add-route-definition">Add route definition</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#hooks">Hooks</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#listen-to-server-event">Listen to server event</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="app.html#app">App</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="app.html#define-app">Define app</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#handle-result">Handle result</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#extending">Extending</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#conventions">Conventions</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="site.html#site">Site</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="site.html#getter-setter">Getter/Setter</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#use-middleware">Use middleware</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#load-app">Load app</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#routing">Routing</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#output-result">Output result</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#environment">Environment</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#start-your-site">Start your site</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="base.html#klass">Klass</a>
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#changelog">CHANGELOG</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="changelog.html#07-2013">0.7 (2013)</a>
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#05-2012">0.5 (2012)</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+</ol>
+
+        </nav>
+    </div>
+
+<article id="content">
+    <a name="changelog"></a><h1>CHANGELOG</h1>
+<a name="07-2013"></a><h2>0.7 (2013)</h2>
+<a name="070-2013-03-23"></a><h3>0.7.0 (2013/03/23)</h3>
+<p><strong>NOTE</strong>: This version is <strong>not compatible</strong> with version <strong>0.5.x</strong></p>
+<ul>
+<li>Documentation</li>
+<li>Introduce <code>Klass</code> - lightweight Javascript OO implementation</li>
+<li>Introduce <code>Core</code> - the plugin/middleware system</li>
+<li>Introduce <code>Site</code><ul>
+<li>to avoid global shared object in <code>lib/genji.js</code></li>
+<li>setting management namespaced by environment</li>
+<li>coporate with <code>Core</code> and map routes to apps</li>
+</ul>
+</li>
+<li>Replace <code>Handler</code> with <code>Context</code>, convert some handlers to plugins</li>
+<li>Refactor <code>router</code><ul>
+<li>allow routing without middleware</li>
+<li>overwrite routes which has same url pattern and http method</li>
+</ul>
+</li>
+<li>Rewrite <code>App</code><ul>
+<li>use <code>Klass</code></li>
+<li>separate routing from App logic</li>
+<li>remove support of static properties</li>
+</ul>
+</li>
+<li>Rewrite <code>Model</code><ul>
+<li>use <code>Klass</code></li>
+<li>remove support of static properties</li>
+</ul>
+</li>
+<li>Remove <code>Role</code></li>
+</ul>
+<a name="05-2012"></a><h2>0.5 (2012)</h2>
+<a name="0510-2012-12-15"></a><h3>0.5.10 (2012/12/15)</h3>
+<ul>
+<li><code>App</code> clone routes object before use</li>
+<li><code>Handler</code> keep parsed and raw http request data</li>
+</ul>
+<a name="059-2012-12-15"></a><h3>0.5.9 (2012/12/15)</h3>
+<ul>
+<li><code>View#minify</code></li>
+<li><code>json</code>, <code>html</code>, <code>text</code> shortcuts for <code>App#routeResults</code></li>
+</ul>
+<a name="058-2012-11-24"></a><h3>0.5.8 (2012/11/24)</h3>
+<ul>
+<li><code>handler#sendAsFile</code><ul>
+<li>allow customize response headers</li>
+<li>detect Buffer when calculate data length</li>
+</ul>
+</li>
+</ul>
+<a name="057-2012-11-06"></a><h3>0.5.7 (2012/11/06)</h3>
+<ul>
+<li><code>util#expose</code> export sub modules</li>
+<li>remove <code>client.js</code></li>
+<li><code>Model</code> <code>toData</code> and <code>toDoc</code> accept array as argument to indicate the fields you need to get.</li>
+<li><code>App#routePreHook</code> support bulk set prehook for array of routes</li>
+</ul>
+<a name="056-2012-10-31"></a><h3>0.5.6 (2012/10/31)</h3>
+<ul>
+<li><code>crypto#decipher</code> handle exception &#39;TypeError: DecipherFinal fail&#39; when decipher string with different key ciphered</li>
+</ul>
+<a name="055-2012-10-26"></a><h3>0.5.5 (2012/10/26)</h3>
+<ul>
+<li><code>control</code><ul>
+<li><code>defer().defer(otherDeferrable)</code></li>
+<li><code>defer().callback(cb)</code></li>
+</ul>
+</li>
+</ul>
+<a name="054-2012-09-14"></a><h3>0.5.4 (2012/09/14)</h3>
+<ul>
+<li>set default context for layout</li>
+<li>batch attache prehook to routes</li>
+<li>allow set cookie during redirection</li>
+<li>default options for <code>Role</code></li>
+</ul>
+<a name="053-2012-08-17"></a><h3>0.5.3 (2012/08/17)</h3>
+<ul>
+<li>node 0.8.x compatibility</li>
+</ul>
+<a name="052-2-2012-07-21"></a><h3>0.5.2-2 (2012/07/21)</h3>
+<ul>
+<li>Bug fix for <code>Model</code></li>
+</ul>
+<a name="052-1-2012-07-18"></a><h3>0.5.2-1 (2012/07/18)</h3>
+<ul>
+<li>Bug fix for <code>App</code></li>
+</ul>
+<a name="052-2012-07-05"></a><h3>0.5.2 (2012/07/05)</h3>
+<ul>
+<li><code>Model</code><ul>
+<li>new field type and type validator: <code>array</code>, <code>regexp</code>, <code>date</code>, <code>bool</code></li>
+<li>dynamic fields validation status</li>
+<li>instance function accepts callback function as last argument,
+call <code>this.emit()</code> as usual will call the callback and event won&#39;t be emitted.</li>
+<li>use <code>toDoc()</code> instead of <code>toData(&#39;alias&#39;)</code></li>
+<li>bug fix for type validation</li>
+</ul>
+</li>
+<li><code>App</code><ul>
+<li>bug fix for instance function not return result</li>
+</ul>
+</li>
+</ul>
+<a name="051-2012-06-16"></a><h3>0.5.1 (2012/06/16)</h3>
+<ul>
+<li><code>View</code><ul>
+<li>add script loader support (head.js)</li>
+<li>change <code>addViewPath</code> to <code>setViewPath</code></li>
+<li>add support for default context (e.g. var view = new View(engine, {context: {title: &#39;Title&#39;}});)</li>
+<li>merge <code>BaseView</code> with <code>ViewWithCompiler</code></li>
+<li>basic <code>layout</code> manager</li>
+</ul>
+</li>
+<li><code>Model</code><ul>
+<li><code>model.attr([key1, key2])</code> get group of attributes as hash object</li>
+<li>Bi-direction aliased field name</li>
+</ul>
+</li>
+<li><code>App</code> support application level and route level <code>routePreHook</code></li>
+<li>Introduce <code>Role</code></li>
+</ul>
+<a name="050-2012-06-05"></a><h3>0.5.0 (2012/06/05)</h3>
+<ul>
+<li>external app loader</li>
+<li>New <code>App</code> module</li>
+<li><code>genji.app</code> renamed to <code>genji.route</code></li>
+</ul>
+<a name="033-2012-05-19"></a><h3>0.3.3 (2012/05/19)</h3>
+<ul>
+<li>expose submodules by default, <code>genji.short</code> and <code>genji.require</code> are deprecated</li>
+<li>rewrite <code>lib/model.js</code>, added test</li>
+<li>support multi-root path for view template (with namespace)</li>
+<li>add <code>Model#changed</code>, return object which contains changed fields/values after initialized.</li>
+<li>add <code>util#byteLength</code></li>
+</ul>
+<a name="032-2012-05-08"></a><h3>0.3.2 (2012/05/08)</h3>
+<ul>
+<li>improve <code>view</code> and <code>model</code></li>
+</ul>
+<a name="031-2012-03-12"></a><h3>0.3.1 (2012/03/12)</h3>
+<ul>
+<li>improve <code>view</code> partial</li>
+<li>introduce <code>model</code></li>
+</ul>
+<a name="030-2012-01-05"></a><h3>0.3.0 (2012/01/05)</h3>
+<ul>
+<li>introduce <code>view</code> for working with template engine like <a href="https://github.com/twitter/hogan.js">hogan.js</a><ul>
+<li>render files</li>
+<li>simple caching support</li>
+<li>preregister partial files in the <code>rootViewPath</code></li>
+</ul>
+</li>
+</ul>
+<a name="024-2012-01-02"></a><h3>0.2.4 (2012/01/02)</h3>
+<ul>
+<li>add <code>send</code>, <code>sendJSON</code> and <code>sendHTML</code> to the <code>base#BaseHandler</code></li>
+<li>introduce <code>event</code> in <code>control#defer</code></li>
+</ul>
+<a name="023-2011-12-15"></a><h3>0.2.3 (2011/12/15)</h3>
+<ul>
+<li>Upgraded <code>expresso</code> for node 0.6.x support</li>
+</ul>
+<a name="022-2011-08-29"></a><h3>0.2.2 (2011/08/29)</h3>
+<ul>
+<li>Cleaned code follow default jshint rules</li>
+<li>Rewrited <code>client.js#Client</code> and added some tests</li>
+</ul>
+<a name="021-2011-08-11"></a><h3>0.2.1 (2011/08/11)</h3>
+<ul>
+<li>Add timeout support for <code>control#parallel</code></li>
+<li>bug fix for handler#Simple#sendJson</li>
+<li>new event for handler with method <code>POST</code>/<code>PUT</code>:<ul>
+<li><code>data</code> for raw data</li>
+<li><code>params</code> for http query string, parsed as plain javascript object</li>
+<li><code>json</code> for json string, parsed as plain javascript object</li>
+</ul>
+</li>
+</ul>
+<a name="020-2011-07-10"></a><h3>0.2.0 (2011/07/10)</h3>
+<ul>
+<li>Changed the way how we define sub url for <code>App#[get, post, put, del, head]</code></li>
+<li><code>control#defer</code><ul>
+<li>put flow control object as the first argument of <code>and</code> callback</li>
+<li>callbacks of <code>and</code>, <code>then</code> now will be called in registered order
+<code>defer(fs.readFile, fs).and(fn1, fn2, fn3).then(fn4, fn5).and(fn6, fn7)</code>
+functions will be called in the following order:
+fn1-&gt;fn2-&gt;fn3-&gt;(fn4&amp;fn5)-&gt;fn6-&gt;fn7</li>
+</ul>
+</li>
+<li><code>util#extend</code> takes unlimited arguments <code>extend(obj, props1, props2, ...,
+propsN)</code></li>
+<li>Add <code>crypto#hmac</code></li>
+<li><code>handler#Simple</code> parses url parameters by default</li>
+<li>Add context for <code>control#parallel</code></li>
+</ul>
+<a name="010-2011-06-29"></a><h3>0.1.0 (2011/06/29)</h3>
+<ul>
+<li>Remove a lots of functionalities, keep small and focus.</li>
+<li>Introduce <code>App</code></li>
+<li><code>control#parallel</code> set done/fail callbacks by
+<code>parallel.done(fn)</code> and <code>parallel.fail(fn)</code></li>
+<li>add <code>genji.short</code>:
+extends the <code>genji</code> namespace with <code>util</code> <code>base</code> <code>control</code> submodules</li>
+<li>Simplified <code>handler</code>,<ul>
+<li>the default handler is <code>genji.require(&#39;handler&#39;).Handler</code>
+which can handle normal http request, parse cookies and send files</li>
+<li>you can use <code>genji.require(&#39;handler&#39;).BaseHandler</code>
+to include features you only need</li>
+</ul>
+</li>
+</ul>
+<a name="003-2011-06-13"></a><h3>0.0.3 (2011/06/13)</h3>
+<ul>
+<li>etag for sending file-like contents</li>
+<li>util<ul>
+<li>crypto<ul>
+<li>new shorthand functions for cipher/decipher</li>
+<li>enable to select the digest encoding for <code>md5</code>, <code>sha1</code>, <code>hmac_sha1</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>web<ul>
+<li>middleware<ul>
+<li>now the middleware does not care about application settings</li>
+<li>new style middleware config format</li>
+<li><code>secure-cookie</code> new middleware to encrypt/decrypt cookie</li>
+</ul>
+</li>
+<li>router, new url routing system, supports declarative and programmatic style of defining url rules.</li>
+<li>move <code>createServer</code>/<code>startServer</code> into submodule <code>web.server</code>, <code>web/index.js</code> only use to export submodules</li>
+</ul>
+</li>
+<li>pattern<ul>
+<li>control<ul>
+<li>promise: call the original async function in next tick</li>
+</ul>
+</li>
+<li>math, new pattern group, add <code>random</code></li>
+</ul>
+</li>
+</ul>
+
+</article>
+
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="all.html?print=1">Print all pages</a>
+            
+                <a href="https://github.com/lsm/genji" id="fork-me-on-github">Fork me on Github</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

@@ -223,30 +223,33 @@
     </div>
 
 <article id="content">
-    <a name="genji-a-hrefhttp-travis-ciorg-lsm-genjiimg-srchttps-securetravis-ciorg-lsm-genjipng-altbuild-status-a"></a><h1>Genji <a href="http://travis-ci.org/lsm/genji"><img src="https://secure.travis-ci.org/lsm/genji.png" alt="build status"></a></h1>
-<p>Writing reusable, modular and flexible node.js application made easy.</p>
-<a name="introduction"></a><h2>Introduction</h2>
-<p>Genji is not a full stack web framework, instead it focuses on making your code reusable and flexible enough to integrate
-with other components and frameworks. In development of modern web application, your service usually consumed by various
-kinds of clients with different manners. You may have web site for browser user, private apis for mobile clients, public
-apis for third-party developers and internal apis for queues or job workers. Genji helps you write reusable code by
-providing extensible plugin/middleware system, routing/transport agnostic application class, models fields validation
-and custom getter/setter method, views layout manager and namespaced template overriding, url routing with hook support.
-While it doesn&#39;t mean you have to stick with a particular development style or technology, genji is highly modular
-designed and customizable, so you can decide which part of the framework to use and how.</p>
-<ul>
-<li>For documentations see: <a href="http://lsm.github.com/genji"><a href="http://lsm.github.com/genji">http://lsm.github.com/genji</a></a></li>
-<li>Check out the <a href="http://lsm.github.com/genji/coverage.html">test coverage</a> and <a href="http://lsm.github.com/genji/plato">plato report</a> for source analysis</li>
-<li>Ideas, bug report or general discussion are always welcome, feel free to open issue at: <a href="https://github.com/lsm/genji/issues"><a href="https://github.com/lsm/genji/issues">https://github.com/lsm/genji/issues</a></a></li>
-</ul>
-<a name="about-the-name-quotgenjiquot"></a><h3>About the name &quot;Genji&quot;</h3>
-<p>The word <code>Gen</code> <code>Ji</code> in Chinese means <code>root</code> <code>base</code> and it&#39;s also the name of the
-<a href="http://en.wikipedia.org/wiki/Genji_(era)" title="Genji (era)">Japanese era name</a> which was created to mark the beginning of a new 60-year
-cycle of the Chinese zodiac. So, basically it means something <strong>fundamental</strong> that you can <strong>grow with</strong>.
-The philosophy of this project follows this meaning.</p>
-<a name="license"></a><h2>License</h2>
-<p>(The MIT License)</p>
-<p>Copyright (c) 2010-2013 Senmiao Liu <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a></p>
+    <a name="the-way-to-genji"></a><h1>The way to Genji</h1>
+<p>The simplest way to use Genji is to use it as a url based http request router</p>
+<pre><code class="lang-javascript">var genji = require(&#39;genji&#39;);
+var http = require(&#39;http&#39;);
+
+// create a router instance
+var simpleRouter = genji.route();
+
+// routing request to function by matching url
+simpleRouter.get(&#39;^/$&#39;, function(context) {
+  context.send(&#39;Hello world!&#39;);
+});
+
+// create a http server object
+var server = http.createServer();
+
+// listen to request event
+simpleRouter.listen(server);
+
+// start handling request
+server.listen(8888, &#39;127.0.0.1&#39;);</code></pre>
+<p>This is regular request routing functionnality which you can find in a lots of frameworks of any language. Of course,
+this is not what all Genji can do. If you feel the above example already meets most of your needs, then go to
+<a href="router.html">Router</a> to see detailed usages. And also go <a href="core.html#context">Context</a> check out what it is and see how you
+can use and extend it. If it&#39;s not, and you feel this is too primitive. You have another option called <a href="site.html">Site</a>
+which is more suitable for large/complex project. So you can change the way of using Genji during evolvement of your
+project and Genji helps you grow smoothly during that process.</p>
 
 </article>
 

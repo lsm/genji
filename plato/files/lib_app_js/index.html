@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lib/app.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">67.29</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">0.79</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">36.30</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">128 / 59</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">/**
+ * Module dependencies
+ */
+
+var toArray = require('./util').toArray;
+var EventEmitter = require('events').EventEmitter;
+var Klass = require('./base').Klass;
+
+/**
+ * App constructor function
+ *
+ * @constructor
+ */
+
+function App() {
+  EventEmitter.call(this);
+  var self = this;
+  self.publicMethods = {};
+
+  for (var k in self) {
+    if (self.isPublicMethodName(k)) {
+      this.processPublicMethod(k);
+    }
+  }
+}
+
+/**
+ * App prototype object
+ */
+
+App.prototype = {
+  emitInlineCallback: false,
+  prefixDelegatedEvent: true,
+  publicMethods: null,
+  reservedMethodNames: Object.keys(EventEmitter.prototype),
+
+  /**
+   * Check if given name can be used as public method name
+   *
+   * @param name {String} Name to check
+   * @returns {boolean}
+   * @public
+   */
+
+  isPublicMethodName: function (name) {
+    return name && 'string' === typeof name && this.reservedMethodNames.indexOf(name) === -1 && name[0] !== '_';
+  },
+
+  /**
+   * The modified emit function which prefixes event with app name if necessary
+   *
+   * @public
+   */
+
+  emit: function () {
+    var emitter = this.delegate || this;
+    var args = toArray(arguments);
+    if (this.delegate && this.prefixDelegatedEvent) {
+      var prefix = 'string' === typeof this.prefixDelegatedEvent ? this.prefixDelegatedEvent : this.name;
+      prefix += ':';
+      args[0] = prefix + args[0];
+    }
+    EventEmitter.prototype.emit.apply(emitter, args);
+  },
+
+  /**
+   * Generate default callback for each public method
+   *
+   * @param propName {String} Name of the property
+   * @private
+   */
+
+  processPublicMethod: function (propName) {
+    var self = this;
+    var f = self[propName];
+    if ('function' === typeof f) {
+      self[propName] = self.publicMethods[propName] = (function (name, f) {
+        return function () {
+          var args = toArray(arguments);
+          var callback = args[args.length - 1];
+          var hasCallback = 'function' === typeof callback;
+          var resultIsNotUndefined = false;
+
+          var wrapper = function () {
+            if (resultIsNotUndefined) {
+              return;
+            }
+            var _args = toArray(arguments);
+
+            if (hasCallback) {
+              if ('before' === self.emitInlineCallback) {
+                _args.unshift(name);
+                self.emit.apply(self, _args);
+                _args.shift();
+              }
+              callback.apply(self, _args);
+            }
+
+            if (!hasCallback || 'after' === self.emitInlineCallback) {
+              _args.unshift(name);
+              self.emit.apply(self, _args);
+            }
+          };
+
+          if (hasCallback) {
+            args[args.length - 1] = wrapper;
+          } else {
+            args.push(wrapper);
+          }
+
+          var result = f.apply(self, args);
+          resultIsNotUndefined = 'undefined' !== typeof result;
+          return result;
+        };
+      })(propName, f);
+    }
+  }
+};
+
+/**
+ * Add more reserved name
+ *
+ * @type {Array}
+ */
+
+App.prototype.reservedMethodNames = App.prototype.reservedMethodNames.concat(Object.keys(App.prototype), 'init', 'domain', 'name');
+
+/**
+ * Module exports
+ */
+
+exports.App = Klass(EventEmitter, App);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+<script>
+  $('[rel=popover]').popover();
+</script>
+
+</body>
+</html>

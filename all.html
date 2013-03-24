@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Genji Documentation</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="css/reset.css">
+    <link type="text/css" rel="stylesheet" href="css/docs.css">
+    <link type="text/css" rel="stylesheet" href="css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="">Genji Documentation</a></h1>
+            </header>
+        
+        <div id='content'><a name="genji-a-hrefhttp-travis-ciorg-lsm-genjiimg-srchttps-securetravis-ciorg-lsm-genjipng-altbuild-status-a"></a><h1>Genji <a href="http://travis-ci.org/lsm/genji"><img src="https://secure.travis-ci.org/lsm/genji.png" alt="build status"></a></h1>
+<p>Writing reusable, modular and flexible node.js application made easy.</p>
+<a name="introduction"></a><h2>Introduction</h2>
+<p>Genji is not a full stack web framework, instead it focuses on making your code reusable and flexible enough to integrate
+with other components and frameworks. In development of modern web application, your service usually consumed by various
+kinds of clients with different manners. You may have web site for browser user, private apis for mobile clients, public
+apis for third-party developers and internal apis for queues or job workers. Genji helps you write reusable code by
+providing extensible plugin/middleware system, routing/transport agnostic application class, models fields validation
+and custom getter/setter method, views layout manager and namespaced template overriding, url routing with hook support.
+While it doesn&#39;t mean you have to stick with a particular development style or technology, genji is highly modular
+designed and customizable, so you can decide which part of the framework to use and how.</p>
+<ul>
+<li>For documentations see: <a href="http://lsm.github.com/genji"><a href="http://lsm.github.com/genji">http://lsm.github.com/genji</a></a></li>
+<li>Check out the <a href="http://lsm.github.com/genji/coverage.html">test coverage</a> and <a href="http://lsm.github.com/genji/plato">plato report</a> for source analysis</li>
+<li>Ideas, bug report or general discussion are always welcome, feel free to open issue at: <a href="https://github.com/lsm/genji/issues"><a href="https://github.com/lsm/genji/issues">https://github.com/lsm/genji/issues</a></a></li>
+</ul>
+<a name="about-the-name-quotgenjiquot"></a><h3>About the name &quot;Genji&quot;</h3>
+<p>The word <code>Gen</code> <code>Ji</code> in Chinese means <code>root</code> <code>base</code> and it&#39;s also the name of the
+<a href="http://en.wikipedia.org/wiki/Genji_(era)" title="Genji (era)">Japanese era name</a> which was created to mark the beginning of a new 60-year
+cycle of the Chinese zodiac. So, basically it means something <strong>fundamental</strong> that you can <strong>grow with</strong>.
+The philosophy of this project follows this meaning.</p>
+<a name="license"></a><h2>License</h2>
+<p>(The MIT License)</p>
+<p>Copyright (c) 2010-2013 Senmiao Liu <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a></p>
+
+<a name="the-way-to-genji"></a><h1>The way to Genji</h1>
+<p>The simplest way to use Genji is to use it as a url based http request router</p>
+<pre><code class="lang-javascript">var genji = require(&#39;genji&#39;);
+var http = require(&#39;http&#39;);
+
+// create a router instance
+var simpleRouter = genji.route();
+
+// routing request to function by matching url
+simpleRouter.get(&#39;^/$&#39;, function(context) {
+  context.send(&#39;Hello world!&#39;);
+});
+
+// create a http server object
+var server = http.createServer();
+
+// listen to request event
+simpleRouter.listen(server);
+
+// start handling request
+server.listen(8888, &#39;127.0.0.1&#39;);</code></pre>
+<p>This is regular request routing functionnality which you can find in a lots of frameworks of any language. Of course,
+this is not what all Genji can do. If you feel the above example already meets most of your needs, then go to
+<a href="router.html">Router</a> to see detailed usages. And also go <a href="core.html#context">Context</a> check out what it is and see how you
+can use and extend it. If it&#39;s not, and you feel this is too primitive. You have another option called <a href="site.html">Site</a>
+which is more suitable for large/complex project. So you can change the way of using Genji during evolvement of your
+project and Genji helps you grow smoothly during that process.</p>
+
+<a name="router"></a><h1>Router</h1>
+<p>Router routes http request to designated handling function based on the requesting url. It supports calling hook
+function before/after dispatch to handling function. Router can be used standalone which means no site/middleware/app involved.</p>
+<a name="add-route-definition"></a><h2>Add route definition</h2>
+<pre><code class="lang-javascript">  var genji = require(&#39;genji&#39;);
+
+  var router = genji.route({urlRoot: &#39;/home&#39;});
+
+  // handle GET request for url &#39;/home/hello?title=Mr&#39; (urlRoot + url)
+  router.get(&#39;/hello/(.*)&#39;, function(context, name) {
+    context.sendHTML(&#39;Hello, &#39; + context.query.title + &#39; &#39; + name);
+  });
+
+  // &#39;urlRoot` will not be prefixed before your url if it starts with &#39;^&#39;
+  router.post(&#39;^/post&#39;, function(context) {
+    // post parameters will be parsed if context listen to the &#39;params&#39; event.
+    context.on(&#39;params&#39;, function(params) {
+      // do something
+      context.send(&#39;ok&#39;);
+    });
+  });</code></pre>
+<a name="hooks"></a><h2>Hooks</h2>
+<p>You can use <code>Hooks</code> to do some tasks before and after dispatch. Hook functions together with handle function will be chained
+into an array by router. And all functions in chain will be called in order during dispatch. During the dispatching process,
+you must explicitly call <code>next</code> or return <code>true</code> in hook function to call the next function in chain.</p>
+<p>We use <code>null</code> to mark the position of the dispatch function. During dispatch, the <code>null</code> placeholder will be replaced by
+handle function. Some special cases when:
+  - <code>null</code> is at beginning of the array, all functions are post hook (e.g. [null, fn1, fn2])
+  - <code>null</code> is not presented or at the end of array, all functions are pre hook (e.g. [fn1, fn2] === [fn1, fn2, null])
+  - the hook is a function, it means the function is a pre hook (e.g. fn1 === [fn1])</p>
+<pre><code class="lang-javascript">  function preHook(context, next) {
+    // you can call `next` asynchronously, the next function in chain won&#39;t be called
+    // until you call `next`
+    setTimeout(next, 1000);
+  }
+
+  function postHook(context, next) {
+    // if you return true, the next function in chain (if any) will be called immediately
+    return true;
+  }
+
+  router.get(&#39;/hooked&#39;, function() {}, [preHook, null, postHook]);</code></pre>
+<a name="listen-to-server-event"></a><h2>Listen to server event</h2>
+<p>You can use router directly with HttpServer instance.</p>
+<pre><code class="lang-javascript">
+  // listen to &#39;request&#39; event of HttpServer instance
+  router.listen(server);</code></pre>
+<p>If you have more complex project, please use <a href="#site">Site</a> with <a href="#app">App</a>.</p>
+<a name="api"></a><h2>API</h2>
+<p><code>Router</code> exposed by <code>require(&#39;genji&#39;).Router</code>. Instance can be created by</p>
+<pre><code class="lang-javascript">
+    var router = require(&#39;genji&#39;).route(options);</code></pre>
+<a name="genjirouteoptionsobject"></a><h3>genji.route(options:Object)</h3>
+<p>Takes <strong>optional</strong> options and create a new <code>genji.Router</code> instance.</p>
+<p>Supported options:</p>
+<ul>
+<li><code>urlRoot</code> is the base url of the router, default value is &#39;^/&#39;.</li>
+<li><code>contextClass</code> the default context class for each request. See <a href="#context">Context</a> for more info.</li>
+</ul>
+<a name="methods"></a><h3>Methods</h3>
+<a name="get-post-put-delete-headurlstring-regexp-handlerfunction-optional-optionsobject"></a><h5>{get|post|put|delete|head}(url:{String|RegExp}, handler:Function, /*optional*/ options:Object)</h5>
+<p>The <code>get/post/put/delete/head</code> route defining methods of <code>Router</code> instance have the same signature:</p>
+<ul>
+<li><p><strong>url</strong> The RegExp instance or string representation of it, string will be converted to regular expression.
+If it&#39;s string, router will check if the given string starts with <code>^</code>. If not the <code>urlRoot</code> will be prepended to the string.</p>
+</li>
+<li><p><strong>handler</strong> Function to handle the request, the handling function has following signature:</p>
+<p><strong>function handler(context, /*optional*/ matched...) {}</strong></p>
+<ul>
+<li><code>context</code> Instance object of <code>Context</code></li>
+<li><code>matched</code> <em>Optional</em> values matched from your url regular expression (e.g. /path/to/item/<strong>([0-9]*)</strong> )</li>
+</ul>
+</li>
+<li><p><strong>hooks</strong> a function or array of functions which will be called during dispatch</p>
+</li>
+</ul>
+<p>Routing rules are grouped by http method. Previous rule could be overriden by subsequently calling routing method with same
+http method and url. That means you can have different handling functions for the same url with different http method.</p>
+<a name="mounturlsarray"></a><h5>mount(urls:{Array})</h5>
+<p>Add batch of routing rules at once. Each element in the <code>urls</code> array should be an array with members of following order:</p>
+<ul>
+<li><code>url</code> same as described above in <code>get/post/put/delete/head</code> methods</li>
+<li><code>handler</code> same as described above</li>
+<li><code>httpMethod</code> <em>Optional</em> http method that accepted, default to &#39;GET&#39;</li>
+<li><code>options</code> <em>Optional</em> same as described above</li>
+</ul>
+<a name="notfoundurlstring-regexp-handlerfunction"></a><h5>notFound(url:{String|RegExp}, handler:Function)</h5>
+<p>The miss matched matcher. You can use it to handle miss matched requests based on different url.</p>
+<pre><code class="lang-javascript">
+  router.notFound(&#39;^/blog/*&#39;, function(context) {
+    // for miss matched url start with `/blog/`
+  });
+
+  router.notFound(&#39;^/*&#39;, function(context) {
+    // for any other cases
+  });</code></pre>
+<a name="routerroutetypestring-urlstring-contextobject-optional-notfoundfunctionboolean"></a><h4>Router#route(type:String, url:String, context:Object, /*optional*/ notFound:Function):Boolean</h4>
+<p>The routing function, it takes input and try to match with existent rules. Return <code>true</code> on matched otherwise <code>flase</code>.</p>
+<ul>
+<li><code>type</code> is type of request <code>GET|POST|PUT|DELETE|HEAD|NOTFOUND</code></li>
+<li><code>url</code> is the request url</li>
+<li><code>context</code> is the <code>this</code> object for dispatching</li>
+<li><code>notFound</code> is an optional function which will be called when no rule matched the given input</li>
+</ul>
+<a name="routerhookfnfunction-array"></a><h4>Router#{hook}(fn:{Function|Array})</h4>
+<p>Add pre/post hook(s) to all existent url routing rules in the current router instance. Takes one argument which could be
+function (pre hook) or array of <code>null positioned</code> hooking functions. This method adds pre hook to the <code>left</code> side (begin)
+of existent pre hooks and adds post hook to <code>right</code> side (end) of existent post hooks.</p>
+<a name="routerlistenserverhttpserver-optional-notfoundfunction"></a><h4>Router#listen(server:{HttpServer}, /*optional*/ notFound:Function)</h4>
+<p>Listen to <code>request</code> event of the vanilla node.js <code>HttpServer</code> instance.</p>
+<ul>
+<li><code>server</code> is an instance of HttpServer</li>
+<li><code>notFound</code> is an optional function which will be called when all routes miss matched in the router.
+A default function that responds 404 to client and output error to <code>stderr</code> will be called if you omit the function</li>
+</ul>
+
+<a name="app"></a><h1>App</h1>
+<p>An app is a <code>class</code> where you define and implement your core business logic. App it self is an event emitter.
+Properties can be overridden by subclassing existent app.</p>
+<a name="define-app"></a><h2>Define app</h2>
+<p>You can define an <code>App</code> like this:</p>
+<pre><code class="lang-javascript">
+  var App = require(&#39;genji&#39;).App;
+  var BlogApp = App(/* instance properties */ properties);</code></pre>
+<p>Let&#39;s go through a simple example to see how we can define an app.</p>
+<pre><code class="lang-javascript">
+var App = require(&#39;genji&#39;).App;
+
+var BlogApp = App({// instance properties object
+    /**
+     * Name of your app
+     */
+    name: &#39;Blog&#39;,
+
+    /**
+     * App constructor function
+     */
+    init: function(db) {
+      this.db = db;
+    },
+
+    /**
+     * Create a blog post
+     */
+    createPost: function(title, content, callback) {
+      // Make the post object
+      var post = {title: title, content: content, created: new Date()};
+      // save to the db
+      this.db.save(post).then(function(result){
+        // error first callback style
+        callback(null, result);
+      });
+    }
+  });</code></pre>
+<p>The <code>BlogApp</code> you just defined can be used as a standalone application class. It means you don&#39;t need the http stack to run your app code. Once you get the <code>BlogApp</code> class, you initialize and use it just like any other classes. The <code>init</code> function will be called on initialization and it&#39;s optional.</p>
+<a name="handle-result"></a><h2>Handle result</h2>
+<p>There are two different ways to handle result of the instance function. One is to add callback as the last argument and
+handle result inline. Another is to listen to the event emitted from object of app instance.</p>
+<a name="inline-callback-style"></a><h3>Inline callback style</h3>
+<pre><code class="lang-javascript">
+var myBlog =  new BlogApp(db);
+
+// create a blog post in db
+myBlog.createPost(&#39;My awesome post&#39;, &#39;Some contents&#39;, function(err, result) {
+  // handle error and result here
+  // this == myBlog, so you can emit event manually
+  this.emit(&#39;createPost&#39;, err, result);
+});</code></pre>
+<a name="event-style"></a><h3>Event style</h3>
+<p><strong>Default callback</strong></p>
+<p>Sometime you don&#39;t care about if the post is saved or not. And you may wish to handle the result in other part of your code.
+So when you call instance function and the last argument is not a callback, genji will generate a default callback for you.
+You call the callback as usual and an event with the name of the instance method will be triggered.</p>
+<pre><code class="lang-javascript">
+// the event callback&#39;s argument is same as how you call the callback inside the &quot;createPost&quot; function
+myBlog.on(&#39;createPost&#39;, function(err, result) {
+  // handle the event
+});
+
+//...
+
+// create and forget
+myBlog.createPost(&#39;I do not care about the result&#39;, &#39;Yes, there is no callback after me.&#39;);</code></pre>
+<p>There is one <strong>exception</strong>. When your instance function is synchronized and returns non-undefined value on calling. The event/callback will not be emitted/invoked in async operation.</p>
+<pre><code class="lang-javascript">
+  getDB: function(cb) {
+    cb(); // will call `theCallback`, if no callback gived event will be emitted
+    process.nextTick(function(){
+      cb(); // `theCallback` will not be called end emit event
+    });
+    return this.db;
+  }
+
+  function theCallback() {
+    // this function will never be called in async operation
+  }
+
+  var db = myBlog.getDB(theCallback);</code></pre>
+<p><strong>Delegation</strong></p>
+<p>You can delegate all the events to other event emitter object by setting the <code>delegate</code> property to that emitter.</p>
+<pre><code class="lang-javascript">
+var otherEmitter = new EventEmitter();
+
+myBlog.delegate = otherEmitter;
+
+// event name will be prefixed by app name on delegation by default
+otherEmitter.on(&#39;Blog:createPost&#39;, function(err, result) {
+  // handle the event
+});
+
+myBlog.on(&#39;createPost&#39;, function(err, result) {
+  // this will never be called as you allready delegate events to `otherEmitter`
+});
+
+myBlog.createPost(&#39;title&#39;, &#39;content&#39;);</code></pre>
+<a name="extending"></a><h2>Extending</h2>
+<p>It&#39;s easy to extend an existent app class, use the app class you want to extend just like you use <code>App</code>:</p>
+<pre><code class="lang-javascript">
+var AwesomeBlogApp = BlogApp({
+
+    name: &#39;AwesomeBlog&#39;,
+
+    createPost: function(title, content, callback) {
+      // ...
+    },
+
+    getPost: function(id, callback) {
+      // ...
+    }
+  });</code></pre>
+<a name="conventions"></a><h2>Conventions</h2>
+<p>App introduced a very thin mechanism to organize business logic code. To make app works simply and efficiently with
+other part of system, here are the conventions you may need to know and understand.</p>
+<a name="session"></a><h3>Session</h3>
+<p>Although we call defined app <code>class</code>, but actually we use individial instance functions in a <code>functional programming</code>
+style in conjuction with <a href="site.html">Site</a> and <a href="router.html">Router</a>. This allow genji to reuse a single app instance
+for multiple requests instead of constructing for each one of them. You may noticed that, there&#39;s no session info passed
+to <code>createPost</code> in the above example, this is not possible in a real world application. So Genji put the session object
+which may contains credential or other user specific info as the first argument of app&#39;s instance function when working
+with Site. So your instance function will have some sort of <code>session first callback last</code> style of function signature.</p>
+<pre><code class="lang-javascript">
+createPost: function(session, title, content, callback) {
+  if (session.group === &#39;author&#39; &amp;&amp; session.user) {
+    // Make the post object with user info
+    var post = {
+      user: session.user,
+      title: title, content: content, created: new Date()
+    };
+    this.db.save(post).then(function(result){
+      callback(null, result);
+    });
+  } else {
+    // do something
+  }
+}</code></pre>
+<p>To make the app class more reusable, don&#39;t put any http stack object as the function argument
+(e.g. request/response object of node.js etc.). That will make you loose the flexiblity and coupled with http stack.
+Leave that job to <code>genji.Site</code> to make you life easier.</p>
+<a name="the-codethis-code-object"></a><h3>The <code>this</code> object</h3>
+<p>You can always use <code>this</code> refer to the instance of app inside of instance function, callback function and event listening function.</p>
+<a name="naming-and-url-mapping"></a><h3>Naming and url mapping</h3>
+<p>Site use <code>name</code> property of app and it&#39;s functions&#39; name for mapping url automatically. For example:</p>
+<ul>
+<li><code>blog/ceate/post</code> to match <code>Blog</code> app&#39;s <code>createPost</code> function.</li>
+<li><code>awesomeblog/create/post</code> map to <code>AwesomeBlog</code>&#39;s <code>createPost</code>.</li>
+<li><code>blog/camel/cased/function/name</code> to match <code>Blog</code>&#39;s <code>camelCasedFunctionName</code> function.</li>
+<li>if the function name start with low dash <code>_</code> (e.g. <code>_privateFunc</code>), no url will map to this function.</li>
+</ul>
+<a name="error-first-callback-style"></a><h3>Error first callback style</h3>
+<p>We follow the native node.js api&#39;s callback style, which put the error object at the first argument of a callback function. It&#39;s true for the event listening function as well.</p>
+<a name="api"></a><h2>API</h2>
+<p><code>App</code> is exposed by <code>require(&#39;genji&#39;).App</code>. Inherits from EventEmitter.</p>
+<a name="properties"></a><h3>Properties</h3>
+<ul>
+<li><p><code>name</code> is the name of your app in <em>string</em>, name should be upper camel case.</p>
+</li>
+<li><p><code>emitInlineCallback</code> is an enum value (&#39;after&#39;, &#39;before&#39;, false) which tells genji automatically emit event <code>after</code>/<code>before</code> callback is called when you handle result inline. Default is boolean <code>false</code> which means not to emit.</p>
+</li>
+<li><p><code>prefixDelegatedEvent</code> is an enum value indicates whether or not to prefix the event name when using <code>delegate</code> as emitter:</p>
+<ul>
+<li><code>true</code> event name will be prefixed, the prefix is <code>&#39;name of app&#39; + &#39;:&#39;</code> (e.g. <code>createPost</code> -&gt; <code>Blog:createPost</code>). This is the default value</li>
+<li><code>false</code> not to prefix</li>
+<li>Any non-empty <em>string</em> value as customized prefix</li>
+</ul>
+</li>
+<li><p><code>publicMethods</code> is an <em>object</em> of functions created upon initialization which considered as public methods, <code>controller</code> uses this property to map url to function.</p>
+</li>
+<li><p><code>reservedMethodNames</code> is an <em>array</em> of reserved names which cannot be used as public method, the default value is:</p>
+<pre><code>    [&quot;setMaxListeners&quot;,&quot;emit&quot;,&quot;addListener&quot;,&quot;on&quot;,&quot;once&quot;,&quot;removeListener&quot;,&quot;removeAllListeners&quot;,&quot;listeners&quot;, &quot;init&quot;, &quot;isPublicMethodName&quot;]</code></pre>
+</li>
+<li><p><code>site</code> is the <code>site</code> instance when works with <code>genji.site</code> is optional but reserved</p>
+</li>
+</ul>
+<a name="methods"></a><h3>Methods</h3>
+<ul>
+<li><p><code>init</code> is the constructor <em>function</em>, it will be called once and only once at the time of initialization, you should not call it manually.</p>
+</li>
+<li><p><code>isPublicMethodName</code> is a <em>function</em> use to check if a string can be used as public method name or not. The default rule is:</p>
+<p>  The name must be a non-empty string and must not equal to one of the <code>reservedMethodNames</code> and not start with lower dash <code>_</code>.</p>
+</li>
+</ul>
+
+<a name="site"></a><h1>Site</h1>
+<p><strong>Site</strong> is the organizer for your applications. And using <strong>Site</strong> is the recommended way to use Genji when you have a
+large/complex project. It has the following features:</p>
+<ul>
+<li>It inherits <code>EventEmitter</code></li>
+<li>It has setter/getter methods which can be used to save and retrieve <code>settings</code></li>
+<li>It can load and expose your <code>app</code> to external world and manage maps between url and app function</li>
+<li>It works with <a href="core.html">Core</a> - the <code>plugin</code> system</li>
+<li>It works with <code>view</code> and renders result by convention</li>
+<li>Settings, plugins and apps are all namespaced by <code>env</code></li>
+</ul>
+<p>A <code>site</code> object can be created by calling <code>genji.site()</code>:</p>
+<pre><code class="lang-javascript">var mySite = genji.site();</code></pre>
+<a name="getter-setter"></a><h2>Getter/Setter</h2>
+<p>You can use <code>mySite</code> to set and get settings.</p>
+<pre><code class="lang-javascript">
+mySite.set(&#39;title&#39;, &#39;My Great Website&#39;);
+
+// &#39;My Great Website&#39;
+var title = mySite.get(&#39;title&#39;);
+
+// set a batch of settings
+mySite.set({
+  host: &#39;127.0.0.1&#39;,
+  port: 8888
+});
+
+// get a batch of settings
+var settings = mySite.get([&#39;title&#39;, &#39;host&#39;, &#39;port&#39;]);
+// {title: &#39;My Great Website&#39;, host: &#39;127.0.0.1&#39;, port: 8888}</code></pre>
+<a name="use-middleware"></a><h2>Use middleware</h2>
+<p>You don&#39;t have to initialize <a href="#core.html">middleware manager</a> by yourself when you use site. You only need to call <code>use</code> method of the
+site instance.</p>
+<pre><code class="lang-javascript">
+// use built-in middlewares
+mySite.use(&#39;conditional-get&#39;);
+mySite.use(&#39;logger&#39;, conf);
+
+// use custom middleware
+
+mySite.use(function(core, conf) {
+    // do something
+  }, conf);</code></pre>
+<a name="load-app"></a><h2>Load app</h2>
+<p>Using app with site is as simple as middleware. But instead of <code>use</code> you need to call <code>load</code> with app instance.</p>
+<pre><code class="lang-javascript">
+var blog = new BlogApp();
+mySite.load(blog);
+
+// site instance will be setted to app instance&#39;s `delegate` property
+// blog.delegate === mySite</code></pre>
+<p>If you have a lots of apps which have similar initializing options. Then you can set the default app options and let
+site initialize them for you.</p>
+<pre><code class="lang-javascript">var options = {x: 1, y: 2};
+mySite.set(&#39;appOptions&#39;, options);
+mySite.load(BlogApp);
+mySite.load(MyOtherApp);</code></pre>
+<p>The default options could be overridden and inherited.</p>
+<pre><code class="lang-javascript">var someOptions = {y: 3, z: 2};
+// the actual intializing option is {x: 1, y: 3, z: 2}
+mySite.load(SomeApp, someOptions);
+// load three apps at once
+mySite.load([SomeApp1, SomeApp2, SomeApp3], someOptions);</code></pre>
+<a name="routing"></a><h2>Routing</h2>
+<p>All methods in the <code>app.publicMethods</code> property will be mapped to url by default follows the <a href="app#naming-and-url-mapping">convention</a>.
+For example, the <code>blog.createPost</code> will be mapped to url that matches <code>^/blog/create/post</code> by default.
+Of course, if the default convention/mapping does not meet your needs, you can use the <code>map</code> function to map individual
+url to app method and override the default options.</p>
+<pre><code class="lang-javascript">
+mySite.map({
+  // handle `POST` requests for url &#39;/blog/create/post&#39;
+  blogCreatePost: {method: &#39;post&#39;}
+  // handle both `GET` and `POST` requests for url &#39;/blog/read/post/:id&#39;
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;},
+  // add hooks
+  blogUpdatePost: {method: &#39;put&#39;, hooks: [preFn1, null, postFn1]}
+});</code></pre>
+<p>If you have predefined routing definition object, you can load it at the same time when loading app.</p>
+<pre><code class="lang-javascript">
+var routes = {
+  // it&#39;s an app default settings if the property key of the route is one of the app&#39;s name (in lower case)
+  blog: {hooks: [fn1, null, fn2], method: &#39;get&#39;, urlRoot: &#39;^/blog/&#39;},
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;},
+  // a comprehensive route definition
+  blogCreatePost: {
+    url: &#39;/create/post&#39;,
+    method: &#39;post&#39;,
+    hooks: [fn3, fn4, null, fn5],
+    view: &#39;json&#39; // see [Output result](#output-result)
+  }
+};
+
+mySite.load(AnotherApp, someOptions, routes);</code></pre>
+<p>The <code>routes.blog</code> object holds default settings for all <code>publicMethods</code> of <code>blog</code> instance. It means if some setting is
+not specified in route, it will use the default one provided by <code>routes.blog</code>. And hooks will be combined. So the final
+routes of above example normalized by genji would be:</p>
+<pre><code class="lang-javascript">var routes = {
+  blogReadPost: {
+    url: &#39;^/blog/read/post/[0-9]{16}&#39;,
+    method: &#39;get&#39;,
+    hooks: [fn1, null, fn2],
+    view: &#39;html&#39; // site default value, see [Output result](#output-result)
+  },
+  // a comprehensive route definition
+  blogCreatePost: {
+    url: &#39;^/blog/create/post&#39;,
+    method: &#39;post&#39;,
+    hooks: [fn1, fn3, fn4, null, fn5, fn2],
+    view: &#39;json&#39; // see [Output result](#output-result)
+  }
+};</code></pre>
+<a name="output-result"></a><h2>Output result</h2>
+<p>We already knew how to map a url to an app&#39;s method. Let&#39;s see how we can output the result.</p>
+<ul>
+<li>Output the result as html string (default):</li>
+</ul>
+<pre><code class="lang-javascript">
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;, view: &#39;html&#39;}</code></pre>
+<ul>
+<li>Output the result as json string:</li>
+</ul>
+<pre><code class="lang-javascript">
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;, view: &#39;json&#39;}</code></pre>
+<ul>
+<li>Handle result by customized function:</li>
+</ul>
+<pre><code class="lang-javascript">
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;, view: function(err, result) {
+    if (err) {
+      this.error(err);
+      return;
+    }
+    this.sendJSON(result);
+  }}</code></pre>
+<p>When you use genji&#39;s <code>view</code> system, site can render view template automatically for you.</p>
+<pre><code class="lang-javascript">
+var hogan = require(&#39;hogan.js&#39;);
+mySite.use(&#39;view&#39;, {engine: hogan, rootViewPath: __dirname});
+
+mySite.map({
+
+  // render template file at &quot;rootViewPath + /blog/views/read_post.html&quot;
+  blogReadPost: {url: &#39;^/blog/read/post/[0-9]{16}&#39;, view: &#39;/blog/views/read_post.html&#39;},
+
+  // the default behavior is try to find a template file at &quot;rootViewPath + /blog/update_post.html&quot; if you use the view system
+  blogUpdatePost: {method: &#39;put&#39;}
+
+});</code></pre>
+<p>Of course, it&#39;s possible to do some tweaks and render manually.</p>
+<pre><code class="lang-javascript">
+  blogUpdatePost: {method: &#39;put&#39;, view: function(err, result) {
+    result.someValue = 1;
+
+    // auto template file discovery, render and send
+    this.render(result);
+
+    // or indicates template view name manually
+    this.render(&#39;blog/update_post.html&#39;, result);
+
+    var self = this;
+    // or render and send manually
+    this.render(&#39;/path/to/blog/views/update_post.html&#39;, result, function (err, html) {
+      self.sendHTML(html);
+    });
+  }}</code></pre>
+<a name="environment"></a><h2>Environment</h2>
+<p>By using <code>env</code> you can have different settings, middlewares and apps for different environments. The default environment
+named <code>default</code>.</p>
+<pre><code class="lang-javascript">
+// switch to environment &quot;dev&quot;
+mySite.env(&#39;dev&#39;);
+
+// the following title and middleware will be used if your &#39;process.env.NODE_ENV&#39; === &#39;dev&#39;
+mySite.set(&#39;title&#39;, &#39;[DEV] My Great Website&#39;);
+mySite.use(&#39;dev-verbose&#39;, &#39;all&#39;);
+// the &quot;DevApp&quot; is also only avaliable for &quot;dev&quot; environment
+mySite.load(DevApp);
+
+// switch back to the &#39;default&#39; environment
+mySite.env(); // or mySite.env(&#39;default&#39;)</code></pre>
+<p>The <code>dev</code> environment inherits <code>default</code>. It means all settings, middlewares and apps setted before you switched to <code>dev</code>
+are also setted/used/loaded. So when you switched to new environment, <code>set/use/load</code> overrides the differences.</p>
+<a name="start-your-site"></a><h2>Start your site</h2>
+<p>Start the server is easy</p>
+<pre><code class="lang-javascript">
+ mySite.start();</code></pre>
+
+<a name="base"></a><h1>Base</h1>
+<p>The <strong>base</strong> module exports two classes</p>
+<ul>
+<li><p><strong>Klass</strong> is a lightweight javascript OO implementation. It only gives you a way to inherit class and nothig more.</p>
+</li>
+<li><p><strong>Base</strong> is a feature rich javascript OO implementation. It supports mixin for instance/static property.</p>
+</li>
+</ul>
+<a name="klass"></a><h2>Klass</h2>
+<p>Klass has follwoing features:</p>
+<ul>
+<li>instance property will be overridden during subclassing</li>
+<li>no reference to the parent overridden method (aka. <code>super</code>) in instance method</li>
+<li><code>instanceof</code> operator works, but <code>Klass</code> itself is not parent class of any subclass defined</li>
+<li>the root super class&#39;s constructor cannot be overridden and will always be called during initialization</li>
+</ul>
+<a name="klasssuperclassfunction-moduleobject-optional-inheritfunctionfunction"></a><h3>Klass(SuperClass:Function, module:Object, /*optional*/ inherit:Function):Function</h3>
+<ul>
+<li><code>SuperClass</code> is constructor function of your parent class</li>
+<li><code>module</code> is an object of instance properties which you want to override or add to the subclass<ul>
+<li><code>init</code> is a reserved property in module object. If it&#39;s a function it will be called during initialization after SuperClass constructor function has been called. The <code>init</code> defined in parent class will be overridden by subclass just like normal property.</li>
+</ul>
+</li>
+<li><code>inherit</code> is an optional function for changing the default inheriting behaviour</li>
+<li><p>returns <code>Subclass</code> which you can continue to subclass by calling</p>
+<p><code>Subclass(module:Object, /\*optional\*/ inherit:Function)</code></p>
+</li>
+<li><p>the initial SuperClass constructor function (root super class) will always be called and cannot be overridden during subclassing</p>
+</li>
+</ul>
+<a name="example"></a><h3>Example</h3>
+<pre><code class="lang-javascript">
+  var Klass = require(&#39;genji&#39;).Klass;
+
+  var Person = Klass(function(name){
+    this.name = name;
+  }, {
+    getName: function(){
+      return this.name;
+    }
+  });
+
+  var Worker = Person({
+    init: function(name) {
+      this.name += &#39; Worker&#39;;
+    },
+
+    work: function(task) {
+      return this.getName() + &#39; start working on &#39; + task;
+    }
+  });
+
+  var steve = new Worker(&#39;Steve&#39;);
+
+  var result = steve.work(&#39;writing report&#39;);
+
+  // &#39;Steve Worker start working on writing report&#39; true true
+  console.log(result, worker instanceof Worker, worker instanceof Person);</code></pre>
+<a name="base"></a><h2>Base</h2>
+<p>(Coming soon)</p>
+
+<a name="changelog"></a><h1>CHANGELOG</h1>
+<a name="07-2013"></a><h2>0.7 (2013)</h2>
+<a name="070-2013-03-23"></a><h3>0.7.0 (2013/03/23)</h3>
+<p><strong>NOTE</strong>: This version is <strong>not compatible</strong> with version <strong>0.5.x</strong></p>
+<ul>
+<li>Documentation</li>
+<li>Introduce <code>Klass</code> - lightweight Javascript OO implementation</li>
+<li>Introduce <code>Core</code> - the plugin/middleware system</li>
+<li>Introduce <code>Site</code><ul>
+<li>to avoid global shared object in <code>lib/genji.js</code></li>
+<li>setting management namespaced by environment</li>
+<li>coporate with <code>Core</code> and map routes to apps</li>
+</ul>
+</li>
+<li>Replace <code>Handler</code> with <code>Context</code>, convert some handlers to plugins</li>
+<li>Refactor <code>router</code><ul>
+<li>allow routing without middleware</li>
+<li>overwrite routes which has same url pattern and http method</li>
+</ul>
+</li>
+<li>Rewrite <code>App</code><ul>
+<li>use <code>Klass</code></li>
+<li>separate routing from App logic</li>
+<li>remove support of static properties</li>
+</ul>
+</li>
+<li>Rewrite <code>Model</code><ul>
+<li>use <code>Klass</code></li>
+<li>remove support of static properties</li>
+</ul>
+</li>
+<li>Remove <code>Role</code></li>
+</ul>
+<a name="05-2012"></a><h2>0.5 (2012)</h2>
+<a name="0510-2012-12-15"></a><h3>0.5.10 (2012/12/15)</h3>
+<ul>
+<li><code>App</code> clone routes object before use</li>
+<li><code>Handler</code> keep parsed and raw http request data</li>
+</ul>
+<a name="059-2012-12-15"></a><h3>0.5.9 (2012/12/15)</h3>
+<ul>
+<li><code>View#minify</code></li>
+<li><code>json</code>, <code>html</code>, <code>text</code> shortcuts for <code>App#routeResults</code></li>
+</ul>
+<a name="058-2012-11-24"></a><h3>0.5.8 (2012/11/24)</h3>
+<ul>
+<li><code>handler#sendAsFile</code><ul>
+<li>allow customize response headers</li>
+<li>detect Buffer when calculate data length</li>
+</ul>
+</li>
+</ul>
+<a name="057-2012-11-06"></a><h3>0.5.7 (2012/11/06)</h3>
+<ul>
+<li><code>util#expose</code> export sub modules</li>
+<li>remove <code>client.js</code></li>
+<li><code>Model</code> <code>toData</code> and <code>toDoc</code> accept array as argument to indicate the fields you need to get.</li>
+<li><code>App#routePreHook</code> support bulk set prehook for array of routes</li>
+</ul>
+<a name="056-2012-10-31"></a><h3>0.5.6 (2012/10/31)</h3>
+<ul>
+<li><code>crypto#decipher</code> handle exception &#39;TypeError: DecipherFinal fail&#39; when decipher string with different key ciphered</li>
+</ul>
+<a name="055-2012-10-26"></a><h3>0.5.5 (2012/10/26)</h3>
+<ul>
+<li><code>control</code><ul>
+<li><code>defer().defer(otherDeferrable)</code></li>
+<li><code>defer().callback(cb)</code></li>
+</ul>
+</li>
+</ul>
+<a name="054-2012-09-14"></a><h3>0.5.4 (2012/09/14)</h3>
+<ul>
+<li>set default context for layout</li>
+<li>batch attache prehook to routes</li>
+<li>allow set cookie during redirection</li>
+<li>default options for <code>Role</code></li>
+</ul>
+<a name="053-2012-08-17"></a><h3>0.5.3 (2012/08/17)</h3>
+<ul>
+<li>node 0.8.x compatibility</li>
+</ul>
+<a name="052-2-2012-07-21"></a><h3>0.5.2-2 (2012/07/21)</h3>
+<ul>
+<li>Bug fix for <code>Model</code></li>
+</ul>
+<a name="052-1-2012-07-18"></a><h3>0.5.2-1 (2012/07/18)</h3>
+<ul>
+<li>Bug fix for <code>App</code></li>
+</ul>
+<a name="052-2012-07-05"></a><h3>0.5.2 (2012/07/05)</h3>
+<ul>
+<li><code>Model</code><ul>
+<li>new field type and type validator: <code>array</code>, <code>regexp</code>, <code>date</code>, <code>bool</code></li>
+<li>dynamic fields validation status</li>
+<li>instance function accepts callback function as last argument,
+call <code>this.emit()</code> as usual will call the callback and event won&#39;t be emitted.</li>
+<li>use <code>toDoc()</code> instead of <code>toData(&#39;alias&#39;)</code></li>
+<li>bug fix for type validation</li>
+</ul>
+</li>
+<li><code>App</code><ul>
+<li>bug fix for instance function not return result</li>
+</ul>
+</li>
+</ul>
+<a name="051-2012-06-16"></a><h3>0.5.1 (2012/06/16)</h3>
+<ul>
+<li><code>View</code><ul>
+<li>add script loader support (head.js)</li>
+<li>change <code>addViewPath</code> to <code>setViewPath</code></li>
+<li>add support for default context (e.g. var view = new View(engine, {context: {title: &#39;Title&#39;}});)</li>
+<li>merge <code>BaseView</code> with <code>ViewWithCompiler</code></li>
+<li>basic <code>layout</code> manager</li>
+</ul>
+</li>
+<li><code>Model</code><ul>
+<li><code>model.attr([key1, key2])</code> get group of attributes as hash object</li>
+<li>Bi-direction aliased field name</li>
+</ul>
+</li>
+<li><code>App</code> support application level and route level <code>routePreHook</code></li>
+<li>Introduce <code>Role</code></li>
+</ul>
+<a name="050-2012-06-05"></a><h3>0.5.0 (2012/06/05)</h3>
+<ul>
+<li>external app loader</li>
+<li>New <code>App</code> module</li>
+<li><code>genji.app</code> renamed to <code>genji.route</code></li>
+</ul>
+<a name="033-2012-05-19"></a><h3>0.3.3 (2012/05/19)</h3>
+<ul>
+<li>expose submodules by default, <code>genji.short</code> and <code>genji.require</code> are deprecated</li>
+<li>rewrite <code>lib/model.js</code>, added test</li>
+<li>support multi-root path for view template (with namespace)</li>
+<li>add <code>Model#changed</code>, return object which contains changed fields/values after initialized.</li>
+<li>add <code>util#byteLength</code></li>
+</ul>
+<a name="032-2012-05-08"></a><h3>0.3.2 (2012/05/08)</h3>
+<ul>
+<li>improve <code>view</code> and <code>model</code></li>
+</ul>
+<a name="031-2012-03-12"></a><h3>0.3.1 (2012/03/12)</h3>
+<ul>
+<li>improve <code>view</code> partial</li>
+<li>introduce <code>model</code></li>
+</ul>
+<a name="030-2012-01-05"></a><h3>0.3.0 (2012/01/05)</h3>
+<ul>
+<li>introduce <code>view</code> for working with template engine like <a href="https://github.com/twitter/hogan.js">hogan.js</a><ul>
+<li>render files</li>
+<li>simple caching support</li>
+<li>preregister partial files in the <code>rootViewPath</code></li>
+</ul>
+</li>
+</ul>
+<a name="024-2012-01-02"></a><h3>0.2.4 (2012/01/02)</h3>
+<ul>
+<li>add <code>send</code>, <code>sendJSON</code> and <code>sendHTML</code> to the <code>base#BaseHandler</code></li>
+<li>introduce <code>event</code> in <code>control#defer</code></li>
+</ul>
+<a name="023-2011-12-15"></a><h3>0.2.3 (2011/12/15)</h3>
+<ul>
+<li>Upgraded <code>expresso</code> for node 0.6.x support</li>
+</ul>
+<a name="022-2011-08-29"></a><h3>0.2.2 (2011/08/29)</h3>
+<ul>
+<li>Cleaned code follow default jshint rules</li>
+<li>Rewrited <code>client.js#Client</code> and added some tests</li>
+</ul>
+<a name="021-2011-08-11"></a><h3>0.2.1 (2011/08/11)</h3>
+<ul>
+<li>Add timeout support for <code>control#parallel</code></li>
+<li>bug fix for handler#Simple#sendJson</li>
+<li>new event for handler with method <code>POST</code>/<code>PUT</code>:<ul>
+<li><code>data</code> for raw data</li>
+<li><code>params</code> for http query string, parsed as plain javascript object</li>
+<li><code>json</code> for json string, parsed as plain javascript object</li>
+</ul>
+</li>
+</ul>
+<a name="020-2011-07-10"></a><h3>0.2.0 (2011/07/10)</h3>
+<ul>
+<li>Changed the way how we define sub url for <code>App#[get, post, put, del, head]</code></li>
+<li><code>control#defer</code><ul>
+<li>put flow control object as the first argument of <code>and</code> callback</li>
+<li>callbacks of <code>and</code>, <code>then</code> now will be called in registered order
+<code>defer(fs.readFile, fs).and(fn1, fn2, fn3).then(fn4, fn5).and(fn6, fn7)</code>
+functions will be called in the following order:
+fn1-&gt;fn2-&gt;fn3-&gt;(fn4&amp;fn5)-&gt;fn6-&gt;fn7</li>
+</ul>
+</li>
+<li><code>util#extend</code> takes unlimited arguments <code>extend(obj, props1, props2, ...,
+propsN)</code></li>
+<li>Add <code>crypto#hmac</code></li>
+<li><code>handler#Simple</code> parses url parameters by default</li>
+<li>Add context for <code>control#parallel</code></li>
+</ul>
+<a name="010-2011-06-29"></a><h3>0.1.0 (2011/06/29)</h3>
+<ul>
+<li>Remove a lots of functionalities, keep small and focus.</li>
+<li>Introduce <code>App</code></li>
+<li><code>control#parallel</code> set done/fail callbacks by
+<code>parallel.done(fn)</code> and <code>parallel.fail(fn)</code></li>
+<li>add <code>genji.short</code>:
+extends the <code>genji</code> namespace with <code>util</code> <code>base</code> <code>control</code> submodules</li>
+<li>Simplified <code>handler</code>,<ul>
+<li>the default handler is <code>genji.require(&#39;handler&#39;).Handler</code>
+which can handle normal http request, parse cookies and send files</li>
+<li>you can use <code>genji.require(&#39;handler&#39;).BaseHandler</code>
+to include features you only need</li>
+</ul>
+</li>
+</ul>
+<a name="003-2011-06-13"></a><h3>0.0.3 (2011/06/13)</h3>
+<ul>
+<li>etag for sending file-like contents</li>
+<li>util<ul>
+<li>crypto<ul>
+<li>new shorthand functions for cipher/decipher</li>
+<li>enable to select the digest encoding for <code>md5</code>, <code>sha1</code>, <code>hmac_sha1</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>web<ul>
+<li>middleware<ul>
+<li>now the middleware does not care about application settings</li>
+<li>new style middleware config format</li>
+<li><code>secure-cookie</code> new middleware to encrypt/decrypt cookie</li>
+</ul>
+</li>
+<li>router, new url routing system, supports declarative and programmatic style of defining url rules.</li>
+<li>move <code>createServer</code>/<code>startServer</code> into submodule <code>web.server</code>, <code>web/index.js</code> only use to export submodules</li>
+</ul>
+</li>
+<li>pattern<ul>
+<li>control<ul>
+<li>promise: call the original async function in next tick</li>
+</ul>
+</li>
+<li>math, new pattern group, add <code>random</code></li>
+</ul>
+</li>
+</ul>
+
+</div>
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="all.html?print=1">Print all pages</a>
+            
+                <a href="https://github.com/lsm/genji" id="fork-me-on-github">Fork me on Github</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

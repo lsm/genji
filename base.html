@@ -223,30 +223,66 @@
     </div>
 
 <article id="content">
-    <a name="genji-a-hrefhttp-travis-ciorg-lsm-genjiimg-srchttps-securetravis-ciorg-lsm-genjipng-altbuild-status-a"></a><h1>Genji <a href="http://travis-ci.org/lsm/genji"><img src="https://secure.travis-ci.org/lsm/genji.png" alt="build status"></a></h1>
-<p>Writing reusable, modular and flexible node.js application made easy.</p>
-<a name="introduction"></a><h2>Introduction</h2>
-<p>Genji is not a full stack web framework, instead it focuses on making your code reusable and flexible enough to integrate
-with other components and frameworks. In development of modern web application, your service usually consumed by various
-kinds of clients with different manners. You may have web site for browser user, private apis for mobile clients, public
-apis for third-party developers and internal apis for queues or job workers. Genji helps you write reusable code by
-providing extensible plugin/middleware system, routing/transport agnostic application class, models fields validation
-and custom getter/setter method, views layout manager and namespaced template overriding, url routing with hook support.
-While it doesn&#39;t mean you have to stick with a particular development style or technology, genji is highly modular
-designed and customizable, so you can decide which part of the framework to use and how.</p>
+    <a name="base"></a><h1>Base</h1>
+<p>The <strong>base</strong> module exports two classes</p>
 <ul>
-<li>For documentations see: <a href="http://lsm.github.com/genji"><a href="http://lsm.github.com/genji">http://lsm.github.com/genji</a></a></li>
-<li>Check out the <a href="http://lsm.github.com/genji/coverage.html">test coverage</a> and <a href="http://lsm.github.com/genji/plato">plato report</a> for source analysis</li>
-<li>Ideas, bug report or general discussion are always welcome, feel free to open issue at: <a href="https://github.com/lsm/genji/issues"><a href="https://github.com/lsm/genji/issues">https://github.com/lsm/genji/issues</a></a></li>
+<li><p><strong>Klass</strong> is a lightweight javascript OO implementation. It only gives you a way to inherit class and nothig more.</p>
+</li>
+<li><p><strong>Base</strong> is a feature rich javascript OO implementation. It supports mixin for instance/static property.</p>
+</li>
 </ul>
-<a name="about-the-name-quotgenjiquot"></a><h3>About the name &quot;Genji&quot;</h3>
-<p>The word <code>Gen</code> <code>Ji</code> in Chinese means <code>root</code> <code>base</code> and it&#39;s also the name of the
-<a href="http://en.wikipedia.org/wiki/Genji_(era)" title="Genji (era)">Japanese era name</a> which was created to mark the beginning of a new 60-year
-cycle of the Chinese zodiac. So, basically it means something <strong>fundamental</strong> that you can <strong>grow with</strong>.
-The philosophy of this project follows this meaning.</p>
-<a name="license"></a><h2>License</h2>
-<p>(The MIT License)</p>
-<p>Copyright (c) 2010-2013 Senmiao Liu <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x73;&#x65;&#110;&#x6d;&#x69;&#x61;&#x6f;&#x2e;&#x6c;&#105;&#117;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a></p>
+<a name="klass"></a><h2>Klass</h2>
+<p>Klass has follwoing features:</p>
+<ul>
+<li>instance property will be overridden during subclassing</li>
+<li>no reference to the parent overridden method (aka. <code>super</code>) in instance method</li>
+<li><code>instanceof</code> operator works, but <code>Klass</code> itself is not parent class of any subclass defined</li>
+<li>the root super class&#39;s constructor cannot be overridden and will always be called during initialization</li>
+</ul>
+<a name="klasssuperclassfunction-moduleobject-optional-inheritfunctionfunction"></a><h3>Klass(SuperClass:Function, module:Object, /*optional*/ inherit:Function):Function</h3>
+<ul>
+<li><code>SuperClass</code> is constructor function of your parent class</li>
+<li><code>module</code> is an object of instance properties which you want to override or add to the subclass<ul>
+<li><code>init</code> is a reserved property in module object. If it&#39;s a function it will be called during initialization after SuperClass constructor function has been called. The <code>init</code> defined in parent class will be overridden by subclass just like normal property.</li>
+</ul>
+</li>
+<li><code>inherit</code> is an optional function for changing the default inheriting behaviour</li>
+<li><p>returns <code>Subclass</code> which you can continue to subclass by calling</p>
+<p><code>Subclass(module:Object, /\*optional\*/ inherit:Function)</code></p>
+</li>
+<li><p>the initial SuperClass constructor function (root super class) will always be called and cannot be overridden during subclassing</p>
+</li>
+</ul>
+<a name="example"></a><h3>Example</h3>
+<pre><code class="lang-javascript">
+  var Klass = require(&#39;genji&#39;).Klass;
+
+  var Person = Klass(function(name){
+    this.name = name;
+  }, {
+    getName: function(){
+      return this.name;
+    }
+  });
+
+  var Worker = Person({
+    init: function(name) {
+      this.name += &#39; Worker&#39;;
+    },
+
+    work: function(task) {
+      return this.getName() + &#39; start working on &#39; + task;
+    }
+  });
+
+  var steve = new Worker(&#39;Steve&#39;);
+
+  var result = steve.work(&#39;writing report&#39;);
+
+  // &#39;Steve Worker start working on writing report&#39; true true
+  console.log(result, worker instanceof Worker, worker instanceof Person);</code></pre>
+<a name="base"></a><h2>Base</h2>
+<p>(Coming soon)</p>
 
 </article>
 

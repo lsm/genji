@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title>Genji Documentation</title>
+    <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Droid+Sans&subset=latin">
+    <link type="text/css" rel="stylesheet" href="css/reset.css">
+    <link type="text/css" rel="stylesheet" href="css/docs.css">
+    <link type="text/css" rel="stylesheet" href="css/print.css" media="print">
+    <link type="text/css" rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/sunburst.min.css">
+    
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    
+    <script type="text/javascript" src="js/viewer.js"></script>
+</head>
+<body>
+    <div id="page">
+        <a name="top" />
+        
+            <header id="header">
+                <h1><a href="">Genji Documentation</a></h1>
+            </header>
+        
+        
+
+
+    <div id="sidebar">
+        <nav id="toc">
+            
+    <ol>
+    
+        <li>
+            <a href="readme.html#genji">Genji </a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="readme.html#introduction">Introduction</a>
+            
+        </li>
+    
+        <li>
+            <a href="readme.html#license">License</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="way.html#the-way-to-genji">The way to Genji</a>
+            
+                
+    <ol>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="router.html#router">Router</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="router.html#add-route-definition">Add route definition</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#hooks">Hooks</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#listen-to-server-event">Listen to server event</a>
+            
+        </li>
+    
+        <li>
+            <a href="router.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="app.html#app">App</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="app.html#define-app">Define app</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#handle-result">Handle result</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#extending">Extending</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#conventions">Conventions</a>
+            
+        </li>
+    
+        <li>
+            <a href="app.html#api">API</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="site.html#site">Site</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="site.html#getter-setter">Getter/Setter</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#use-middleware">Use middleware</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#load-app">Load app</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#routing">Routing</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#output-result">Output result</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#environment">Environment</a>
+            
+        </li>
+    
+        <li>
+            <a href="site.html#start-your-site">Start your site</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="base.html#klass">Klass</a>
+            
+        </li>
+    
+        <li>
+            <a href="base.html#base">Base</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#changelog">CHANGELOG</a>
+            
+                
+    <ol>
+    
+        <li>
+            <a href="changelog.html#07-2013">0.7 (2013)</a>
+            
+        </li>
+    
+        <li>
+            <a href="changelog.html#05-2012">0.5 (2012)</a>
+            
+        </li>
+    
+</ol>
+
+            
+        </li>
+    
+</ol>
+
+        </nav>
+    </div>
+
+<article id="content">
+    <a name="app"></a><h1>App</h1>
+<p>An app is a <code>class</code> where you define and implement your core business logic. App it self is an event emitter.
+Properties can be overridden by subclassing existent app.</p>
+<a name="define-app"></a><h2>Define app</h2>
+<p>You can define an <code>App</code> like this:</p>
+<pre><code class="lang-javascript">
+  var App = require(&#39;genji&#39;).App;
+  var BlogApp = App(/* instance properties */ properties);</code></pre>
+<p>Let&#39;s go through a simple example to see how we can define an app.</p>
+<pre><code class="lang-javascript">
+var App = require(&#39;genji&#39;).App;
+
+var BlogApp = App({// instance properties object
+    /**
+     * Name of your app
+     */
+    name: &#39;Blog&#39;,
+
+    /**
+     * App constructor function
+     */
+    init: function(db) {
+      this.db = db;
+    },
+
+    /**
+     * Create a blog post
+     */
+    createPost: function(title, content, callback) {
+      // Make the post object
+      var post = {title: title, content: content, created: new Date()};
+      // save to the db
+      this.db.save(post).then(function(result){
+        // error first callback style
+        callback(null, result);
+      });
+    }
+  });</code></pre>
+<p>The <code>BlogApp</code> you just defined can be used as a standalone application class. It means you don&#39;t need the http stack to run your app code. Once you get the <code>BlogApp</code> class, you initialize and use it just like any other classes. The <code>init</code> function will be called on initialization and it&#39;s optional.</p>
+<a name="handle-result"></a><h2>Handle result</h2>
+<p>There are two different ways to handle result of the instance function. One is to add callback as the last argument and
+handle result inline. Another is to listen to the event emitted from object of app instance.</p>
+<a name="inline-callback-style"></a><h3>Inline callback style</h3>
+<pre><code class="lang-javascript">
+var myBlog =  new BlogApp(db);
+
+// create a blog post in db
+myBlog.createPost(&#39;My awesome post&#39;, &#39;Some contents&#39;, function(err, result) {
+  // handle error and result here
+  // this == myBlog, so you can emit event manually
+  this.emit(&#39;createPost&#39;, err, result);
+});</code></pre>
+<a name="event-style"></a><h3>Event style</h3>
+<p><strong>Default callback</strong></p>
+<p>Sometime you don&#39;t care about if the post is saved or not. And you may wish to handle the result in other part of your code.
+So when you call instance function and the last argument is not a callback, genji will generate a default callback for you.
+You call the callback as usual and an event with the name of the instance method will be triggered.</p>
+<pre><code class="lang-javascript">
+// the event callback&#39;s argument is same as how you call the callback inside the &quot;createPost&quot; function
+myBlog.on(&#39;createPost&#39;, function(err, result) {
+  // handle the event
+});
+
+//...
+
+// create and forget
+myBlog.createPost(&#39;I do not care about the result&#39;, &#39;Yes, there is no callback after me.&#39;);</code></pre>
+<p>There is one <strong>exception</strong>. When your instance function is synchronized and returns non-undefined value on calling. The event/callback will not be emitted/invoked in async operation.</p>
+<pre><code class="lang-javascript">
+  getDB: function(cb) {
+    cb(); // will call `theCallback`, if no callback gived event will be emitted
+    process.nextTick(function(){
+      cb(); // `theCallback` will not be called end emit event
+    });
+    return this.db;
+  }
+
+  function theCallback() {
+    // this function will never be called in async operation
+  }
+
+  var db = myBlog.getDB(theCallback);</code></pre>
+<p><strong>Delegation</strong></p>
+<p>You can delegate all the events to other event emitter object by setting the <code>delegate</code> property to that emitter.</p>
+<pre><code class="lang-javascript">
+var otherEmitter = new EventEmitter();
+
+myBlog.delegate = otherEmitter;
+
+// event name will be prefixed by app name on delegation by default
+otherEmitter.on(&#39;Blog:createPost&#39;, function(err, result) {
+  // handle the event
+});
+
+myBlog.on(&#39;createPost&#39;, function(err, result) {
+  // this will never be called as you allready delegate events to `otherEmitter`
+});
+
+myBlog.createPost(&#39;title&#39;, &#39;content&#39;);</code></pre>
+<a name="extending"></a><h2>Extending</h2>
+<p>It&#39;s easy to extend an existent app class, use the app class you want to extend just like you use <code>App</code>:</p>
+<pre><code class="lang-javascript">
+var AwesomeBlogApp = BlogApp({
+
+    name: &#39;AwesomeBlog&#39;,
+
+    createPost: function(title, content, callback) {
+      // ...
+    },
+
+    getPost: function(id, callback) {
+      // ...
+    }
+  });</code></pre>
+<a name="conventions"></a><h2>Conventions</h2>
+<p>App introduced a very thin mechanism to organize business logic code. To make app works simply and efficiently with
+other part of system, here are the conventions you may need to know and understand.</p>
+<a name="session"></a><h3>Session</h3>
+<p>Although we call defined app <code>class</code>, but actually we use individial instance functions in a <code>functional programming</code>
+style in conjuction with <a href="site.html">Site</a> and <a href="router.html">Router</a>. This allow genji to reuse a single app instance
+for multiple requests instead of constructing for each one of them. You may noticed that, there&#39;s no session info passed
+to <code>createPost</code> in the above example, this is not possible in a real world application. So Genji put the session object
+which may contains credential or other user specific info as the first argument of app&#39;s instance function when working
+with Site. So your instance function will have some sort of <code>session first callback last</code> style of function signature.</p>
+<pre><code class="lang-javascript">
+createPost: function(session, title, content, callback) {
+  if (session.group === &#39;author&#39; &amp;&amp; session.user) {
+    // Make the post object with user info
+    var post = {
+      user: session.user,
+      title: title, content: content, created: new Date()
+    };
+    this.db.save(post).then(function(result){
+      callback(null, result);
+    });
+  } else {
+    // do something
+  }
+}</code></pre>
+<p>To make the app class more reusable, don&#39;t put any http stack object as the function argument
+(e.g. request/response object of node.js etc.). That will make you loose the flexiblity and coupled with http stack.
+Leave that job to <code>genji.Site</code> to make you life easier.</p>
+<a name="the-codethis-code-object"></a><h3>The <code>this</code> object</h3>
+<p>You can always use <code>this</code> refer to the instance of app inside of instance function, callback function and event listening function.</p>
+<a name="naming-and-url-mapping"></a><h3>Naming and url mapping</h3>
+<p>Site use <code>name</code> property of app and it&#39;s functions&#39; name for mapping url automatically. For example:</p>
+<ul>
+<li><code>blog/ceate/post</code> to match <code>Blog</code> app&#39;s <code>createPost</code> function.</li>
+<li><code>awesomeblog/create/post</code> map to <code>AwesomeBlog</code>&#39;s <code>createPost</code>.</li>
+<li><code>blog/camel/cased/function/name</code> to match <code>Blog</code>&#39;s <code>camelCasedFunctionName</code> function.</li>
+<li>if the function name start with low dash <code>_</code> (e.g. <code>_privateFunc</code>), no url will map to this function.</li>
+</ul>
+<a name="error-first-callback-style"></a><h3>Error first callback style</h3>
+<p>We follow the native node.js api&#39;s callback style, which put the error object at the first argument of a callback function. It&#39;s true for the event listening function as well.</p>
+<a name="api"></a><h2>API</h2>
+<p><code>App</code> is exposed by <code>require(&#39;genji&#39;).App</code>. Inherits from EventEmitter.</p>
+<a name="properties"></a><h3>Properties</h3>
+<ul>
+<li><p><code>name</code> is the name of your app in <em>string</em>, name should be upper camel case.</p>
+</li>
+<li><p><code>emitInlineCallback</code> is an enum value (&#39;after&#39;, &#39;before&#39;, false) which tells genji automatically emit event <code>after</code>/<code>before</code> callback is called when you handle result inline. Default is boolean <code>false</code> which means not to emit.</p>
+</li>
+<li><p><code>prefixDelegatedEvent</code> is an enum value indicates whether or not to prefix the event name when using <code>delegate</code> as emitter:</p>
+<ul>
+<li><code>true</code> event name will be prefixed, the prefix is <code>&#39;name of app&#39; + &#39;:&#39;</code> (e.g. <code>createPost</code> -&gt; <code>Blog:createPost</code>). This is the default value</li>
+<li><code>false</code> not to prefix</li>
+<li>Any non-empty <em>string</em> value as customized prefix</li>
+</ul>
+</li>
+<li><p><code>publicMethods</code> is an <em>object</em> of functions created upon initialization which considered as public methods, <code>controller</code> uses this property to map url to function.</p>
+</li>
+<li><p><code>reservedMethodNames</code> is an <em>array</em> of reserved names which cannot be used as public method, the default value is:</p>
+<pre><code>    [&quot;setMaxListeners&quot;,&quot;emit&quot;,&quot;addListener&quot;,&quot;on&quot;,&quot;once&quot;,&quot;removeListener&quot;,&quot;removeAllListeners&quot;,&quot;listeners&quot;, &quot;init&quot;, &quot;isPublicMethodName&quot;]</code></pre>
+</li>
+<li><p><code>site</code> is the <code>site</code> instance when works with <code>genji.site</code> is optional but reserved</p>
+</li>
+</ul>
+<a name="methods"></a><h3>Methods</h3>
+<ul>
+<li><p><code>init</code> is the constructor <em>function</em>, it will be called once and only once at the time of initialization, you should not call it manually.</p>
+</li>
+<li><p><code>isPublicMethodName</code> is a <em>function</em> use to check if a string can be used as public method name or not. The default rule is:</p>
+<p>  The name must be a non-empty string and must not equal to one of the <code>reservedMethodNames</code> and not start with lower dash <code>_</code>.</p>
+</li>
+</ul>
+
+</article>
+
+        <footer id="footer">
+            Powered by <a href="http://github.com/maximebf/beautiful-docs">beautiful-docs</a> -
+            <a href="#top">Back to top</a> - <a href="all.html">Everything on a single page</a>
+            - <a href="?print=1">Print current page</a> - <a href="all.html?print=1">Print all pages</a>
+            
+                <a href="https://github.com/lsm/genji" id="fork-me-on-github">Fork me on Github</a>
+            
+        </footer>
+    </div>
+</body>
+</html>

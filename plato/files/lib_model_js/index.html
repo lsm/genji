@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/bootstrap-3.0.0-wip.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/font-awesome-ie7.css" rel="stylesheet">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet">
+  <link href="../../assets/css/plato.css" rel="stylesheet">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="brand" href="http://github.com/jsoverson/plato">Plato on Github</a>
+    <ul class="nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>lib/model.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
+      <p class="stat">64.08</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
+      <p class="stat">2.13</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
+      <p class="stat">58.93</p>
+    </div>
+    <div class="span6">
+      <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
+      <p class="stat">227 / 157</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="span6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="span6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="span12">// # model.js - Handle your data logic #
+
+
+var Klass = require('./base').Klass;
+var extend = require('./util').extend;
+var util = require('util');
+
+
+
+function Model(data) {
+  // mark that we are initializing, changed fields should not be recorded.
+  this.initialized = false;
+  // tell if the input data has `idAttribute` or not. (default `idAttribute` field is `_id`)
+  this.noIdAttribute = !data[this.idAttribute];
+  // object to hold the document data
+  this.data = {};
+  // object contains the invaild fields and values and reasons
+  this.invalidFields = {count: 0, fields: {}};
+
+  // check for required fields
+  var self = this;
+  if (Array.isArray(this.requires) && this.requires.length > 0) {
+    this.requires.forEach(function (fieldName) {
+      if (!data.hasOwnProperty(fieldName)) {
+        // missing field found
+        self.invalidFields.count++;
+        self.invalidFields.fields[fieldName] = {error: this.ERROR_FIELD_MISSING};
+      }
+    });
+  }
+  // set input data to internal `this.data` object, apply validators and setters.
+  Object.keys(data).forEach(function (key) {
+    self.set(key, data[key]);
+  });
+  // mark that the initialization is finished
+  this.initialized = true;
+}
+
+Model.prototype = {
+
+  name: 'Model',
+  setters: {},
+  getters: {},
+  fields: {},
+  aliases: {},
+  // object contains the changed field/value pairs
+  changedFields: {},
+  idAttribute: '_id',
+
+  set: function (key, value) {
+    var isInvalid = this.validateField(key, value);
+    if (isInvalid) {
+      this.invalidFields.count++;
+      this.invalidFields.fields[key] = {
+        error: isInvalid === true ? this.ERROR_FIELD_INVALID : isInvalid,
+        value: value
+      };
+    } else {
+      var data = this.data;
+      var aliasKey = this.aliases[key] || key;
+      if (this.getInvalidFields().hasOwnProperty(key)) {
+        // if this field is invalid previously, then delete the field from invalidFields hash.
+        this.invalidFields.count--;
+        delete this.invalidFields.fields[key];
+      }
+      // get setter function from setters hash
+      var setter = this.setters[key];
+      // apply attribute's setter function if any, when original data doc has no `_idAttribute`
+      var newValue = this.noIdAttribute && setter ? setter.call(this, value) : value;
+      // save the changed value if we're not initializing.
+      if (this.initialized && data[aliasKey] !== newValue) {
+        this.changedFields = this.changedFields || {};
+        this.changedFields[key] = newValue;
+      }
+      data[aliasKey] = newValue;
+    }
+    return this;
+  },
+
+  get: function (key) {
+    if (Array.isArray(key)) {
+      var obj = {};
+      key.forEach(function (keyName) {
+        obj[keyName] = this.get(keyName);
+      }, this);
+      return obj;
+    }
+    var data = this.data;
+    // use original key name
+    var aliasKey = this.aliases[key] || key;
+    var getter = this.getters[key];
+    return getter ? getter.call(this, data[aliasKey]) : data[aliasKey];
+  },
+
+  validateField: function (fieldName, value) {
+    if (!this.fields) {
+      return false;
+    }
+
+    var field = this.maps[fieldName] || fieldName;
+    var validator = this.fields[field];
+
+    if (!validator) {
+      return false;
+    }
+
+    var validatorType = typeof validator;
+    if ('string' === validatorType) {
+      switch (validator) {
+        case 'number':
+        case 'string':
+          return validator === typeof value ? false : this.ERROR_FIELD_TYPE;
+        case 'array':
+          return Array.isArray(value) ? false : this.ERROR_FIELD_TYPE;
+        case 'regexp':
+          return util.isRegExp(value) ? false : this.ERROR_FIELD_TYPE;
+        case 'date':
+          return util.isDate(value) ? false : this.ERROR_FIELD_TYPE;
+        case 'bool':
+          return value === true || value === false ? false : this.ERROR_FIELD_TYPE;
+      }
+    } else if (validatorType === 'function') {
+      return validator(value);
+    }
+    return this.ERROR_VALIDATOR;
+  },
+
+  isValid: function () {
+    return this.invalidFields.count === 0;
+  },
+
+  getInvalidFields: function () {
+    return this.invalidFields.count === 0 ? false : this.invalidFields.fields;
+  },
+
+  changed: function () {
+    return this.changedFields;
+  },
+
+  toData: function (keys) {
+    if (!this.isValid()) {
+      // return false if we have invalid field
+      return false;
+    }
+    var _data = this.data;
+    var data = {};
+    keys = keys || Object.keys(_data);
+    var self = this;
+    var _maps = this.maps;
+    keys.forEach(function (key) {
+      data[_maps[key] || key] = self.get(_maps[key] || key);
+    });
+    return data;
+  },
+
+  toDoc: function (keys) {
+    if (!this.isValid()) {
+      // return false if we have invalid field
+      return false;
+    }
+    var _data = this.data;
+    var doc = {};
+    keys = keys || Object.keys(_data);
+    var self = this;
+    var _aliases = this.aliases;
+    var _maps = this.maps;
+    keys.forEach(function (key) {
+      doc[_aliases[key] || key] = self.get(_maps[key] || key);
+    });
+    return doc;
+  },
+
+  ERROR_FIELD_MISSING: 1001,
+  ERROR_FIELD_TYPE: 1002,
+  ERROR_FIELD_INVALID: 1003,
+  ERROR_VALIDATOR: 1004
+};
+
+function modelInherits(prototype, subModule) {
+  Object.keys(subModule).forEach(function (propKey) {
+    var notReserved = false;
+    switch (propKey) {
+      case 'name':
+      case 'requires':
+        prototype[propKey] = subModule[propKey];
+        break;
+      case 'fields':
+        extend(prototype.fields, subModule.fields);
+        break;
+      case 'aliases':
+        var aliases = extend(prototype.aliases, subModule.aliases);
+        var maps = {};
+        Object.keys(aliases).forEach(function (alias) {
+          maps[aliases[alias]] = alias;
+        });
+        prototype.aliases = aliases;
+        prototype.maps = maps;
+        break;
+      case 'id':
+        prototype.idAttribute = subModule.id;
+        break;
+      default:
+        notReserved = true;
+    }
+    if (notReserved) {
+      if (/^(set|get)[A-Z]+/.test(propKey)) {
+        var attributeName = propKey.slice(3);
+        attributeName = attributeName[0].toLowerCase() + attributeName.slice(1);
+        if (prototype.fields.hasOwnProperty(attributeName)) {
+          // field is defined, this should be a setter/getter for attribute
+          var fn = subModule[propKey];
+          if (typeof fn === 'function') {
+            switch (propKey.slice(0, 3)) {
+              case 'set':
+                prototype.setters[attributeName] = fn;
+                break;
+              case 'get':
+                prototype.getters[attributeName] = fn;
+                break;
+            }
+          }
+          return;
+        }
+      }
+      prototype[propKey] = subModule[propKey];
+    }
+  });
+}
+
+exports.Model = Klass(Model, null, modelInherits);</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+<script>
+  $('[rel=popover]').popover();
+</script>
+
+</body>
+</html>
