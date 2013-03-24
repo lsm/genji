@@ -1,5 +1,6 @@
 var genji = require('../index');
 var assert = require('assert');
+var http = require('http');
 
 // options for `secure-cookie` middleware
 var secureCookieOptions = {cookieName: '_testSecure', path: '../../lib/middleware', secureKey: 'cipher-key', serverKey: 'hmac-key'};
@@ -32,8 +33,8 @@ exports['test plugin securecookie'] = function () {
   var site = genji.site();
   site.use('securecookie', secureCookieOptions);
   site.use(testCookiePlugin);
-  site.set('port', 8889);
-  var server = site.start();
+  var server = http.createServer();
+  site.start(server);
   assert.response(server, {
     url: '/sign',
     timeout: 2000,
@@ -44,7 +45,8 @@ exports['test plugin securecookie'] = function () {
     var site = genji.site();
     site.use('securecookie', secureCookieOptions);
     site.use(testCookiePlugin);
-    var server = site.start();
+    var server = http.createServer();
+    site.start(server);
     assert.response(server, {
       url: '/verify',
       timeout: 500,
