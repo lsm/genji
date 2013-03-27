@@ -1,12 +1,12 @@
 {
   "summary": {
     "total": {
-      "sloc": 3709,
-      "maintainability": 1491.9546246353038
+      "sloc": 3418,
+      "maintainability": 1347.1631291289093
     },
     "average": {
-      "sloc": 176,
-      "maintainability": "71.05"
+      "sloc": 179,
+      "maintainability": "70.90"
     }
   },
   "reports": [
@@ -361,85 +361,37 @@
           "line": 11,
           "complexity": {
             "sloc": {
-              "physical": 58,
-              "logical": 30
+              "physical": 57,
+              "logical": 28
             },
             "cyclomatic": 2,
             "halstead": {
               "operators": {
                 "distinct": 10,
-                "total": 69,
+                "total": 65,
                 "identifiers": [
                   "__stripped__"
                 ]
               },
               "operands": {
-                "distinct": 35,
-                "total": 102,
+                "distinct": 33,
+                "total": 96,
                 "identifiers": [
                   "__stripped__"
                 ]
               },
-              "length": 171,
-              "vocabulary": 45,
-              "difficulty": 14.571428571428571,
-              "volume": 939.1068794723744,
-              "effort": 13684.128815168884,
-              "bugs": 0.3130356264907915,
-              "time": 760.2293786204935
+              "length": 161,
+              "vocabulary": 43,
+              "difficulty": 14.545454545454547,
+              "volume": 873.6286255070378,
+              "effort": 12707.32546192055,
+              "bugs": 0.29120954183567926,
+              "time": 705.9625256622528
             }
           }
         },
         "module": "lib/genji.js",
         "maintainability": 86.0988181222442
-      }
-    },
-    {
-      "info": {
-        "file": "lib/mime.js",
-        "fileShort": "lib/mime.js",
-        "fileSafe": "lib_mime_js",
-        "link": "files/lib_mime_js/index.html"
-      },
-      "jshint": {
-        "messages": 0
-      },
-      "complexity": {
-        "aggregate": {
-          "line": 3,
-          "complexity": {
-            "sloc": {
-              "physical": 176,
-              "logical": 171
-            },
-            "cyclomatic": 4,
-            "halstead": {
-              "operators": {
-                "distinct": 11,
-                "total": 186,
-                "identifiers": [
-                  "__stripped__"
-                ]
-              },
-              "operands": {
-                "distinct": 279,
-                "total": 352,
-                "identifiers": [
-                  "__stripped__"
-                ]
-              },
-              "length": 538,
-              "vocabulary": 290,
-              "difficulty": 6.939068100358423,
-              "volume": 4400.791090428035,
-              "effort": 30537.38907193074,
-              "bugs": 1.4669303634760118,
-              "time": 1696.5216151072632
-            }
-          }
-        },
-        "module": "lib/mime.js",
-        "maintainability": 76.72766022246029
       }
     },
     {
@@ -540,54 +492,6 @@
     },
     {
       "info": {
-        "file": "lib/plugin/file.js",
-        "fileShort": "lib/plugin/file.js",
-        "fileSafe": "lib_plugin_file_js",
-        "link": "files/lib_plugin_file_js/index.html"
-      },
-      "jshint": {
-        "messages": 0
-      },
-      "complexity": {
-        "aggregate": {
-          "line": 9,
-          "complexity": {
-            "sloc": {
-              "physical": 107,
-              "logical": 41
-            },
-            "cyclomatic": 17,
-            "halstead": {
-              "operators": {
-                "distinct": 16,
-                "total": 148,
-                "identifiers": [
-                  "__stripped__"
-                ]
-              },
-              "operands": {
-                "distinct": 76,
-                "total": 180,
-                "identifiers": [
-                  "__stripped__"
-                ]
-              },
-              "length": 328,
-              "vocabulary": 92,
-              "difficulty": 18.94736842105263,
-              "volume": 2139.7283215867,
-              "effort": 40542.22083006379,
-              "bugs": 0.7132427738622333,
-              "time": 2252.3456016702103
-            }
-          }
-        },
-        "module": "lib/plugin/file.js",
-        "maintainability": 68.97995034276711
-      }
-    },
-    {
-      "info": {
         "file": "lib/plugin/index.js",
         "fileShort": "lib/plugin/index.js",
         "fileSafe": "lib_plugin_index_js",
@@ -649,37 +553,37 @@
           "line": 9,
           "complexity": {
             "sloc": {
-              "physical": 83,
-              "logical": 42
+              "physical": 76,
+              "logical": 39
             },
-            "cyclomatic": 13,
+            "cyclomatic": 12,
             "halstead": {
               "operators": {
                 "distinct": 16,
-                "total": 122,
+                "total": 106,
                 "identifiers": [
                   "__stripped__"
                 ]
               },
               "operands": {
-                "distinct": 59,
-                "total": 147,
+                "distinct": 60,
+                "total": 122,
                 "identifiers": [
                   "__stripped__"
                 ]
               },
-              "length": 269,
-              "vocabulary": 75,
-              "difficulty": 19.93220338983051,
-              "volume": 1675.5522277433918,
-              "effort": 33397.44779366489,
-              "bugs": 0.5585174092477972,
-              "time": 1855.4137663147162
+              "length": 228,
+              "vocabulary": 76,
+              "difficulty": 16.266666666666666,
+              "volume": 1424.5274730651377,
+              "effort": 23172.31356185957,
+              "bugs": 0.47484249102171255,
+              "time": 1287.3507534366427
             }
           }
         },
         "module": "lib/plugin/parser.js",
-        "maintainability": 62.96341128397625
+        "maintainability": 63.8795263428091
       }
     },
     {

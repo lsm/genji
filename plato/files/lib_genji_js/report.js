@@ -10,39 +10,39 @@ __report = {
       "line": 11,
       "complexity": {
         "sloc": {
-          "physical": 58,
-          "logical": 30
+          "physical": 57,
+          "logical": 28
         },
         "cyclomatic": 2,
         "halstead": {
           "operators": {
             "distinct": 10,
-            "total": 69,
+            "total": 65,
             "identifiers": [
               "__stripped__"
             ]
           },
           "operands": {
-            "distinct": 35,
-            "total": 102,
+            "distinct": 33,
+            "total": 96,
             "identifiers": [
               "__stripped__"
             ]
           },
-          "length": 171,
-          "vocabulary": 45,
-          "difficulty": 14.571428571428571,
-          "volume": 939.1068794723744,
-          "effort": 13684.128815168884,
-          "bugs": 0.3130356264907915,
-          "time": 760.2293786204935
+          "length": 161,
+          "vocabulary": 43,
+          "difficulty": 14.545454545454547,
+          "volume": 873.6286255070378,
+          "effort": 12707.32546192055,
+          "bugs": 0.29120954183567926,
+          "time": 705.9625256622528
         }
       }
     },
     "functions": [
       {
         "name": "route",
-        "line": 55,
+        "line": 54,
         "complexity": {
           "sloc": {
             "physical": 4,
@@ -76,7 +76,7 @@ __report = {
       },
       {
         "name": "site",
-        "line": 66,
+        "line": 65,
         "complexity": {
           "sloc": {
             "physical": 3,
