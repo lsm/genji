@@ -23,13 +23,10 @@ describe('Core', function () {
         url: '/receive$',
         method: 'POST',
         handler: function (context) {
-          context.on('json', function (json, data, error) {
-            if (!error) {
-              assert.equal(json.key, 'value');
-              assert.equal(data, jsonStr);
-              context.sendJSON({ok: true});
-            }
-          });
+          var json = context.json;
+          assert.equal(json.key, 'value');
+          assert.equal(context.data, jsonStr);
+          context.sendJSON({ok: true});
         }
       }
     };
@@ -53,84 +50,86 @@ describe('Core', function () {
       });
   });
 
-  it('should app auto routing', function (done) {
-    core.loadPlugin('router');
-    var result = 'Test result!';
+  describe('.mapRoutes', function () {
+    it('should auto map app function to route', function (done) {
+      core.loadPlugin('router');
+      var result = 'Test result!';
 
-    var TestApp = App({
-      name: 'Test',
-      exampleFunction: function (callback) {
-        callback(null, result);
-      }
-    });
-
-    var testApp = new TestApp();
-    core.mapRoutes(testApp);
-    server.on('request', core.getListener());
-
-    request(server)
-      .get('/test/example/function')
-      .expect('Content-Type', 'text/html; charset=utf-8')
-      .expect(200, result, done);
-  });
-
-  it('should app customized routing and hooks', function (done) {
-    core.loadPlugin('router');
-
-    var result = 'Test result!';
-
-    var TestApp = App({
-      name: 'Test',
-      exampleFunction: function (session, param, callback) {
-        assert.equal('test', param);
-        assert.equal('john', session.user);
-        callback(null, {user: session.user, message: result});
-      }
-    });
-
-    var testApp = new TestApp();
-
-    var preHook = function (context, param, next) {
-      assert.equal('test', param);
-      context.session = {user: 'john'};
-      setTimeout(next, 50);
-    };
-
-    var postHook = function (context, param, next) {
-      assert.equal('test', param);
-      assert.equal('john', context.session.user);
-    };
-
-    var routes = {
-      customized: {hooks: [null, postHook]},
-      testExampleFunction: {url: '^/example/(.*)', view: 'json', hooks: [preHook, null, postHook]},
-      customizedRoute: {url: '^/another/example/(.*)', method: 'post', handler: function (context, param, next) {
-        context.session = {user: 'john'};
-        assert.equal('test', param);
-        context.send(result);
-        return true;
-      }}
-    };
-
-    core.mapRoutes(routes, testApp);
-    core.mapRoutes(routes);
-    server.on('request', core.getListener());
-
-    request(server)
-      .get('/example/test')
-      .expect('Content-Type', 'application/json; charset=utf-8')
-      .expect(200)
-      .end(function (err, res) {
-        if (err) {
-          throw err;
+      var TestApp = App({
+        name: 'Test',
+        exampleFunction: function (callback) {
+          callback(null, result);
         }
-        var json = res.body;
-        assert.equal('john', json.user);
-        assert.equal(result, json.message);
-        request(server)
-          .post('/another/example/test')
-          .expect('Content-Type', 'text/plain')
-          .expect(200, result, done);
       });
+
+      var testApp = new TestApp();
+      core.mapRoutes(testApp);
+      server.on('request', core.getListener());
+
+      request(server)
+        .get('/test/example/function')
+        .expect('Content-Type', 'text/html; charset=utf-8')
+        .expect(200, result, done);
+    });
+
+    it('should use customized routes and hooks', function (done) {
+      core.loadPlugin('router');
+
+      var result = 'Test result!';
+
+      var TestApp = App({
+        name: 'Test',
+        exampleFunction: function (session, param, callback) {
+          assert.equal('test', param);
+          assert.equal('john', session.user);
+          callback(null, {user: session.user, message: result});
+        }
+      });
+
+      var testApp = new TestApp();
+
+      var preHook = function (context, param, next) {
+        assert.equal('test', param);
+        context.session = {user: 'john'};
+        setTimeout(next, 50);
+      };
+
+      var postHook = function (context, param, next) {
+        assert.equal('test', param);
+        assert.equal('john', context.session.user);
+      };
+
+      var routes = {
+        customized: {hooks: [null, postHook]},
+        testExampleFunction: {url: '^/example/(.*)', view: 'json', hooks: [preHook, null, postHook]},
+        customizedRoute: {url: '^/another/example/(.*)', method: 'post', handler: function (context, param, next) {
+          context.session = {user: 'john'};
+          assert.equal('test', param);
+          context.send(result);
+          return true;
+        }}
+      };
+
+      core.mapRoutes(routes, testApp);
+      core.mapRoutes(routes);
+      server.on('request', core.getListener());
+
+      request(server)
+        .get('/example/test')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect(200)
+        .end(function (err, res) {
+          if (err) {
+            throw err;
+          }
+          var json = res.body;
+          assert.equal('john', json.user);
+          assert.equal(result, json.message);
+          request(server)
+            .post('/another/example/test')
+            .expect('Content-Type', 'text/plain')
+            .expect(200, result, done);
+        });
+    });
   });
 });

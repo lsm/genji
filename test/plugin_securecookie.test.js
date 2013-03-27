@@ -30,34 +30,36 @@ var testCookiePlugin = {
   }
 };
 
-describe('Secure cookie plugin', function () {
-  it('should be able to sign and verify cookies', function (done) {
-    var site = genji.site();
-    site.use('securecookie', secureCookieOptions);
-    site.use(testCookiePlugin);
-    var server = http.createServer();
-    site.start(server);
+describe('Plugin', function () {
+  describe('.securecookie', function () {
+    it('should be able to sign and verify cookies', function (done) {
+      var site = genji.site();
+      site.use('securecookie', secureCookieOptions);
+      site.use(testCookiePlugin);
+      var server = http.createServer();
+      site.start(server);
 
-    request(server)
-      .get('/sign')
-      .set('data', JSON.stringify(userData))
-      .end(function (err, res) {
-        var signedCookie = res.headers['set-cookie'];
-        var site = genji.site();
-        site.use('securecookie', secureCookieOptions);
-        site.use(testCookiePlugin);
-        var server = http.createServer();
-        site.start(server);
-        request(server)
-          .get('/verify')
-          .set('Cookie', signedCookie[0])
-          .end(function (err, res) {
-            var parsedData = JSON.parse(res.headers.data);
-            assert.equal(parsedData.cookieId, userData.cookieId);
-            assert.deepEqual(new Date(parsedData.cookieExpires), userData.cookieExpires);
-            assert.equal(parsedData.cookieData.a, userData.cookieData.a);
-            done();
-          });
-      });
+      request(server)
+        .get('/sign')
+        .set('data', JSON.stringify(userData))
+        .end(function (err, res) {
+          var signedCookie = res.headers['set-cookie'];
+          var site = genji.site();
+          site.use('securecookie', secureCookieOptions);
+          site.use(testCookiePlugin);
+          var server = http.createServer();
+          site.start(server);
+          request(server)
+            .get('/verify')
+            .set('Cookie', signedCookie[0])
+            .end(function (err, res) {
+              var parsedData = JSON.parse(res.headers.data);
+              assert.equal(parsedData.cookieId, userData.cookieId);
+              assert.deepEqual(new Date(parsedData.cookieExpires), userData.cookieExpires);
+              assert.equal(parsedData.cookieData.a, userData.cookieData.a);
+              done();
+            });
+        });
+    });
   });
 });
