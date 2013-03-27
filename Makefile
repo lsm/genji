@@ -1,4 +1,4 @@
-REPORTER ?= nyan
+REPORTER ?= dot
 DOC_PATH ?= ./docs
 
 test-cov: lib-cov
