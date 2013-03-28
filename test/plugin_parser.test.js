@@ -3,6 +3,7 @@ var http = require('http');
 var assert = require('assert');
 var request = require('supertest');
 var querystring = require('querystring');
+var Router = genji.Router;
 
 describe('Plugin', function () {
   var core;
@@ -92,7 +93,7 @@ describe('Plugin', function () {
 
     it('should drop connection if max post size exceeded', function (done) {
       core.loadPlugin('parser', {maxIncomingSize: 10});
-      core.loadPlugin('router', {urlRoot: '^/json'});
+      core.loadPlugin('router', new Router({urlRoot: '^/json'}));
 
       var data = "01234567890";
 
@@ -115,6 +116,29 @@ describe('Plugin', function () {
         .set('Content-Type', 'application/x-www-form-urlencoded')
         .expect('Connection', 'close')
         .expect(413, "", done);
+    });
+  });
+
+  describe('.router', function () {
+    it('should reply 404 and emit error event if url not matched', function (done) {
+      core.loadPlugin('router');
+
+      var routes = {
+        index: {
+          url: '^/',
+          method: 'GET',
+          handler: function (context) {
+            throw new Error('Request should not be routed here.');
+          }
+        }
+      };
+
+      core.mapRoutes(routes);
+      server.on('request', core.getListener());
+
+      request(server)
+        .get('/not/existent/url')
+        .expect(404, "Content not found: /not/existent/url", done);
     });
   });
 });
