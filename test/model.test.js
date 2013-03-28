@@ -3,15 +3,17 @@ var assert = require('assert');
 var Model = genji.Model;
 
 describe('Model', function () {
-
-
   it('should define model', function () {
-
     var Post = Model({
       name: 'Post',
       fields: {
         id: 'number',
         title: 'string',
+        tags: 'array',
+        created: 'date',
+        draft: 'bool',
+        reg: 'regexp',
+        invalid: {},
         content: function (content) {
           if (typeof content !== 'string') {
             return 'content should be string';
@@ -33,18 +35,31 @@ describe('Model', function () {
     var post = new Post({
       id: 10,
       title: 'example post title',
-      content: 'invalid content'
+      content: 'invalid content',
+      tags: ['test'],
+      created: new Date(),
+      draft: 'false',
+      reg: /test/g,
+      invalid: 'invalid'
     });
 
     assert.equal(post.isValid(), false);
+    assert.equal(post.toDoc(), false);
     assert.equal(post.get('id'), 'postId_10');
     assert.equal(post.get('title'), 'EXAMPLE POST TITLE');
+    assert.deepEqual(post.get(['id', 'title']), {id: 'postId_10', title: 'EXAMPLE POST TITLE'});
+
     var postDoc = post.toData();
     assert.equal(postDoc, false);
     assert.equal(post.STATUS_DRAFT, 0);
     var invalidFields = post.getInvalidFields();
     assert.equal(invalidFields.content.error, 'content should be longer than 20 characters');
     assert.equal(invalidFields.content.value, 'invalid content');
+    assert.equal(post.ERROR_VALIDATOR, invalidFields.invalid.error);
+    assert.equal(post.ERROR_FIELD_TYPE, invalidFields.draft.error);
+    assert.equal('false', invalidFields.draft.value);
+    post.set('draft', true);
+    assert.equal('undefined', typeof invalidFields.draft);
 
     var PostExtended = Post({
       name: 'PostExtended',
