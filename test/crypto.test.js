@@ -9,11 +9,11 @@ describe('Crypto', function () {
   });
 
   it('should hash file to md5 hex string', function () {
-    crypto.md5file('./test/hashfile', 'hex', function (err, hex) {
+    crypto.md5file('./test/view/hashfile.html', 'hex', function (err, hex) {
       assert.equal(null, err);
       assert.equal('894f3eee0b8ff321748f97eff3d9805e', hex);
     });
-    crypto.md5file('./test/hashfile', function (err, hex) {
+    crypto.md5file('./test/view/hashfile.html', function (err, hex) {
       assert.equal(null, err);
       assert.equal('894f3eee0b8ff321748f97eff3d9805e', hex);
     });
@@ -24,7 +24,7 @@ describe('Crypto', function () {
   });
 
   it('should hash file to sha1 hex string', function () {
-    crypto.sha1file('./test/hashfile', 'hex', function (err, hex) {
+    crypto.sha1file('./test/view/hashfile.html', 'hex', function (err, hex) {
       assert.equal(null, err);
       assert.equal('d370f9a9e3babf48bd9e4cd4f77bfd5ffef592b0', hex);
     });
