@@ -221,4 +221,65 @@ describe('Plugin', function () {
     });
   });
 
+  describe('.view', function () {
+    it('should render and reply the content of file', function (done) {
+      var engine = {
+        render: function (str, ctx) {
+          assert.equal('testing data for crypto', str);
+          var search = new RegExp(ctx.search);
+          var result = str.replace(search, ctx.replace);
+          return result;
+        }
+      };
+      core.loadPlugin('router');
+      core.loadPlugin('view', {engine: engine, rootViewPath: __dirname});
+
+      var routes = {
+        viewHashfileWithPath: {
+          url: '^/hashfile/with/path',
+          method: 'GET',
+          view: function () {
+            this.render('view/hashfile.html', {search: 'crypto', replace: "view"});
+          }
+        },
+
+        viewHashfile: {
+          url: '^/hashfile',
+          method: 'GET',
+          view: function () {
+            this.render({search: 'crypto', replace: "view"});
+          }
+        },
+
+        viewHashfileCustomCallback: {
+          method: 'GET',
+          view: function () {
+            var self = this;
+            this.render('view/hashfile.html', {search: 'crypto', replace: "view"}, function (err, html) {
+              if (err) {
+                throw err;
+              }
+              self.sendHTML(html + '!');
+            });
+          }
+        }
+      };
+
+      core.mapRoutes(routes);
+      server.on('request', core.getListener());
+
+      request(server)
+        .get('/hashfile/with/path')
+        .expect(200, "testing data for view", function () {
+          request(server)
+            .get('/hashfile')
+            .expect(200, "testing data for view", function () {
+              request(server)
+                .get('/view/hashfile/custom/callback')
+                .expect(200, "testing data for view!", done);
+            });
+        });
+    });
+  });
+
 });
