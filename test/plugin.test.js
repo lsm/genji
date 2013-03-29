@@ -91,7 +91,7 @@ describe('Plugin', function () {
         });
     });
 
-    it('should drop connection if max post size exceeded', function (done) {
+    it('should close connection if max post size exceeded', function (done) {
       core.loadPlugin('parser', {maxIncomingSize: 10});
       core.loadPlugin('router', new Router({urlRoot: '^/json'}));
 
@@ -102,7 +102,7 @@ describe('Plugin', function () {
           url: '^/max/exceeded',
           method: 'POST',
           handler: function (context) {
-            throw new Error('Connection should be dropped due to exceeded max post size.');
+            throw new Error('Connection should be closed due to exceeded max post size.');
           }
         }
       };
