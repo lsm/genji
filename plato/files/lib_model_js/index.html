@@ -45,21 +45,21 @@
   <div class="row">
     <div class="span6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
-      <p class="stat">64.08</p>
+      <p class="stat">63.29</p>
     </div>
     <div class="span6">
       <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
-      <p class="stat">2.13</p>
+      <p class="stat">2.24</p>
     </div>
   </div>
   <div class="row">
     <div class="span6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
-      <p class="stat">58.93</p>
+      <p class="stat">61.66</p>
     </div>
     <div class="span6">
       <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
-      <p class="stat">227 / 157</p>
+      <p class="stat">318 / 158</p>
     </div>
   </div>
 </div>
@@ -82,14 +82,23 @@
 
 <div class="container">
   <div class="row">
-    <textarea id="file-source" class="span12">// # model.js - Handle your data logic #
+    <textarea id="file-source" class="span12">/**
+ * Database agnostic data model class
+ */
 
-
-var Klass = require('./base').Klass;
+/**
+ * Module dependencies
+ */
+var Klass = require('./klass').Klass;
 var extend = require('./util').extend;
 var util = require('util');
 
-
+/**
+ * Constructor function of Model
+ * @param data {Object} Data that need to be handled by Model
+ * @constructor
+ * @public
+ */
 
 function Model(data) {
   // mark that we are initializing, changed fields should not be recorded.
@@ -100,6 +109,11 @@ function Model(data) {
   this.data = {};
   // object contains the invaild fields and values and reasons
   this.invalidFields = {count: 0, fields: {}};
+  this.setters = this.setters || {};
+  this.getters = this.getters || {};
+  this.aliases = this.aliases || {};
+  // object contains the changed field/value pairs
+  this.changedFields = {};
 
   // check for required fields
   var self = this;
@@ -120,16 +134,26 @@ function Model(data) {
   this.initialized = true;
 }
 
+/**
+ * Model prototype object
+ */
+
 Model.prototype = {
 
+  /**
+   * Name of the Model
+   */
   name: 'Model',
-  setters: {},
-  getters: {},
-  fields: {},
-  aliases: {},
-  // object contains the changed field/value pairs
-  changedFields: {},
   idAttribute: '_id',
+
+  /**
+   * Data field setter function.
+   *
+   * @param key {String} Name of the field
+   * @param value {*} Value of the field
+   * @returns {*} "this"
+   * @public
+   */
 
   set: function (key, value) {
     var isInvalid = this.validateField(key, value);
@@ -161,6 +185,14 @@ Model.prototype = {
     return this;
   },
 
+  /**
+   * Get field value by name.
+   *
+   * @param key {String|Array} Name of the field or array of field names
+   * @returns {*} Field value or field/value hash if key is Array
+   * @public
+   */
+
   get: function (key) {
     if (Array.isArray(key)) {
       var obj = {};
@@ -175,6 +207,14 @@ Model.prototype = {
     var getter = this.getters[key];
     return getter ? getter.call(this, data[aliasKey]) : data[aliasKey];
   },
+
+  /**
+   * Validate field base on the "this.fields" object.
+   *
+   * @param fieldName {String} Name of the field
+   * @param value {*} Value that need to be validated
+   * @returns {Boolean|*} Returns "false" if validated successfully otherwise returns error code
+   */
 
   validateField: function (fieldName, value) {
     if (!this.fields) {
@@ -209,17 +249,46 @@ Model.prototype = {
     return this.ERROR_VALIDATOR;
   },
 
+  /**
+   * Check if current data in model is valid or not.
+   *
+   * @returns {Boolean}
+   * @public
+   */
+
   isValid: function () {
     return this.invalidFields.count === 0;
   },
+
+  /**
+   * Get invalid data fields
+   *
+   * @returns {Boolean|Object} False if all fields are valid otherwise object.
+   * @public
+   */
 
   getInvalidFields: function () {
     return this.invalidFields.count === 0 ? false : this.invalidFields.fields;
   },
 
+  /**
+   * Get the changed fields after model initialized.
+   *
+   * @returns {*}
+   * @public
+   */
+
   changed: function () {
     return this.changedFields;
   },
+
+  /**
+   * Return data with fields' name that you want to present to end-user.
+   *
+   * @param [keys] {Array} Array of fields you want to get, if not supplied return all fields.
+   * @returns {Object|Boolean} False if model has invalid field
+   * @public
+   */
 
   toData: function (keys) {
     if (!this.isValid()) {
@@ -236,6 +305,14 @@ Model.prototype = {
     });
     return data;
   },
+
+  /**
+   * Return data with fields' name that you want to save to database.
+   *
+   * @param [keys] {Array} Array of fields you want to get, if not supplied return all fields.
+   * @returns {Object|Boolean} False if model has invalid field
+   * @public
+   */
 
   toDoc: function (keys) {
     if (!this.isValid()) {
@@ -254,11 +331,23 @@ Model.prototype = {
     return doc;
   },
 
+  /**
+   * Error codes.
+   */
+
   ERROR_FIELD_MISSING: 1001,
   ERROR_FIELD_TYPE: 1002,
   ERROR_FIELD_INVALID: 1003,
   ERROR_VALIDATOR: 1004
 };
+
+/**
+ * Model inherits function
+ *
+ * @param prototype {Object} Prototype object of parent class
+ * @param subModule {Object}
+ * @private
+ */
 
 function modelInherits(prototype, subModule) {
   Object.keys(subModule).forEach(function (propKey) {
@@ -269,10 +358,10 @@ function modelInherits(prototype, subModule) {
         prototype[propKey] = subModule[propKey];
         break;
       case 'fields':
-        extend(prototype.fields, subModule.fields);
+        prototype.fields = extend({}, prototype.fields, subModule.fields);
         break;
       case 'aliases':
-        var aliases = extend(prototype.aliases, subModule.aliases);
+        var aliases = extend({}, prototype.aliases, subModule.aliases);
         var maps = {};
         Object.keys(aliases).forEach(function (alias) {
           maps[aliases[alias]] = alias;
@@ -296,9 +385,11 @@ function modelInherits(prototype, subModule) {
           if (typeof fn === 'function') {
             switch (propKey.slice(0, 3)) {
               case 'set':
+                prototype.setters = prototype.setters || {};
                 prototype.setters[attributeName] = fn;
                 break;
               case 'get':
+                prototype.getters = prototype.getters || {};
                 prototype.getters[attributeName] = fn;
                 break;
             }
@@ -310,6 +401,10 @@ function modelInherits(prototype, subModule) {
     }
   });
 }
+
+/**
+ * Module exports
+ */
 
 exports.Model = Klass(Model, null, modelInherits);</textarea>
   </div>
