@@ -124,8 +124,8 @@ describe('Plugin', function () {
       core.loadPlugin('router');
 
       var routes = {
-        index: {
-          url: '^/',
+        indexHome: {
+          url: '^/$',
           method: 'GET',
           handler: function (context) {
             throw new Error('Request should not be routed here.');
