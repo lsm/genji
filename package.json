@@ -1,6 +1,6 @@
 {
   "name": "genji",
-  "description": "Writing reusable, modular and flexible node.js application made easy.",
+  "description": "Writing reusable, modular and flexible node.js applications made easy.",
   "version": "0.7.0",
   "keywords": ["genji", "event", "rest", "framework", "middleware", "router", "async", "mvc", "app", "api"],
   "homepage": "http://github.com/lsm/genji",

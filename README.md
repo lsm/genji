@@ -1,7 +1,7 @@
 Genji [![build status](https://secure.travis-ci.org/lsm/genji.png)](http://travis-ci.org/lsm/genji)
 =====
 
-Writing reusable, modular and flexible node.js application made easy.
+Writing reusable, modular and flexible node.js applications made easy.
 
 ## Introduction
 

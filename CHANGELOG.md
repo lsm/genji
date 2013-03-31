@@ -3,7 +3,7 @@ CHANGELOG
 
 ## 0.7 (2013)
 
-### 0.7.0 (2013/03/23)
+### 0.7.0 (2013/03/31)
 
 **NOTE**: This version is **not compatible** with version **0.5.x**
 
@@ -26,6 +26,9 @@ CHANGELOG
   - use `Klass`
   - remove support of static properties
 - Remove `Role`
+- Remove `Base`
+- Remove file plugin and lib/mime.js
+- Refactor `view`
 
 ## 0.5 (2012)
 
