@@ -280,6 +280,36 @@ describe('Plugin', function () {
             });
         });
     });
+
+    it('should fail to render and return 503', function (done) {
+      var engine = {
+        render: function (str, ctx) {
+          assert.equal('testing data for crypto', str);
+          var search = new RegExp(ctx.search);
+          var result = str.replace(search, ctx.replace);
+          return result;
+        }
+      };
+      core.loadPlugin('router');
+      core.loadPlugin('view', {engine: engine, rootViewPath: __dirname});
+
+      var routes = {
+        viewHashfileWithPath: {
+          url: '^/unknow/file',
+          method: 'GET',
+          view: function () {
+            this.render('view/unknow_file.html', {search: 'crypto', replace: "view"});
+          }
+        }
+      };
+
+      core.mapRoutes(routes);
+      server.on('request', core.getListener());
+
+      request(server)
+        .get('/unknow/file')
+        .expect(503, "Failed to render file", done);
+    });
   });
 
 });
