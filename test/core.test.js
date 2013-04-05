@@ -13,8 +13,8 @@ describe('Core', function () {
   });
 
   it('should use parser and router plugins to route and parse json request', function (done) {
-    core.loadPlugin('parser');
-    core.loadPlugin('router', {urlRoot: '^/json'});
+    core.use('parser');
+    core.use('router', {urlRoot: '^/json'});
 
     var jsonStr = JSON.stringify({key: "value"});
 
@@ -31,7 +31,7 @@ describe('Core', function () {
       }
     };
 
-    core.mapRoutes(routes);
+    core.map(routes);
     server.on('request', core.getListener());
 
     request(server)
@@ -50,9 +50,9 @@ describe('Core', function () {
       });
   });
 
-  describe('.mapRoutes', function () {
-    it('should auto map app function to route', function (done) {
-      core.loadPlugin('router');
+  describe('.load', function () {
+    it('should load app and map public function to route automatically', function (done) {
+      core.use('router');
       var result = 'Test result!';
 
       var TestApp = App({
@@ -63,7 +63,7 @@ describe('Core', function () {
       });
 
       var testApp = new TestApp();
-      core.mapRoutes(testApp);
+      core.load(testApp);
       server.on('request', core.getListener());
 
       request(server)
@@ -72,8 +72,8 @@ describe('Core', function () {
         .expect(200, result, done);
     });
 
-    it('should use customized routes and hooks', function (done) {
-      core.loadPlugin('router');
+    it('should load app and use customized routes and hooks', function (done) {
+      core.use('router');
 
       var result = 'Test result!';
 
@@ -110,8 +110,9 @@ describe('Core', function () {
         }}
       };
 
-      core.mapRoutes(routes, testApp);
-      core.mapRoutes(routes);
+      core.load(testApp);
+      core.map(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)

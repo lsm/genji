@@ -15,8 +15,8 @@ describe('Plugin', function () {
 
   describe('.parser', function () {
     it('should parse json request', function (done) {
-      core.loadPlugin('parser');
-      core.loadPlugin('router', {urlRoot: '^/json'});
+      core.use('parser');
+      core.use('router', {urlRoot: '^/json'});
 
       var jsonStr = JSON.stringify({key: "value"});
 
@@ -33,7 +33,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
@@ -53,8 +53,8 @@ describe('Plugin', function () {
     });
 
     it('should parse post form request and url query', function (done) {
-      core.loadPlugin('parser');
-      core.loadPlugin('router', {urlRoot: '^/json'});
+      core.use('parser');
+      core.use('router', {urlRoot: '^/json'});
 
       var queryStr = querystring.stringify({key: "value"});
 
@@ -72,7 +72,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
@@ -92,8 +92,8 @@ describe('Plugin', function () {
     });
 
     it('should close connection if max post size exceeded', function (done) {
-      core.loadPlugin('parser', {maxIncomingSize: 10});
-      core.loadPlugin('router', new Router({urlRoot: '^/json'}));
+      core.use('parser', {maxIncomingSize: 10});
+      core.use('router', new Router({urlRoot: '^/json'}));
 
       var data = "01234567890";
 
@@ -107,7 +107,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
@@ -121,7 +121,7 @@ describe('Plugin', function () {
 
   describe('.router', function () {
     it('should reply 404 and emit error event if url not matched', function (done) {
-      core.loadPlugin('router');
+      core.use('router');
 
       var routes = {
         indexHome: {
@@ -133,7 +133,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
@@ -231,8 +231,8 @@ describe('Plugin', function () {
           return result;
         }
       };
-      core.loadPlugin('router');
-      core.loadPlugin('view', {engine: engine, rootViewPath: __dirname});
+      core.use('router');
+      core.use('view', {engine: engine, rootViewPath: __dirname});
 
       var routes = {
         viewHashfileWithPath: {
@@ -265,7 +265,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
@@ -290,8 +290,8 @@ describe('Plugin', function () {
           return result;
         }
       };
-      core.loadPlugin('router');
-      core.loadPlugin('view', {engine: engine, rootViewPath: __dirname});
+      core.use('router');
+      core.use('view', {engine: engine, rootViewPath: __dirname});
 
       var routes = {
         viewHashfileWithPath: {
@@ -303,7 +303,7 @@ describe('Plugin', function () {
         }
       };
 
-      core.mapRoutes(routes);
+      core.map(routes);
       server.on('request', core.getListener());
 
       request(server)
