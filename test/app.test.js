@@ -111,7 +111,8 @@ describe('App', function () {
     var emitter = new MyApp();
     subMyApp.delegate = emitter;
 
-    emitter.on('SubMyApp:doAsyncJob', function (err, result) {
+    emitter.on('SubMyApp:doAsyncJob', function (app, err, result) {
+      assert.equal(app, subMyApp);
       assert.equal('hello', result);
       subMyApp.prefixDelegatedEvent = 'CustomPrefix';
       subMyApp.doAsyncJob('world');
@@ -119,7 +120,8 @@ describe('App', function () {
 
     subMyApp.doAsyncJob('hello');
 
-    emitter.on('CustomPrefix:doAsyncJob', function (err, result) {
+    emitter.on('CustomPrefix:doAsyncJob', function (app, err, result) {
+      assert.equal(app, subMyApp);
       assert.equal('world', result);
       done();
     });
