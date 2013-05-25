@@ -1,7 +1,7 @@
 {
   "name": "genji",
   "description": "Writing reusable, modular and flexible node.js applications made easy.",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "keywords": ["genji", "event", "rest", "framework", "middleware", "router", "async", "mvc", "app", "api"],
   "homepage": "http://github.com/lsm/genji",
   "author": "Senmiao Liu <senmiao.liu@gmail.com> http://vitecho.com",
