@@ -358,7 +358,7 @@ function defer(asyncFn, context, emitter) {
           });
         } else {
           // otherwise throw the exception
-          console.trace('Please set error handling function with `.fail` or supply a `emitter` and listen to the `fail` event.');
+          console.trace('Please set error handling function with `.fail` or supply an `emitter` and listen to the `fail` event.');
           throw err;
         }
       }

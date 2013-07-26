@@ -45,21 +45,21 @@
   <div class="row">
     <div class="span6">
       <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"></i></a></h2>
-      <p class="stat">65.28</p>
+      <p class="stat">65.82</p>
     </div>
     <div class="span6">
       <h2 class="header">Estimated # Bugs  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs"></i></a></h2>
-      <p class="stat">2.77</p>
+      <p class="stat">3.19</p>
     </div>
   </div>
   <div class="row">
     <div class="span6">
       <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty"></i></a></h2>
-      <p class="stat">71.54</p>
+      <p class="stat">74.51</p>
     </div>
     <div class="span6">
       <h2 class="header">SLOC/LSLOC <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC"></i></h2>
-      <p class="stat">378 / 191</p>
+      <p class="stat">421 / 220</p>
     </div>
   </div>
 </div>
@@ -97,11 +97,12 @@ var Path = require('path');
 var toArray = require('./util').toArray;
 var App = require('./app').App;
 var Context = require('./context').Context;
+var extend = require('./util').extend;
 
 /**
  * The middleware management class
  *
- * @param emitter {Object} An EventEmitter instance use to emit event from core or context
+ * @param [site] {Object} Optional Site instance object
  * @constructor
  * @public
  */
@@ -111,28 +112,18 @@ var Core = Klass(Chain, {
   /**
    * Constructor class
    *
-   * @param emitter {Object} An EventEmitter instance use to emit event from core
+   * @param [site] {Object} Optional Site instance object
    * @constructor
    * @public
    */
 
-  init: function (emitter) {
-    this.emitter = emitter;
+  init: function (site) {
+    this.site = site;
     this.plugins = [];
     this.stackNames = [];
     this.stacks = {};
-  },
-
-  /**
-   * Emit event to core's emitter
-   *
-   * @param name {String} Event name
-   * @param [data...] {*} Optional event data object
-   * @public
-   */
-
-  emit: function (name, data) {
-    this.emitter.emit.apply(this.emitter, arguments);
+    this.apps = {};
+    this.routes = {};
   },
 
   /**
@@ -144,8 +135,6 @@ var Core = Klass(Chain, {
 
   writeHead: function () {
     this.add('writeHead', function (statusCode, headers) {
-      // the final chain which writes to the response
-      statusCode = statusCode || this.response.statusCode;
       this.response.writeHead(statusCode, headers);
     });
     // return the stacked callbacks
@@ -161,6 +150,9 @@ var Core = Klass(Chain, {
 
   write: function () {
     this.add('write', function (chunk, encoding) {
+      if (!this._headerSent) {
+        this.writeHead();
+      }
       this.response.write(chunk, encoding);
     });
     return this.get('write');
@@ -175,6 +167,9 @@ var Core = Klass(Chain, {
 
   end: function () {
     this.add('end', function (chunk, encoding) {
+      if (!this._headerSent) {
+        this.writeHead();
+      }
       this.response.end(chunk, encoding);
     });
     return this.get('end');
@@ -188,7 +183,7 @@ var Core = Klass(Chain, {
    * @public
    */
 
-  loadPlugin: function (plugin, options) {
+  use: function (plugin, options) {
     if ('string' === typeof plugin) {
       plugin = require(Path.join(__dirname, '/plugin', plugin.toLowerCase()));
     }
@@ -212,46 +207,66 @@ var Core = Klass(Chain, {
     if (plugin.module) {
       Context = Context(plugin.module);
     }
+    return this;
+  },
+
+  /**
+   *
+   * @param app
+   * @public
+   */
+  load: function (app) {
+    this.apps[app.name.toLowerCase()] = app;
+    return this;
+  },
+
+  /**
+   *
+   * @param routes
+   * @returns {*}
+   * @public
+   */
+  map: function (routes) {
+    extend(this.routes, routes);
+    return this;
   },
 
   /**
    * Map methods of app to routes and add normalized routes to router
    *
-   * @param [routes] {Object} Optional routing definition object
-   * @param [app] {Object} Instance object of app
-   * @public
+   * @private
    */
 
-  mapRoutes: function (routes, app) {
+  buildRoutes: function () {
     if (!this.router) {
-      this.loadPlugin('router', {urlRoot: this.get('urlRoot')});
+      this.use('router');
     }
-    var router = this.router;
-    var self = this;
-    if (routes instanceof App) {
-      app = routes;
-      routes = null;
-    }
-    routes = routes || {};
 
-    if (app) {
-      var publicMethods = app.publicMethods;
+    var self = this;
+    var router = this.router;
+    var routes = this.routes;
+    var apps = this.apps;
+
+    Object.keys(apps).forEach(function (appName) {
+      var _app = apps[appName];
+      var publicMethods = _app.publicMethods;
       Object.keys(publicMethods).forEach(function (name) {
-        var route = self.normalizeRoute(name, routes, app);
+        var routeName = appName + name[0].toUpperCase() + name.slice(1);
+        var route = self.normalizeRoute(routeName, routes, apps);
         if (route) {
           router.add(route.method, route.url, route.handler, route.hooks);
           delete routes[route.name];
         }
       });
-    } else if (routes) {
-      Object.keys(routes).forEach(function (routeName) {
-        var route = self.normalizeRoute(routeName, routes);
-        if (route) {
-          router.add(route.method, route.url, route.handler, route.hooks);
-          delete routes[route.name];
-        }
-      });
-    }
+    });
+
+    Object.keys(routes).forEach(function (routeName) {
+      var route = self.normalizeRoute(routeName, routes, apps);
+      if (route) {
+        router.add(route.method, route.url, route.handler, route.hooks);
+        delete routes[route.name];
+      }
+    });
   },
 
   /**
@@ -259,33 +274,34 @@ var Core = Klass(Chain, {
    *
    * @param routeName {String} Name of the route, if app supplied this should be name of the app function
    * @param routes {Object} The routes definition object
-   * @param [app] {Object} Optional app instance object
+   * @param [apps] {Object} Optional object of app instances
    * @returns {Object|Boolean}
    * @private
    */
 
-  normalizeRoute: function (routeName, routes, app) {
-    var appName;
+  normalizeRoute: function (routeName, routes, apps) {
+    var router = this.router;
+    var self = this;
+    var defaultViewPath = router.slashCamelCase(routeName);
+    var appName = defaultViewPath.split('/')[0];
+    if (routeName === appName) {
+      return false;
+    }
+
+    var app;
     var appFn;
-    if (app) {
-      appFn = app.publicMethods[routeName];
-      appName = app.name.toLowerCase();
-      routeName = appName + routeName[0].toUpperCase() + routeName.slice(1);
+
+    if (apps) {
+      app = apps[appName];
+      if (app) {
+        var methodName = routeName.replace(appName, '');
+        methodName = methodName[0].toLowerCase() + methodName.slice(1);
+        appFn = app.publicMethods[methodName];
+      }
     }
 
     var route = routes[routeName] || {};
     route.name = routeName;
-    var router = this.router;
-    var self = this;
-
-    var defaultViewPath = router.slashCamelCase(routeName);
-    if (!appName) {
-      appName = defaultViewPath.split('/')[0];
-    }
-
-    if (routeName === appName) {
-      return false;
-    }
 
     defaultViewPath = defaultViewPath.split('/');
     defaultViewPath.shift();
@@ -353,6 +369,7 @@ var Core = Klass(Chain, {
         route.handler = function (context) {
           var next;
           var args = toArray(arguments);
+          context.app = app;
 
           function callback() {
             if (self.view) {
@@ -380,6 +397,9 @@ var Core = Klass(Chain, {
         };
       } else {
         route.handler = function (context) {
+          if (app) {
+            context.app = app;
+          }
           if (self.view) {
             context.view = self.view;
             context.viewPath = defaultViewPath;
@@ -390,6 +410,12 @@ var Core = Klass(Chain, {
           return true;
         };
       }
+    } else if (app) {
+      var handler = route.handler;
+      route.handler = function (context) {
+        context.app = app;
+        handler.apply(null, arguments);
+      };
     }
 
     if (appRouteDefaults && appRouteDefaults.hooks) {
@@ -407,9 +433,11 @@ var Core = Klass(Chain, {
    * Get the listener which can handle "request" event
    *
    * @returns {Function}
+   * @public
    */
 
   getListener: function () {
+    this.buildRoutes();
     var stacks = this.stacks;
     var stackNames = this.stackNames;
 
@@ -443,16 +471,31 @@ var Core = Klass(Chain, {
 
     Context = Context({
       writeHead: function (statusCode, headers) {
-        headers = headers || {};
-        writeHead.call(this, statusCode, headers);
+        this._headerSent = true;
+        writeHead.call(this, statusCode || this.statusCode, extend(this._headers, headers));
+        return this;
       },
       write: function (chunk, encoding) {
         write.call(this, chunk, encoding);
+        return this;
       },
       end: function (chunk, encoding) {
         end.call(this, chunk, encoding);
+        return this;
       }
     });
+
+    if (this.site) {
+      var site = this.site;
+      Context = Context({
+        set: function () {
+          return site.set.apply(site, arguments);
+        },
+        get: function () {
+          return site.get.apply(site, arguments);
+        }
+      });
+    }
 
     return function (request, response) {
       var ctx = new Context(request, response);
