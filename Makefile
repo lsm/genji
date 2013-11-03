@@ -1,15 +1,22 @@
 REPORTER ?= dot
 DOC_PATH ?= ./docs
 
-test:
-	@./node_modules/.bin/mocha --require blanket --reporter $(REPORTER)
+lib-cov:
+	@rm -rf ./lib-cov
+	@./node_modules/jscoverage/bin/jscoverage ./lib ./lib-cov
 
-test-cov:
+test:	
+	@./node_modules/.bin/mocha --reporter $(REPORTER)
+
+test-cov: lib-cov
 	@mkdir -p $(DOC_PATH)
-	@GENJI_COV=1 $(MAKE) test REPORTER=html-cov > $(DOC_PATH)/coverage.html
+	GENJI_COV=1 $(MAKE) test REPORTER=html-cov > $(DOC_PATH)/coverage.html
+	@rm -rf ./lib-cov
 
-test-coveralls:
-	@GENJI_COV=1 $(MAKE) test REPORTER=mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
+test-coveralls: lib-cov
+	echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
+	GENJI_COV=1 $(MAKE) test REPORTER=mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
+	@rm -rf ./lib-cov
 
 watch:
 	@./node_modules/.bin/mocha \
