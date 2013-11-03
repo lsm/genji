@@ -1,28 +1,20 @@
 REPORTER ?= dot
 DOC_PATH ?= ./docs
 
-lib-cov:
-	@rm -fr ./$@
-	@jscoverage lib $@
-
 test:
-	@./node_modules/.bin/mocha --reporter $(REPORTER)
+	@./node_modules/.bin/mocha --require blanket --reporter $(REPORTER)
 
-test-cov: lib-cov
+test-cov:
 	@mkdir -p $(DOC_PATH)
 	@GENJI_COV=1 $(MAKE) test REPORTER=html-cov > $(DOC_PATH)/coverage.html
 
-test-coveralls: lib-cov
+test-coveralls:
 	@GENJI_COV=1 $(MAKE) test REPORTER=mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
 
 watch:
 	@./node_modules/.bin/mocha \
 		--watch \
 		--reporter $(REPORTER)
-
-clean:
-	rm -fr lib-cov
-	rm -f coverage.html
 
 docs: test-cov
 	npm install beautiful-docs@0.8.0

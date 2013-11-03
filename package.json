@@ -19,10 +19,14 @@
     "supertest": "0.5.1",
     "hogan.js": "2.0.0",
     "mocha-lcov-reporter": "0.0.1",
-    "coveralls": "2.3.0"
+    "coveralls": "2.3.0",
+    "blanket": "1.1.5"
   },
   "scripts": {
-    "test": "make test-coveralls"
+    "test": "make test-coveralls",
+    "blanket": {
+      "pattern": "genji/lib"
+    }
   },
   "engines": {
     "node": ">= 0.6.0"
