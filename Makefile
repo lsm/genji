@@ -14,7 +14,7 @@ test-cov: lib-cov
 	@rm -rf ./lib-cov
 
 test-coveralls: lib-cov
-	echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
+	@echo TRAVIS_JOB_ID $(TRAVIS_JOB_ID)
 	GENJI_COV=1 $(MAKE) test REPORTER=mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
 	@rm -rf ./lib-cov
 
