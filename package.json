@@ -22,7 +22,7 @@
     "coveralls": "2.3.0"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test-coveralls"
   },
   "engines": {
     "node": ">= 0.6.0"
