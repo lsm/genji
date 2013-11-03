@@ -1,4 +1,4 @@
-Genji [![build status](https://secure.travis-ci.org/lsm/genji.png)](http://travis-ci.org/lsm/genji)
+Genji [![build status](https://secure.travis-ci.org/lsm/genji.png)](http://travis-ci.org/lsm/genji) [![Coverage Status](https://coveralls.io/repos/lsm/genji/badge.png?branch=master)](https://coveralls.io/r/lsm/genji?branch=master)
 =====
 
 Writing reusable, modular and flexible node.js applications made easy.
