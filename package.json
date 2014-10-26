@@ -19,6 +19,7 @@
     "supertest": "0.14.0",
     "mocha-lcov-reporter": "0.0.1",
     "coveralls": "2.11.2",
+    "hogan.js": "2.0.0",
     "jscoverage": "0.3.8"
   },
   "scripts": {
