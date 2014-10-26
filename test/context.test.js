@@ -152,47 +152,4 @@ describe('Context', function () {
         .expect(200, html, done);
     });
   });
-
-  it('should be able to set/parse cookie by using cookie plugin', function (done) {
-    var Cookie = genji.cookie;
-    var CookieContext = Context(genji.plugin.cookie.module);
-    var cookieOptions = {
-      expires: new Date(10000),
-      path: '/cookie',
-      domain: 'test.com',
-      secure: true,
-      httponly: true
-    };
-    var clientCookie = 'client_cookie=client_value;';
-    var cookies = [
-      'test_cookie=cookie_value; expires=Thu, 01 Jan 1970 00:00:10 GMT; path=/cookie; domain=test.com; secure=true; httponly=true',
-      "cookie_to_clear=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/"
-    ];
-
-    var router = genji.route({contextClass: CookieContext});
-
-    router.get('^/cookie$', function (context) {
-      var clientCookieValue = context.getCookie('client_cookie');
-      assert.equal(clientCookieValue, 'client_value');
-      assert.equal(Cookie.checkLength(context.request.headers.cookie), true);
-      context.setCookie('test_cookie', 'cookie_value', cookieOptions);
-      context.clearCookie('cookie_to_clear', {path: '/'});
-      context.sendHTML('<br />');
-    });
-
-    router.listen(server);
-
-    request(server)
-      .get('/cookie')
-      .set('Cookie', clientCookie)
-      .expect(200, '<br />')
-      .expect('content-type', 'text/html; charset=utf-8')
-      .end(function (err, res) {
-        var cookieValue = Cookie.parse(res.headers['set-cookie'][0], 'test_cookie');
-        assert.equal('cookie_value', cookieValue);
-        assert.equal(cookies[0], res.headers['set-cookie'][0]);
-        assert.equal(cookies[1], res.headers['set-cookie'][1]);
-        done();
-      });
-  });
 });
