@@ -1,3 +1,4 @@
+"use strict";
 var genji = require('../index');
 var assert = require('assert');
 var View = genji.View;

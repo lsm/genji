@@ -1,3 +1,4 @@
+"use strict";
 var genji = require('../index');
 var Chain = genji.Chain;
 var chain = genji.chain;

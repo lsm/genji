@@ -1,3 +1,4 @@
+"use strict";
 var genji = require('../index');
 var http = require('http');
 var Context = genji.Context;
