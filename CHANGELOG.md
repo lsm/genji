@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+## 0.9 (2014)
+
+### 0.9.3
+
+- Support dependency injection and function delegation
+- Rewrite `Router` for simplified features
+- `Core` supports async plugins
+
 ## 0.7 (2013)
 
 ### 0.7.0 (2013/03/31)
