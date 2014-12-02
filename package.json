@@ -1,10 +1,10 @@
 {
   "name": "genji",
-  "description": "Writing reusable, modular and flexible node.js applications made easy.",
+  "description": "Small extensible core for modern web application.",
   "version": "0.9.3",
   "keywords": ["api", "rest", "framework", "middleware", "router", "genji", "dependency injection"],
   "homepage": "http://github.com/lsm/genji",
-  "author": "Senmiao Liu <senmiao.liu@gmail.com> http://vitecho.com",
+  "author": "Senmiao Liu <senmiao.liu@gmail.com>",
   "repository" : {
     "type" : "git",
     "url" : "http://github.com/lsm/genji.git"
